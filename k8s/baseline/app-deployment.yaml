@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baseline-nginx
+  namespace: baseline
+  labels:
+    app: baseline-nginx
+    environment: baseline
+    security-profile: weak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: baseline-nginx
+  template:
+    metadata:
+      labels:
+        app: baseline-nginx
+        environment: baseline
+        security-profile: weak
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80

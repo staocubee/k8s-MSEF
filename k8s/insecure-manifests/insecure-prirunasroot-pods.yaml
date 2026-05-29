@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: insecure-run-as-root
+spec:
+  containers:
+  - name: app
+    image: nginx
+    securityContext:
+      runAsUser: 0
+

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: baseline
+  labels:
+    environment: baseline
+    security-profile: weak

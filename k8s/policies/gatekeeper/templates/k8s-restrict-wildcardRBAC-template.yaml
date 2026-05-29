@@ -1,0 +1,51 @@
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8srestrictwildcardrbac
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sRestrictWildcardRBAC
+  targets:
+  - target: admission.k8s.gatekeeper.sh
+    rego: |
+      package k8srestrictwildcardrbac
+
+      is_rbac_kind {
+        input.review.kind.kind == "Role"
+      }
+
+      is_rbac_kind {
+        input.review.kind.kind == "ClusterRole"
+      }
+
+      violation[{"msg": msg}] {
+        is_rbac_kind
+        r := input.review.object.rules[_]
+        r.resources[_] == "*"
+        msg := sprintf("Wildcard resources are not allowed in %v: %v", [input.review.kind.kind, input.review.object.metadata.name])
+      }
+
+      violation[{"msg": msg}] {
+        is_rbac_kind
+        r := input.review.object.rules[_]
+        r.verbs[_] == "*"
+        msg := sprintf("Wildcard verbs are not allowed in %v: %v", [input.review.kind.kind, input.review.object.metadata.name])
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "RoleBinding"
+        s := input.review.object.subjects[_]
+        s.kind == "ServiceAccount"
+        s.name == "default"
+        msg := sprintf("Binding to default ServiceAccount is forbidden: %v", [input.review.object.metadata.name])
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "ClusterRoleBinding"
+        s := input.review.object.subjects[_]
+        s.kind == "ServiceAccount"
+        s.name == "default"
+        msg := sprintf("Binding to default ServiceAccount is forbidden: %v", [input.review.object.metadata.name])
+      }

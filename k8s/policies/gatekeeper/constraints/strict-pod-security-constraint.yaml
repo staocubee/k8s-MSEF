@@ -1,0 +1,11 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sStrictPodSecurity
+metadata:
+  name: enforce-strict-pod-security
+spec:
+  enforcementAction: deny
+  match:
+    namespaceSelector:
+      matchLabels:
+        security-level: hardened
+

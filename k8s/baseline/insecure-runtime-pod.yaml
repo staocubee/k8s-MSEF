@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: insecure-write-root
+  namespace: baseline
+  labels:
+    app: insecure-write-root
+    environment: baseline
+    security-profile: weak
+spec:
+  restartPolicy: Never
+  containers:
+  - name: alpine
+    image: alpine:latest
+    command: ["sh", "-c", "sleep 3600"]
+    securityContext:
+      runAsUser: 0
+      allowPrivilegeEscalation: true

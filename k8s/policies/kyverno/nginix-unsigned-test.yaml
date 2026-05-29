@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: unsigned-test
+  namespace: hardened
+spec:
+  serviceAccountName: custom-sa
+  containers:
+  - name: nginx
+    image: nginx
+

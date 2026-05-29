@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: security-report-service
+  namespace: hardened
+  labels:
+    app: security-report-server
+spec:
+  type: LoadBalancer
+  selector:
+    app: security-report-server
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    protocol: TCP

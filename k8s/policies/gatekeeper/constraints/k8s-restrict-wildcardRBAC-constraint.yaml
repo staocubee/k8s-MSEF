@@ -1,0 +1,10 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRestrictWildcardRBAC
+metadata:
+  name: restrict-wildcard-rbac
+spec:
+  enforcementAction: deny
+  match:
+    kinds:
+    - apiGroups: ["rbac.authorization.k8s.io"]
+      kinds: ["Role", "ClusterRole", "RoleBinding", "ClusterRoleBinding"]

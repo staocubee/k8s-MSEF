@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: insecure-pull-always
+spec:
+  containers:
+  - name: app
+    image: nginx
+    imagePullPolicy: Always
+

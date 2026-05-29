@@ -1,0 +1,101 @@
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8sstrictpodsecurity
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sStrictPodSecurity
+  targets:
+  - target: admission.k8s.gatekeeper.sh
+    rego: |
+      package k8sstrictpodsecurity
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        c := input.review.object.spec.containers[_]
+        c.securityContext.privileged == true
+        msg := "Privileged containers are not allowed"
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        c := input.review.object.spec.containers[_]
+        c.securityContext.runAsUser == 0
+        msg := "Running as root is not allowed"
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        not input.review.object.spec.securityContext
+        msg := "Pod securityContext is required"
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        c := input.review.object.spec.containers[_]
+        not c.securityContext
+        msg := sprintf("Container securityContext is required for container %v", [c.name])
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        c := input.review.object.spec.containers[_]
+        c.securityContext.allowPrivilegeEscalation == true
+        msg := "Privilege escalation is not allowed"
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        c := input.review.object.spec.containers[_]
+        c.securityContext.readOnlyRootFilesystem == false
+        msg := "Writable root filesystem is not allowed"
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        input.review.object.spec.hostNetwork == true
+        msg := "Host network is not allowed"
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        input.review.object.spec.hostPID == true
+        msg := "Host PID namespace is not allowed"
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        v := input.review.object.spec.volumes[_]
+        v.hostPath
+        msg := "HostPath volumes are not allowed"
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        c := input.review.object.spec.containers[_]
+        c.securityContext.capabilities.add[_] == "SYS_ADMIN"
+        msg := "SYS_ADMIN capability is not allowed"
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        c := input.review.object.spec.containers[_]
+        c.securityContext.capabilities.add[_] == "NET_ADMIN"
+        msg := "NET_ADMIN capability is not allowed"
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        sc := input.review.object.spec.securityContext
+        sc.sysctls[_].name == "kernel.shm_rmid_forced"
+        msg := "Unsafe sysctls are not allowed"
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        c := input.review.object.spec.containers[_]
+        endswith(c.image, ":latest")
+        msg := "Latest image tag is not allowed"
+      }

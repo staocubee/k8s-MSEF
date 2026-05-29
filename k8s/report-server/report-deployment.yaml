@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: security-report-server
+  namespace: hardened
+  labels:
+    app: security-report-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: security-report-server
+  template:
+    metadata:
+      labels:
+        app: security-report-server
+    spec:
+      serviceAccountName: hardened-app-sa
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: report-server
+        image: REPORT_IMAGE_PLACEHOLDER
+        ports:
+        - containerPort: 80
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+          runAsUser: 101
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "100m"
+            memory: "128Mi"

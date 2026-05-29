@@ -1,0 +1,11 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sDisallowDefaultSA
+metadata:
+  name: disallow-default-sa
+spec:
+  enforcementAction: deny
+  match:
+    namespaceSelector:
+      matchLabels:
+        security-level: hardened
+
