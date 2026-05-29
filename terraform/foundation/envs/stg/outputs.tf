@@ -17,3 +17,9 @@ output "workload_identity_provider" {
 output "state_bucket_name" {
   value = module.state_bucket.bucket_name
 }
+output "workload_identity_service_accounts" {
+  value = module.workload_identity.service_accounts
+}
+output "iam_bindings" {
+  value = module.iam.bindings
+}

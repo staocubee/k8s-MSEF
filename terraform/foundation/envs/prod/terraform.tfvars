@@ -1,10 +1,37 @@
-project_id = "YOUR_GCP_PROJECT_ID"
-env        = "prod"
-region     = "us-central1"
-
-github_owner = "YOUR_GITHUB_USERNAME_OR_ORG"
-github_repo  = "k8s-MSEF"
-
+project_id             = "msef-2026"
+region                 = "us-central1"
+github_owner           = "staocubee"
+env                    = "prod"
+github_repo            = "k8s-MSEF"
 artifact_registry_repo = "k8s-msef"
+state_bucket_name      = "msef-2026-dev-tfstate"
+workload_service_accounts = {
+  external-secrets = {
+    display_name = "dev External Secrets GSA"
+    roles = [
+      "roles/secretmanager.secretAccessor"
+    ]
+  }
 
-state_bucket_name = "YOUR_GCP_PROJECT_ID-prod-tfstate"
+  cert-manager = {
+    display_name = "dev Cert Manager GSA"
+    roles = [
+      "roles/dns.admin"
+    ]
+  }
+
+  argocd = {
+    display_name = "dev ArgoCD GSA"
+    roles = [
+      "roles/artifactregistry.reader"
+    ]
+  }
+
+  workload-app = {
+    display_name = "dev Application Workload GSA"
+    roles = [
+      "roles/artifactregistry.reader",
+      "roles/secretmanager.secretAccessor"
+    ]
+  }
+}
