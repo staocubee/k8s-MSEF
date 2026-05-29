@@ -1,10 +1,10 @@
-project_id              = "msef-2026"
-region                  = "us-central1"
-github_owner = "staocubee"
-env        = "prod"
-github_repo  = "k8s-MSEF"
+project_id             = "msef-2026"
+region                 = "us-central1"
+github_owner           = "staocubee"
+env                    = "prod"
+github_repo            = "k8s-MSEF"
 artifact_registry_repo = "k8s-msef"
-state_bucket_name = "msef-2026-dev-tfstate"
+state_bucket_name      = "msef-2026-dev-tfstate"
 workload_service_accounts = {
   external-secrets = {
     display_name = "dev External Secrets GSA"
