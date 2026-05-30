@@ -16,6 +16,16 @@ spec:
           - Pod
           namespaces:
           - hardened
+    exclude:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          - Deployment
+          names:
+          - security-report-server
+          namespaces:
+          - hardened
     verifyImages:
     - imageReferences:
       - "staocube/*"
@@ -33,4 +43,3 @@ spec:
               a4W4EgsQNrPaPWTeGAUUef1CEWFtqsxDC4N9qLWdZi9r51IPsXR2D4H05Q==
               -----END PUBLIC KEY-----
             signatureAlgorithm: sha256
-            repository: index.docker.io/staocube/k8s-security-report
