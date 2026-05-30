@@ -13,6 +13,8 @@ spec:
     targetRevision: 8.0.5
     helm:
       values: |
+        crds:
+          enabled: true
         driver:
           enabled: true
           kind: modern_ebpf
@@ -48,4 +50,3 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true

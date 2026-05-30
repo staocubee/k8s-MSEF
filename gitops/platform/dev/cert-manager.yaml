@@ -15,7 +15,6 @@ spec:
       values: |
         crds:
           enabled: true
-        installCRDs: true
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager
@@ -25,4 +24,3 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true
