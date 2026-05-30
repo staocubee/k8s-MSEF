@@ -3,9 +3,34 @@ kind: Pod
 metadata:
   name: unsigned-test-nginx
   namespace: hardened
+  labels:
+    app: unsigned-test-nginx
+    environment: hardened
 spec:
   serviceAccountName: hardened-app-sa
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
   containers:
   - name: nginx
-    image: nginx
-
+    image: nginx:1.27.4
+    ports:
+    - containerPort: 80
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+      runAsUser: 101
+      seccompProfile:
+        type: RuntimeDefault
+      capabilities:
+        drop:
+        - ALL
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        cpu: "100m"
+        memory: "128Mi"
