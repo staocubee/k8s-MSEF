@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - templates/strict-pod-security-template.yaml
+  - templates/k8s-disallow-default-sa-template.yaml
+  - templates/k8s-restrict-wildcardRBAC-template.yaml
+  - templates/require-resource-template.yaml
+  - constraints/strict-pod-security-constraint.yaml
+  - constraints/k8s-disallow-defaultsa-constraint.yaml
+  - constraints/k8s-restrict-wildcardRBAC-constraint.yaml
+  - constraints/require-resource-constraint.yaml

@@ -1,0 +1,38 @@
+{
+  "yaml.schemas": {
+    "https://json.schemastore.org/kustomization.json": [
+      "**/kustomization.yaml",
+      "**/kustomization.yml"
+    ],
+    "kubernetes": [
+      "k8s/**/*.yaml",
+      "k8s/**/*.yml",
+      "gitops/**/*.yaml",
+      "gitops/**/*.yml"
+    ]
+  },
+  "yaml.validate": true,
+  "yaml.customTags": [
+    "!reference sequence",
+    "!reference mapping",
+    "!reference scalar"
+  ],
+  "cSpell.words": [
+    "argocd",
+    "Argoproj",
+    "Gatekeeper",
+    "Kyverno",
+    "Cosign",
+    "Falco",
+    "GKE",
+    "Kustomization",
+    "kustomize",
+    "staocube",
+    "sysctl",
+    "hostPath",
+    "hostPID",
+    "hostNetwork",
+    "runAsNonRoot",
+    "readOnlyRootFilesystem"
+  ]
+}

@@ -7,3 +7,4 @@ resources:
   - gatekeeper.yaml
   - kyverno.yaml
   - falco.yaml
+  - security-policy.yaml
