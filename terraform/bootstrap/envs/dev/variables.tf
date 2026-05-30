@@ -33,3 +33,8 @@ variable "root_app_path" {
   description = "Path to the root app for this environment."
   type        = string
 }
+
+variable "root_app_manifest_path" {
+  description = "Path to the root app manifest."
+  type        = string
+}

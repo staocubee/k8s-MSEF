@@ -4,6 +4,7 @@ env        = "dev"
 
 cluster_name = "dev-msef-gke"
 
-repo_url        = "https://github.com/staocubee/k8s-MSEF.git"
-target_revision = "main"
-root_app_path   = "gitops/apps/dev"
+repo_url               = "https://github.com/staocubee/k8s-MSEF.git"
+target_revision        = "main"
+root_app_path          = "gitops/apps/dev"
+root_app_manifest_path = "../../../../gitops/bootstrap/dev/root-app.yaml"
