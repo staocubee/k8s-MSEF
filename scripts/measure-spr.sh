@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-MANIFEST="${MANIFEST:-k8s/integrity-tests/unsigned-test.yaml}"
+MANIFEST="${MANIFEST:-k8s/integrity-tests/default-unsigned-image.yaml}"
 TOTAL="${TOTAL:-10}"
 RESULTS_DIR="${RESULTS_DIR:-results}"
 
