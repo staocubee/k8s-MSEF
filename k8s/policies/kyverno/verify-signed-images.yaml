@@ -19,6 +19,8 @@ spec:
     verifyImages:
     - imageReferences:
       - "staocube/*"
+      - "docker.io/staocube/*"
+      - "index.docker.io/staocube/*"
       mutateDigest: true
       required: true
       verifyDigest: false

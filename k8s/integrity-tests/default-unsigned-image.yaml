@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: unsigned-test
+  name: unsigned-test-nginx
   namespace: hardened
   labels:
-    app: unsigned-test
+    app: unsigned-test-nginx
     environment: hardened
 spec:
   serviceAccountName: hardened-app-sa
@@ -14,14 +14,16 @@ spec:
     seccompProfile:
       type: RuntimeDefault
   containers:
-  - name: unsigned-app
+  - name: unsigned-image-test
     image: staocube/unsigned-test:1.0
-    command: ["sh", "-c", "sleep 3600"]
+    ports:
+    - containerPort: 80
     securityContext:
       allowPrivilegeEscalation: false
-      readOnlyRootFilesystem: true
       runAsNonRoot: true
-      runAsUser: 1000
+      runAsUser: 101
+      seccompProfile:
+        type: RuntimeDefault
       capabilities:
         drop:
         - ALL
