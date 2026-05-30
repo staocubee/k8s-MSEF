@@ -1,0 +1,23 @@
+
+================================
+Kubernetes Security Evaluation Report
+================================
+
+Final Metrics
+-------------
+MBR = .95
+SPR = 1.00
+RDR = 1.00
+MTTD = 17.00s
+FPR = 0
+
+--------------------------------
+Interpretation
+--------------------------------
+Admission Control Strength : .95
+Signature Integrity Enforcement : 1.00
+Runtime Detection Coverage : 1.00
+Runtime Detection Speed : 17.00s
+Detection Noise / False Positive Rate : 0
+
+Report generated at: Sat May 30 18:23:20 WAT 2026

@@ -1,0 +1,25 @@
+===== Runtime Detection Rate Experiment =====
+Start Time: Sat May 30 18:13:57 WAT 2026
+Falco pods: dev-falco-2fjxz dev-falco-8ssmz dev-falco-jrqh7 
+
+Running: Sensitive file access
+Detected: YES
+--------------------------------
+Running: Write to root filesystem
+Detected: YES
+--------------------------------
+Running: Privilege escalation attempt
+Detected: YES
+--------------------------------
+Running: Network via /dev/tcp
+Detected: YES
+--------------------------------
+Running: Network via curl
+Detected: YES
+--------------------------------
+
+===== Experiment Result =====
+Simulated Attacks: 5
+Detected Attack Windows: 5
+RDR = 1.00
+End Time: Sat May 30 18:16:01 WAT 2026

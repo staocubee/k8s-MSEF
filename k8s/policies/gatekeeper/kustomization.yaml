@@ -6,7 +6,9 @@ resources:
   - templates/k8s-disallow-default-sa-template.yaml
   - templates/k8s-restrict-wildcardRBAC-template.yaml
   - templates/require-resource-template.yaml
+  - restrict-secret-access-rbac-template.yaml
   - constraints/strict-pod-security-constraint.yaml
   - constraints/k8s-disallow-defaultsa-constraint.yaml
   - constraints/k8s-restrict-wildcardRBAC-constraint.yaml
   - constraints/require-resource-constraint.yaml
+  - restrict-secret-access-rbac-constraint.yaml

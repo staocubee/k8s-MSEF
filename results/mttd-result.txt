@@ -1,0 +1,5 @@
+Simulated Attacks: 5
+Detected Attacks: 2
+Total Detection Time: 34s
+MTTD = 17.00s
+Timestamp: Sat May 30 18:17:38 WAT 2026

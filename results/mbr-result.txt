@@ -1,0 +1,53 @@
+===== Manifest Blocking Rate Experiment =====
+Manifest Directory: k8s/insecure-manifests
+Target Namespace: hardened
+
+Testing: k8s/insecure-manifests/insecure-allclusterroletodefaultsa-pod.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/insecure-allclusterrolewildcardaccess-pod.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/insecure-alldangeroussysctl-pod.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/insecure-alldefaultsa-pod.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/insecure-alldropnocap.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/insecure-allhostnetenab-pods.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/insecure-allhostpathmount-pods.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/insecure-allhostpid-pods.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/insecure-allimagepullpolicyalways-pod.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/insecure-alllatesttagusage-pod.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/insecure-allnoresourcelimit.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/insecure-allnosecuritycontextatall-pod.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/insecure-allprivesca-pods.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/insecure-allpublicuntrustedimage-pod.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/insecure-allrolewithsecretaccess-pod.yaml
+Result: ALLOWED
+Testing: k8s/insecure-manifests/insecure-allrolewithsecretroletodefaultsa-pod.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/insecure-allsys_adm-pods.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/insecure-allwritablerootfilesystem-pod.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/insecure-prirunasroot-pods.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/insecure-privileged-pods.yaml
+Result: BLOCKED
+Testing: k8s/insecure-manifests/runtime-attacker.yaml
+Result: BLOCKED
+
+===== Experiment Result =====
+Total Insecure Manifests: 21
+Blocked: 20
+Allowed: 1
+MBR = .95
+Timestamp: Sat May 30 18:13:29 WAT 2026

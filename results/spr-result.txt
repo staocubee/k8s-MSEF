@@ -1,0 +1,20 @@
+===== Signature Policy Rejection Rate Experiment =====
+Unsigned Manifest: k8s/integrity-tests/default-unsigned-image.yaml
+
+Attempt 1: BLOCKED
+Attempt 2: BLOCKED
+Attempt 3: BLOCKED
+Attempt 4: BLOCKED
+Attempt 5: BLOCKED
+Attempt 6: BLOCKED
+Attempt 7: BLOCKED
+Attempt 8: BLOCKED
+Attempt 9: BLOCKED
+Attempt 10: BLOCKED
+
+===== Experiment Result =====
+Blocked Unsigned Images: 10
+Allowed Unsigned Images: 0
+Total Unsigned Image Attempts: 10
+SPR = 1.00
+Timestamp: Sat May 30 18:13:57 WAT 2026
