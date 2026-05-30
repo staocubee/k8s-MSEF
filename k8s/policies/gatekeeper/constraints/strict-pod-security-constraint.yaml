@@ -5,7 +5,8 @@ metadata:
 spec:
   enforcementAction: deny
   match:
-    namespaceSelector:
-      matchLabels:
-        security-level: hardened
-
+    kinds:
+    - apiGroups: [""]
+      kinds: ["Pod"]
+    namespaces:
+    - hardened

@@ -4,7 +4,7 @@ metadata:
   name: unsigned-test-nginx
   namespace: hardened
 spec:
-  serviceAccountName: custom-sa
+  serviceAccountName: hardened-app-sa
   containers:
   - name: nginx
     image: nginx
