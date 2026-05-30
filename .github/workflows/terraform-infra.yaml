@@ -1,0 +1,104 @@
+name: Terraform Infra
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - stg
+          - prod
+
+      action:
+        description: "Terraform action"
+        required: true
+        default: "plan"
+        type: choice
+        options:
+          - fmt
+          - validate
+          - plan
+          - apply
+          - destroy-plan
+          - destroy
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-infra-${{ github.event.inputs.environment }}
+  cancel-in-progress: false
+
+env:
+  TF_VERSION: "1.9.8"
+  GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+  GCP_REGION: ${{ vars.GCP_REGION }}
+  TF_IN_AUTOMATION: "true"
+
+jobs:
+  terraform-infra:
+    name: Terraform Infra - ${{ github.event.inputs.environment }} - ${{ github.event.inputs.action }}
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform/infra/envs/${{ github.event.inputs.environment }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Show selected environment
+        run: |
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          echo "Action: ${{ github.event.inputs.action }}"
+          echo "Project: $GCP_PROJECT_ID"
+          echo "Region: $GCP_REGION"
+
+      - name: Terraform fmt
+        if: github.event.inputs.action == 'fmt'
+        run: terraform fmt -recursive -check
+
+      - name: Terraform init
+        if: github.event.inputs.action != 'fmt'
+        run: terraform init
+
+      - name: Terraform validate
+        if: github.event.inputs.action == 'validate'
+        run: terraform validate
+
+      - name: Terraform plan
+        if: github.event.inputs.action == 'plan'
+        run: terraform plan -input=false
+
+      - name: Terraform apply
+        if: github.event.inputs.action == 'apply'
+        run: terraform apply -auto-approve -input=false
+
+      - name: Terraform destroy plan
+        if: github.event.inputs.action == 'destroy-plan'
+        run: terraform plan -destroy -input=false
+
+      - name: Terraform destroy
+        if: github.event.inputs.action == 'destroy'
+        run: terraform destroy -auto-approve -input=false

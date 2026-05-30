@@ -1,4 +1,4 @@
-name: Security Evaluation
+name: Run Security Orchestrator
 
 on:
   workflow_dispatch:
@@ -22,8 +22,8 @@ env:
   GCP_REGION: ${{ vars.GCP_REGION }}
 
 jobs:
-  security-evaluation:
-    name: Run Security Evaluation
+  run-security:
+    name: Run Security Script
     runs-on: ubuntu-latest
 
     steps:
@@ -50,39 +50,15 @@ jobs:
             --region "$GCP_REGION" \
             --project "$GCP_PROJECT_ID"
 
-      - name: Verify cluster access
-        run: |
-          kubectl get nodes
-          kubectl get pods -n baseline
-          kubectl get pods -n hardened
-          kubectl get pods -n falco
-
       - name: Make scripts executable
         run: chmod +x scripts/*.sh
 
-      - name: Run MBR
-        run: scripts/measure-mbr.sh | tee results/mbr-result.txt
+      - name: Run orchestrator
+        run: scripts/run-k8s-security-evaluation.sh
 
-      - name: Run SPR
-        run: scripts/measure-spr.sh | tee results/spr-result.txt
-
-      - name: Run RDR
-        run: scripts/measure-rdr.sh | tee results/rdr-result.txt
-
-      - name: Run MTTD
-        run: scripts/measure-mttd.sh | tee results/mttd-result.txt
-
-      - name: Run FPR
-        run: scripts/measure-fpr.sh | tee results/fpr-result.txt
-
-      - name: Generate reports
-        run: |
-          scripts/generate-security-report.sh | tee results/final-security-report.txt
-          scripts/generate-html-report.sh
-
-      - name: Upload evaluation results
+      - name: Upload results
         uses: actions/upload-artifact@v4
         with:
-          name: security-evaluation-${{ github.event.inputs.environment }}
+          name: security-orchestrator-${{ github.event.inputs.environment }}
           path: |
             results/

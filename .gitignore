@@ -24,4 +24,5 @@ nexus-data/
 
 # --- System & Misc ---
 .DS_Store
-.env
+.envcosign.key
+*.key
