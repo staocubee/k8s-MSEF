@@ -5,7 +5,3 @@ output "argocd_namespace" {
 output "argocd_release_name" {
   value = helm_release.argocd.name
 }
-
-output "root_app_name" {
-  value = kubernetes_manifest.root_app.manifest.metadata.name
-}

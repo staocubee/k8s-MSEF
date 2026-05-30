@@ -1,0 +1,27 @@
+# --- Terraform ---
+# Local .terraform folder (Contains heavy binaries)
+.terraform/
+.terraform.*
+
+# Terraform state files (Can contain secrets)
+*.tfstate
+*.tfstate.*
+
+# Terraform variables (NEVER push secrets)
+# *.tfvars
+*.tfvars.json
+
+# Lock files 
+.terraform.lock.hcl
+
+# --- DevOps & Artifacts ---
+# Helm charts and dependencies
+**/charts/*.tgz
+**/charts/index.yaml
+
+# Nexus local data (if testing locally)
+nexus-data/
+
+# --- System & Misc ---
+.DS_Store
+.env

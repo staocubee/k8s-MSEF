@@ -30,3 +30,8 @@ variable "root_app_path" {
   description = "Path to the root ArgoCD app for this environment."
   type        = string
 }
+
+variable "root_app_manifest_path" {
+  description = "Local path to the ArgoCD root application manifest."
+  type        = string
+}

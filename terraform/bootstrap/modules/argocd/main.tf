@@ -18,10 +18,15 @@ resource "helm_release" "argocd" {
 
   create_namespace = false
 
+  timeout = 900
+  wait    = true
+  atomic  = false
+
   values = [
     yamlencode({
-      global = {
-        domain = ""
+      crds = {
+        install = true
+        keep    = false
       }
 
       server = {
@@ -41,42 +46,24 @@ resource "helm_release" "argocd" {
   depends_on = [kubernetes_namespace.argocd]
 }
 
-resource "kubernetes_manifest" "root_app" {
-  manifest = {
-    apiVersion = "argoproj.io/v1alpha1"
-    kind       = "Application"
 
-    metadata = {
-      name      = "${var.environment}-root-app"
-      namespace = var.argocd_namespace
-    }
+resource "null_resource" "apply_root_app" {
+  depends_on = [helm_release.argocd]
 
-    spec = {
-      project = "default"
-
-      source = {
-        repoURL        = var.repo_url
-        targetRevision = var.target_revision
-        path           = var.root_app_path
-      }
-
-      destination = {
-        server    = "https://kubernetes.default.svc"
-        namespace = var.argocd_namespace
-      }
-
-      syncPolicy = {
-        automated = {
-          prune    = true
-          selfHeal = true
-        }
-
-        syncOptions = [
-          "CreateNamespace=true"
-        ]
-      }
-    }
+  triggers = {
+    root_app_sha = filesha256(var.root_app_manifest_path)
   }
 
-  depends_on = [helm_release.argocd]
+  provisioner "local-exec" {
+    command = <<EOT
+      echo "Waiting for ArgoCD Application CRD..."
+      kubectl wait --for condition=established --timeout=180s crd/applications.argoproj.io
+
+      echo "Waiting for ArgoCD server..."
+      kubectl rollout status deployment/argocd-server -n ${var.argocd_namespace} --timeout=300s
+
+      echo "Applying ArgoCD root application..."
+      kubectl apply -f ${var.root_app_manifest_path}
+    EOT
+  }
 }

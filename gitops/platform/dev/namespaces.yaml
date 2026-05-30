@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cert-manager
+  labels:
+    environment: dev
+    platform-component: cert-manager
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gatekeeper-system
+  labels:
+    environment: dev
+    platform-component: gatekeeper
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kyverno
+  labels:
+    environment: dev
+    platform-component: kyverno
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: falco
+  labels:
+    environment: dev
+    platform-component: falco

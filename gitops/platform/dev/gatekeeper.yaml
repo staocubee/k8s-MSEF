@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dev-gatekeeper
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: https://open-policy-agent.github.io/gatekeeper/charts
+    chart: gatekeeper
+    targetRevision: 3.22.2
+    helm:
+      values: |
+        replicas: 1
+
+        controllerManager:
+          exemptNamespaces:
+            - kube-system
+            - gatekeeper-system
+            - argocd
+            - cert-manager
+            - kyverno
+            - falco
+
+        audit:
+          interval: 60
+          emitAuditEvents: true
+
+        validatingWebhookTimeoutSeconds: 5
+        mutatingWebhookTimeoutSeconds: 5
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: gatekeeper-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
