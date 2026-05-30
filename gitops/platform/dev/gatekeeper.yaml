@@ -13,6 +13,8 @@ spec:
     targetRevision: 3.22.2
     helm:
       values: |
+        crds:
+          enabled: true
         replicas: 1
 
         controllerManager:
@@ -39,4 +41,3 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true
