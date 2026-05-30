@@ -5,6 +5,7 @@ metadata:
   namespace: hardened
   labels:
     app: security-report-server
+    environment: hardened
 spec:
   replicas: 1
   selector:
@@ -14,6 +15,7 @@ spec:
     metadata:
       labels:
         app: security-report-server
+        environment: hardened
     spec:
       serviceAccountName: hardened-app-sa
       automountServiceAccountToken: false
@@ -23,7 +25,7 @@ spec:
           type: RuntimeDefault
       containers:
       - name: report-server
-        image: REPORT_IMAGE_PLACEHOLDER
+        image: staocube/k8s-security-report:1.0
         ports:
         - containerPort: 80
         securityContext:
@@ -31,6 +33,8 @@ spec:
           readOnlyRootFilesystem: false
           runAsNonRoot: true
           runAsUser: 101
+          seccompProfile:
+            type: RuntimeDefault
           capabilities:
             drop:
             - ALL

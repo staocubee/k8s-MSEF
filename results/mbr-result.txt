@@ -31,7 +31,7 @@ Result: BLOCKED
 Testing: k8s/insecure-manifests/insecure-allpublicuntrustedimage-pod.yaml
 Result: BLOCKED
 Testing: k8s/insecure-manifests/insecure-allrolewithsecretaccess-pod.yaml
-Result: ALLOWED
+Result: BLOCKED
 Testing: k8s/insecure-manifests/insecure-allrolewithsecretroletodefaultsa-pod.yaml
 Result: BLOCKED
 Testing: k8s/insecure-manifests/insecure-allsys_adm-pods.yaml
@@ -47,7 +47,7 @@ Result: BLOCKED
 
 ===== Experiment Result =====
 Total Insecure Manifests: 21
-Blocked: 20
-Allowed: 1
-MBR = .95
-Timestamp: Sat May 30 18:13:29 WAT 2026
+Blocked: 21
+Allowed: 0
+MBR = 1.00
+Timestamp: Sat May 30 18:31:16 WAT 2026

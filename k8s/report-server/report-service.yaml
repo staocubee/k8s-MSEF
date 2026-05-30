@@ -5,6 +5,7 @@ metadata:
   namespace: hardened
   labels:
     app: security-report-server
+    environment: hardened
 spec:
   type: LoadBalancer
   selector:
