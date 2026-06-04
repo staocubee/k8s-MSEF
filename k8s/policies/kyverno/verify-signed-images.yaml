@@ -39,7 +39,7 @@ spec:
         - keys:
             publicKeys: |
               -----BEGIN PUBLIC KEY-----
-              MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEiIpp+bPjWkHsmrs8mWDT8Zus+LYN
-              a4W4EgsQNrPaPWTeGAUUef1CEWFtqsxDC4N9qLWdZi9r51IPsXR2D4H05Q==
+              MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEW0u8CmQMY/CvDuHTe3JbDv5RrsZx
+              YxpVvEZKLI5+imF5aFdiSp17GNcIy5nVDnN1X0ks1g+G1wbDyaSK0NLB1w==
               -----END PUBLIC KEY-----
             signatureAlgorithm: sha256
