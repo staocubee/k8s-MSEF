@@ -39,6 +39,7 @@ env:
   GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
   GCP_REGION: ${{ vars.GCP_REGION }}
   TF_IN_AUTOMATION: "true"
+  GOOGLE_APPLICATION_CREDENTIALS: ${{ env.CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE }}
 
 jobs:
   terraform-infra:
