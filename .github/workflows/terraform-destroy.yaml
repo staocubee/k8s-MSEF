@@ -74,6 +74,12 @@ jobs:
       - name: Terraform init
         run: terraform init
 
+      - name: Pre-clean ArgoCD applications
+        if: github.event.inputs.action == 'destroy'
+        run: |
+          kubectl delete applications --all -n argocd --timeout=120s || true
+          kubectl get applications -n argocd || true
+
       - name: Terraform destroy bootstrap
         run: terraform destroy -auto-approve -input=false
 
