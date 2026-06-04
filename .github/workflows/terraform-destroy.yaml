@@ -58,6 +58,23 @@ jobs:
 
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
+        with:
+          install_components: gke-gcloud-auth-plugin
+
+      - name: Install required packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Configure GKE auth plugin
+        run: |
+          echo "USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> "$GITHUB_ENV"
+          gke-gcloud-auth-plugin --version
+
+      - name: Reset kubeconfig
+        run: |
+          rm -rf "$HOME/.kube"
+          mkdir -p "$HOME/.kube"
 
       - name: Get GKE credentials
         continue-on-error: true
@@ -65,6 +82,13 @@ jobs:
           gcloud container clusters get-credentials "${{ github.event.inputs.environment }}-msef-gke" \
             --region "$GCP_REGION" \
             --project "$GCP_PROJECT_ID"
+
+      - name: Verify cluster access
+        continue-on-error: true
+        run: |
+          kubectl config current-context || true
+          kubectl get nodes || true
+          kubectl get ns || true
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -75,10 +99,32 @@ jobs:
         run: terraform init
 
       - name: Pre-clean ArgoCD applications
-        if: github.event.inputs.action == 'destroy'
         run: |
           kubectl delete applications --all -n argocd --timeout=120s || true
           kubectl get applications -n argocd || true
+
+      - name: Pre-clean stuck ArgoCD namespace finalizers
+        continue-on-error: true
+        run: |
+          if kubectl get ns argocd >/dev/null 2>&1; then
+            echo "Checking argocd namespace status..."
+            kubectl get ns argocd -o jsonpath='{.status.phase}' || true
+            echo ""
+
+            kubectl delete applications --all -n argocd --timeout=120s || true
+            kubectl delete all --all -n argocd --timeout=120s || true
+
+            PHASE=$(kubectl get ns argocd -o jsonpath='{.status.phase}' 2>/dev/null || echo "NotFound")
+
+            if [ "$PHASE" = "Terminating" ]; then
+              echo "argocd namespace is stuck terminating. Removing finalizers..."
+              kubectl get namespace argocd -o json > /tmp/argocd-ns.json
+              jq '.spec.finalizers=[]' /tmp/argocd-ns.json > /tmp/argocd-ns-finalize.json
+              kubectl replace --raw "/api/v1/namespaces/argocd/finalize" -f /tmp/argocd-ns-finalize.json || true
+            fi
+          else
+            echo "argocd namespace not found. Skipping pre-clean."
+          fi
 
       - name: Terraform destroy bootstrap
         run: terraform destroy -auto-approve -input=false
