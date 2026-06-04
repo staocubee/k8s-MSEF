@@ -69,6 +69,12 @@ jobs:
             --region "$GCP_REGION" \
             --project "$GCP_PROJECT_ID"
 
+      - name: Get GKE credentials
+        run: |
+          gcloud container clusters get-credentials "${{ github.event.inputs.environment }}-msef-gke" \
+            --region "$GCP_REGION" \
+            --project "$GCP_PROJECT_ID"
+      
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
