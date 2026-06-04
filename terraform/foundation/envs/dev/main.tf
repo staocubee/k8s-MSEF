@@ -56,31 +56,51 @@ locals {
   ]...)
 
   github_actions_iam_bindings = {
-    github_artifact_registry_writer = {
-      role   = "roles/artifactregistry.writer"
-      member = local.github_actions_member
-    }
-
-    github_container_developer = {
-      role   = "roles/container.developer"
-      member = local.github_actions_member
-    }
-
-    github_service_account_user = {
-      role   = "roles/iam.serviceAccountUser"
-      member = local.github_actions_member
-    }
-
-    github_storage_admin = {
-      role   = "roles/storage.admin"
-      member = local.github_actions_member
-    }
-
-    github_secretmanager_secret_accessor = {
-      role   = "roles/secretmanager.secretAccessor"
-      member = local.github_actions_member
-    }
+  github_artifact_registry_writer = {
+    role   = "roles/artifactregistry.writer"
+    member = local.github_actions_member
   }
+
+  github_container_developer = {
+    role   = "roles/container.developer"
+    member = local.github_actions_member
+  }
+
+  github_container_admin = {
+    role   = "roles/container.admin"
+    member = local.github_actions_member
+  }
+
+  github_compute_network_admin = {
+    role   = "roles/compute.networkAdmin"
+    member = local.github_actions_member
+  }
+
+  github_service_account_user = {
+    role   = "roles/iam.serviceAccountUser"
+    member = local.github_actions_member
+  }
+
+  github_service_account_admin = {
+    role   = "roles/iam.serviceAccountAdmin"
+    member = local.github_actions_member
+  }
+
+  github_project_iam_admin = {
+    role   = "roles/resourcemanager.projectIamAdmin"
+    member = local.github_actions_member
+  }
+
+  github_storage_admin = {
+    role   = "roles/storage.admin"
+    member = local.github_actions_member
+  }
+
+  github_secretmanager_secret_accessor = {
+    role   = "roles/secretmanager.secretAccessor"
+    member = local.github_actions_member
+  }
+}
 }
 
 module "iam" {
