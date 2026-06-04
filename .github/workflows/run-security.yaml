@@ -39,6 +39,12 @@ jobs:
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
 
+      - name: Install GKE auth plugin
+        if: github.event.inputs.action != 'fmt'
+        run: |
+          gcloud components install gke-gcloud-auth-plugin --quiet || true
+          echo "USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> "$GITHUB_ENV"
+
       - name: Install required packages
         run: |
           sudo apt-get update
