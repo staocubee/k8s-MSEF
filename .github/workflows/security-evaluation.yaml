@@ -45,6 +45,27 @@ jobs:
           gcloud components install gke-gcloud-auth-plugin --quiet || true
           echo "USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> "$GITHUB_ENV"
 
+      - name: Reset kubeconfig
+        if: github.event.inputs.action != 'fmt'
+        run: |
+          rm -rf "$HOME/.kube"
+          mkdir -p "$HOME/.kube"
+
+      - name: Get GKE credentials
+        if: github.event.inputs.action != 'fmt'
+        continue-on-error: ${{ github.event.inputs.action == 'destroy' || github.event.inputs.action == 'destroy-plan' }}
+        run: |
+          gcloud container clusters get-credentials "${{ github.event.inputs.environment }}-msef-gke" \
+            --region "$GCP_REGION" \
+            --project "$GCP_PROJECT_ID"
+
+      - name: Verify cluster access
+        if: github.event.inputs.action != 'fmt' && github.event.inputs.action != 'destroy' && github.event.inputs.action != 'destroy-plan'
+        run: |
+          kubectl config current-context
+          kubectl get nodes
+          kubectl get ns
+
       - name: Install required packages
         run: |
           sudo apt-get update
