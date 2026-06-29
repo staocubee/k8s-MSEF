@@ -1,0 +1,63 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  project: default
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack
+    targetRevision: 56.0.0
+    helm:
+      values: |
+        crds:
+          enabled: false
+
+        kubeEtcd:
+          enabled: false
+        kubeScheduler:
+          enabled: false
+        kubeControllerManager:
+          enabled: false
+        kubeProxy:
+          enabled: false
+        kubeDns:
+          enabled: false
+
+        grafana:
+          grafana.ini:
+            server:
+              root_url: http://grafana.34.170.137.139.nip.io
+              serve_from_sub_path: true
+
+        prometheus-node-exporter:
+          tolerations:
+            - effect: NoSchedule
+              operator: Exists
+            - effect: NoSchedule
+              key: kubernetes.io/arch
+              operator: Equal
+              value: amd64
+
+        coreDns:
+          enabled: false
+  ignoreDifferences:
+    - group: apps
+      kind: DaemonSet
+      name: monitoring-prometheus-node-exporter
+      namespace: monitoring
+      jsonPointers:
+        - /spec/template/spec/tolerations
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - SkipDryRunOnMissingResource=true

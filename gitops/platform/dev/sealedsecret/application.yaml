@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sealed-secrets
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  project: default
+
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/template/spec/containers/0/resources
+        - /spec/template/spec/initContainers/0/resources
+        - /spec/template/spec/tolerations
+
+  source:
+    repoURL: https://bitnami-labs.github.io/sealed-secrets
+    chart: sealed-secrets
+    targetRevision: 2.16.1
+    helm:
+      values: |
+        fullnameOverride: sealed-secrets
+
+        rbac:
+          create: true
+          serviceProxier:
+            create: false
+
+        resources:
+          requests:
+            cpu: 500m
+            memory: 2Gi
+            ephemeral-storage: 1Gi
+          limits:
+            ephemeral-storage: 1Gi
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: sealed-secrets
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - RespectIgnoreDifferences=true

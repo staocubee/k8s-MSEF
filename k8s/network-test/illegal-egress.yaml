@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: illegal-egress
+  namespace: hardened
+spec:
+  restartPolicy: Never
+  containers:
+    - name: curl
+      image: curlimages/curl:8.8.0
+      command:
+        - sh
+        - -c
+        - |
+          curl --connect-timeout 5 https://www.google.com

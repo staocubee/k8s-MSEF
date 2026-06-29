@@ -27,6 +27,13 @@ spec:
         falcosidekick:
           enabled: false
 
+        falco:
+          jsonOutput: true
+
+          httpOutput:
+            enabled: true
+            url: http://falcosidekick.falco.svc.cluster.local:2801
+
         collectors:
           kubernetes:
             enabled: true

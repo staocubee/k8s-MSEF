@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+
+metadata:
+  name: allow-web
+
+spec:
+
+  podSelector: {}
+
+  policyTypes:
+  - Egress
+
+  egress:
+
+  - to:
+
+    - namespaceSelector:
+
+        matchLabels:
+
+          kubernetes.io/metadata.name: kube-system
+
+    ports:
+
+    - protocol: HTTP
+      port: 80
+    - protocol: HTTPs
+      port: 443

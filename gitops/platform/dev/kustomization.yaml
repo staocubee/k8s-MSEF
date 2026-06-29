@@ -3,8 +3,11 @@ kind: Kustomization
 
 resources:
   - namespaces.yaml
-  - cert-manager.yaml
-  - gatekeeper.yaml
-  - kyverno.yaml
-  - falco.yaml
+  - cert-manager/application.yaml
+  - gatekeeper/application.yaml
+  - kyverno/application.yaml
+  - falco/application.yaml
+  - falco-side-kick/application.yaml
   - security-policy.yaml
+  - external-secrets/application.yaml
+  - network-policies
