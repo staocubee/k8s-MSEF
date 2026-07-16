@@ -1,46 +1,101 @@
 #!/bin/bash
+
+###############################################################################
+# Multi-Layer Security Evaluation Framework (MSEF)
+#
+# Generates a consolidated text report from all experiment outputs.
+###############################################################################
+
 set -euo pipefail
+shopt -s nullglob
 
-RESULTS_DIR="${RESULTS_DIR:-results}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-get_metric() {
-  local metric="$1"
-  local file="$2"
+RESULTS_DIR="${RESULTS_DIR:-$PROJECT_ROOT/results}"
+JSON_DIR="$RESULTS_DIR/json"
+TXT_DIR="$RESULTS_DIR/txt"
 
-  if [ -f "$file" ]; then
-    grep -E "^$metric[[:space:]]*=" "$file" | tail -n 1 | awk -F'= ' '{print $2}' || true
-  fi
+mkdir -p "$TXT_DIR"
+
+REPORT="$TXT_DIR/security-evaluation-report.txt"
+
+###############################################################################
+
+metric () {
+
+jq -r '.score // .average // "N/A"' "$1" 2>/dev/null || echo "N/A"
+
 }
 
-MBR=$(get_metric "MBR" "$RESULTS_DIR/mbr-result.txt")
-SPR=$(get_metric "SPR" "$RESULTS_DIR/spr-result.txt")
-RDR=$(get_metric "RDR" "$RESULTS_DIR/rdr-result.txt")
-MTTD=$(get_metric "MTTD" "$RESULTS_DIR/mttd-result.txt")
-FPR=$(get_metric "FPR" "$RESULTS_DIR/fpr-result.txt")
+###############################################################################
 
-echo ""
-echo "================================"
-echo "Kubernetes Security Evaluation Report"
-echo "================================"
+MBR=$(metric "$JSON_DIR/mbr.json")
+NPER=$(metric "$JSON_DIR/nper.json")
+SMER=$(metric "$JSON_DIR/smer.json")
+PES=$(metric "$JSON_DIR/pes.json")
 
-echo ""
-echo "Final Metrics"
-echo "-------------"
-echo "MBR = ${MBR:-N/A}"
-echo "SPR = ${SPR:-N/A}"
-echo "RDR = ${RDR:-N/A}"
-echo "MTTD = ${MTTD:-N/A}"
-echo "FPR = ${FPR:-N/A}"
-echo ""
+SPR=$(metric "$JSON_DIR/spr.json")
+IES=$(metric "$JSON_DIR/ies.json")
 
-echo "--------------------------------"
-echo "Interpretation"
-echo "--------------------------------"
-echo "Admission Control Strength : ${MBR:-N/A}"
-echo "Signature Integrity Enforcement : ${SPR:-N/A}"
-echo "Runtime Detection Coverage : ${RDR:-N/A}"
-echo "Runtime Detection Speed : ${MTTD:-N/A}"
-echo "Detection Noise / False Positive Rate : ${FPR:-N/A}"
-echo ""
+RDR=$(metric "$JSON_DIR/rdr.json")
+MTTD=$(metric "$JSON_DIR/mttd.json")
+FPR=$(metric "$JSON_DIR/fpr.json")
+RRSR=$(metric "$JSON_DIR/rrsr.json")
+DES=$(metric "$JSON_DIR/des.json")
 
-echo "Report generated at: $(date)"
+###############################################################################
+
+cat > "$REPORT" <<EOF
+===========================================================
+ Multi-Layer Security Evaluation Framework Report
+===========================================================
+
+Generated:
+$(date)
+
+-----------------------------------------------------------
+PREVENTION LAYER
+-----------------------------------------------------------
+
+Manifest Blocking Rate (MBR)               : $MBR
+Network Policy Enforcement Rate (NPER)     : $NPER
+Secrets Management Enforcement Rate (SMER) : $SMER
+
+Prevention Effectiveness Score (PES)       : $PES
+
+
+-----------------------------------------------------------
+INTEGRITY LAYER
+-----------------------------------------------------------
+
+Supply-chain Policy Rejection Rate (SPR)   : $SPR
+
+Integrity Effectiveness Score (IES)        : $IES
+
+
+-----------------------------------------------------------
+DETECTION LAYER
+-----------------------------------------------------------
+
+Runtime Detection Rate (RDR)               : $RDR
+Mean Time To Detect (MTTD)                 : $MTTD seconds
+False Positive Rate (FPR)                  : $FPR
+Runtime Response Success Rate (RRSR)       : $RRSR
+
+Detection Effectiveness Score (DES)        : $DES
+
+
+-----------------------------------------------------------
+FRAMEWORK SUMMARY
+-----------------------------------------------------------
+
+Prevention Layer  : $PES
+Integrity Layer   : $IES
+Detection Layer   : $DES
+
+===========================================================
+
+EOF
+
+cat "$REPORT"

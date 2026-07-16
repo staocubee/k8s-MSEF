@@ -1,0 +1,34 @@
+
+=====================================================
+MSEF PRE-DEPLOYMENT SECURITY REPORT
+=====================================================
+
+CVDR : Trivy 1.00
+       Snyk  0.60
+
+MMDR : Trivy 1.00
+       Snyk  0.80
+
+IDR  : Trivy 1.00
+       Snyk  0.60
+
+MST  : Trivy 1.20s
+       Snyk  13.20s
+
+WFDR : Trivy 0.56
+       Snyk  0.33
+
+SDR  : Trivy 0.30
+       Snyk  0.20
+
+FNR  : Trivy 0.32
+       Snyk  0.56
+
+TAR  : 0.60
+
+Generated:
+
+Mon Jul  6 18:29:45 WAT 2026
+
+=====================================================
+

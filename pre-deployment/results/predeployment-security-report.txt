@@ -1,0 +1,17 @@
+==============================================
+ MSEF Pre-Deployment Security Evaluation Report
+==============================================
+
+Final Metrics
+-------------
+VDR = N/A
+MDR = N/A
+IDR = N/A
+
+Interpretation
+--------------
+Vulnerability Detection Rate : N/A
+Manifest Detection Rate      : N/A
+IaC Detection Rate           : N/A
+
+Report generated at: Thu Jul  2 22:13:06 WAT 2026

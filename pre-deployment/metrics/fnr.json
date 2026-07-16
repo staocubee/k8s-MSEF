@@ -1,0 +1,25 @@
+{
+  "metric":"FNR",
+
+  "known":34,
+
+  "trivy":{
+
+      "detected":23,
+
+      "missed":11,
+
+      "score":0.32
+
+  },
+
+  "snyk":{
+
+      "detected":15,
+
+      "missed":19,
+
+      "score":0.56
+
+  }
+}

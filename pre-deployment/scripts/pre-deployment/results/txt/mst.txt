@@ -1,0 +1,30 @@
+
+==========================================
+Mean Scan Time (seconds)
+==========================================
+
+TRIVY
+
+Image Scan      : 1.27
+
+Manifest Scan   : 1.66
+
+Terraform Scan  : 1.54
+
+Average (MST)   : 1.49
+
+
+SNYK
+
+Image Scan      : 19.08
+
+Manifest Scan   : 16.20
+
+Terraform Scan  : 11.87
+
+Average (MST)   : 15.72
+
+Generated
+
+Fri Jul  3 22:01:05 WAT 2026
+

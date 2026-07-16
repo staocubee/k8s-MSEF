@@ -90,8 +90,20 @@ jobs:
       - name: Run MBR
         run: scripts/measure-mbr.sh | tee results/mbr-result.txt
 
+      - name: Run NPER
+        run: scripts/measure-nper.sh | tee results/nper-result.txt
+
+      - name: Run SMER
+        run: scripts/measure-smer.sh | tee results/smer-result.txt
+
+      - name: Run PES
+        run: scripts/measure-pes.sh | tee results/pes-result.txt
+
       - name: Run SPR
         run: scripts/measure-spr.sh | tee results/spr-result.txt
+
+      - name: Run IES
+        run: scripts/measure-ies.sh | tee results/ies-result.txt
 
       - name: Run RDR
         run: scripts/measure-rdr.sh | tee results/rdr-result.txt
@@ -101,6 +113,12 @@ jobs:
 
       - name: Run FPR
         run: scripts/measure-fpr.sh | tee results/fpr-result.txt
+
+      - name: Run RRSR
+        run: scripts/measure-rrsr.sh | tee results/rrsr-result.txt
+
+      - name: Run DES
+        run: scripts/measure-des.sh | tee results/des-result.txt
 
       - name: Generate reports
         run: |

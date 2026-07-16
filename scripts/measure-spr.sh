@@ -1,44 +1,121 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+###############################################################################
+# measure-spr.sh
+#
+# Supply-Chain Policy Rejection Rate (SPR)
+#
+# SPR = Blocked Unsigned Images / Total Unsigned Images
+###############################################################################
+
 set -euo pipefail
+shopt -s nullglob
 
-MANIFEST="${MANIFEST:-k8s/integrity-tests/default-unsigned-image.yaml}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+RESULTS_DIR="${RESULTS_DIR:-$PROJECT_ROOT/results}"
+JSON_DIR="${RESULTS_DIR}/json"
+TXT_DIR="${RESULTS_DIR}/txt"
+LOG_DIR="${RESULTS_DIR}/logs"
+
+mkdir -p "$JSON_DIR" "$TXT_DIR" "$LOG_DIR"
+
+MANIFEST="${MANIFEST:-${ROOT_DIR}/k8s/integrity-tests/default-unsigned-image.yaml}"
 TOTAL="${TOTAL:-10}"
-RESULTS_DIR="${RESULTS_DIR:-results}"
-
-mkdir -p "$RESULTS_DIR"
 
 BLOCKED=0
 ALLOWED=0
 
-echo "===== Signature Policy Rejection Rate Experiment ====="
-echo "Unsigned Manifest: $MANIFEST"
-echo ""
+LOG_FILE="${LOG_DIR}/spr-details.log"
+
+> "$LOG_FILE"
+
+echo "=========================================="
+echo "Supply-Chain Policy Rejection Rate (SPR)"
+echo "=========================================="
+echo
 
 for i in $(seq 1 "$TOTAL"); do
-  TMP_FILE="/tmp/unsigned-test-$i.yaml"
 
-  sed "s/name: unsigned-test/name: unsigned-test-$i/g" "$MANIFEST" > "$TMP_FILE"
+    TMP_FILE="/tmp/unsigned-test-$i.yaml"
 
-  OUTPUT=$(kubectl apply --dry-run=server -f "$TMP_FILE" 2>&1 || true)
+    sed "s/name: unsigned-test/name: unsigned-test-$i/g" \
+        "$MANIFEST" > "$TMP_FILE"
 
-  if echo "$OUTPUT" | grep -Eiq "signature|cosign|attestor|verify|verified|denied|failed|no matching signatures|not found"; then
-    BLOCKED=$((BLOCKED + 1))
-    echo "Attempt $i: BLOCKED"
-  else
-    ALLOWED=$((ALLOWED + 1))
-    echo "Attempt $i: ALLOWED"
-  fi
+    OUTPUT=$(kubectl apply \
+        --dry-run=server \
+        -f "$TMP_FILE" 2>&1 || true)
 
-  echo "$OUTPUT" >> "$RESULTS_DIR/spr-details.log"
-  echo "--------------------------------" >> "$RESULTS_DIR/spr-details.log"
+    if echo "$OUTPUT" | grep -Eiq \
+        "signature|cosign|attestor|verify|verified|denied|failed|no matching signatures"; then
+
+        BLOCKED=$((BLOCKED+1))
+
+        echo "Attempt $i : BLOCKED"
+
+    else
+
+        ALLOWED=$((ALLOWED+1))
+
+        echo "Attempt $i : ALLOWED"
+
+    fi
+
+    {
+        echo "Attempt $i"
+        echo "$OUTPUT"
+        echo "--------------------------------------"
+    } >> "$LOG_FILE"
+
 done
 
-SPR=$(echo "scale=2; $BLOCKED / $TOTAL" | bc)
+SPR=$(awk "BEGIN {printf \"%.2f\", $BLOCKED/$TOTAL}")
 
-echo ""
-echo "===== Experiment Result ====="
-echo "Blocked Unsigned Images: $BLOCKED"
-echo "Allowed Unsigned Images: $ALLOWED"
-echo "Total Unsigned Image Attempts: $TOTAL"
-echo "SPR = $SPR"
-echo "Timestamp: $(date)"
+###############################################
+# JSON
+###############################################
+
+cat > "$JSON_DIR/spr.json" <<EOF
+{
+  "metric":"SPR",
+  "total":$TOTAL,
+  "blocked":$BLOCKED,
+  "allowed":$ALLOWED,
+  "score":$SPR
+}
+EOF
+
+###############################################
+# TXT
+###############################################
+
+cat > "$TXT_DIR/spr.txt" <<EOF
+==========================================
+Supply-Chain Policy Rejection Rate (SPR)
+==========================================
+
+Total Unsigned Images
+
+$TOTAL
+
+Blocked
+
+$BLOCKED
+
+Allowed
+
+$ALLOWED
+
+SPR
+
+$SPR
+
+Generated
+
+$(date)
+
+EOF
+
+###############################################
+
+cat "$TXT_DIR/spr.txt"

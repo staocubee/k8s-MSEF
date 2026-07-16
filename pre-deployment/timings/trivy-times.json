@@ -1,0 +1,9 @@
+{
+  "image": 2,
+  "manifest": 2,
+  "terraform": 2,
+  "secret": 0,
+  "dependency": 0,
+  "workflow": 2,
+  "total": 8
+}

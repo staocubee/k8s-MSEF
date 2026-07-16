@@ -1,0 +1,15 @@
+{
+  "metric":"MMDR",
+
+  "known":5,
+
+  "trivy":{
+      "detected":5,
+      "score":1.00
+  },
+
+  "snyk":{
+      "detected":4,
+      "score":0.80
+  }
+}

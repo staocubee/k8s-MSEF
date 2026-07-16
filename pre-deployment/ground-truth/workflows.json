@@ -1,0 +1,13 @@
+{
+  "known_workflow_issues": [
+    "pull_request_target",
+    "write-all permissions",
+    "unpinned GitHub Actions",
+    "unpinned container image",
+    "hardcoded AWS credential",
+    "hardcoded GitHub token",
+    "secret printed to logs",
+    "curl pipe to shell",
+    "docker login password on CLI"
+  ]
+}

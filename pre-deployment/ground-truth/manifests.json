@@ -1,0 +1,9 @@
+{
+  "known_misconfigurations":[
+    "privileged-container",
+    "writable-rootfs",
+    "latest-tag",
+    "hostpath-volume",
+    "missingResources"
+  ]
+}

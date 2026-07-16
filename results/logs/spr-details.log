@@ -1,0 +1,30 @@
+Attempt 1
+error: error validating "/tmp/unsigned-test-1.yaml": error validating data: failed to download openapi: Get "https://34.69.4.129/openapi/v2?timeout=32s": dial tcp 34.69.4.129:443: i/o timeout; if you choose to ignore these errors, turn validation off with --validate=false
+--------------------------------------
+Attempt 2
+error: error validating "/tmp/unsigned-test-2.yaml": error validating data: failed to download openapi: Get "https://34.69.4.129/openapi/v2?timeout=32s": dial tcp 34.69.4.129:443: i/o timeout; if you choose to ignore these errors, turn validation off with --validate=false
+--------------------------------------
+Attempt 3
+error: error validating "/tmp/unsigned-test-3.yaml": error validating data: failed to download openapi: Get "https://34.69.4.129/openapi/v2?timeout=32s": dial tcp 34.69.4.129:443: i/o timeout; if you choose to ignore these errors, turn validation off with --validate=false
+--------------------------------------
+Attempt 4
+error: error validating "/tmp/unsigned-test-4.yaml": error validating data: failed to download openapi: Get "https://34.69.4.129/openapi/v2?timeout=32s": dial tcp 34.69.4.129:443: i/o timeout; if you choose to ignore these errors, turn validation off with --validate=false
+--------------------------------------
+Attempt 5
+error: error validating "/tmp/unsigned-test-5.yaml": error validating data: failed to download openapi: Get "https://34.69.4.129/openapi/v2?timeout=32s": dial tcp 34.69.4.129:443: i/o timeout; if you choose to ignore these errors, turn validation off with --validate=false
+--------------------------------------
+Attempt 6
+error: error validating "/tmp/unsigned-test-6.yaml": error validating data: failed to download openapi: Get "https://34.69.4.129/openapi/v2?timeout=32s": dial tcp 34.69.4.129:443: i/o timeout; if you choose to ignore these errors, turn validation off with --validate=false
+--------------------------------------
+Attempt 7
+error: error validating "/tmp/unsigned-test-7.yaml": error validating data: failed to download openapi: Get "https://34.69.4.129/openapi/v2?timeout=32s": dial tcp 34.69.4.129:443: i/o timeout; if you choose to ignore these errors, turn validation off with --validate=false
+--------------------------------------
+Attempt 8
+error: error validating "/tmp/unsigned-test-8.yaml": error validating data: failed to download openapi: Get "https://34.69.4.129/openapi/v2?timeout=32s": dial tcp 34.69.4.129:443: i/o timeout; if you choose to ignore these errors, turn validation off with --validate=false
+--------------------------------------
+Attempt 9
+error: error validating "/tmp/unsigned-test-9.yaml": error validating data: failed to download openapi: Get "https://34.69.4.129/openapi/v2?timeout=32s": dial tcp 34.69.4.129:443: i/o timeout; if you choose to ignore these errors, turn validation off with --validate=false
+--------------------------------------
+Attempt 10
+error: error validating "/tmp/unsigned-test-10.yaml": error validating data: failed to download openapi: Get "https://34.69.4.129/openapi/v2?timeout=32s": dial tcp 34.69.4.129:443: i/o timeout; if you choose to ignore these errors, turn validation off with --validate=false
+--------------------------------------

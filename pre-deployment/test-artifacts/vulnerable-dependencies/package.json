@@ -1,0 +1,14 @@
+{
+  "name": "msef-vulnerable-node-app",
+  "version": "1.0.0",
+  "description": "Intentionally vulnerable Node.js dependencies for MSEF evaluation",
+  "private": true,
+  "dependencies": {
+    "express": "4.16.0",
+    "lodash": "4.17.15",
+    "axios": "0.21.0",
+    "minimist": "0.0.8",
+    "serialize-javascript": "2.1.1",
+    "jsonwebtoken": "8.5.0"
+  }
+}

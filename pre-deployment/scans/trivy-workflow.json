@@ -1,0 +1,10 @@
+{
+  "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "0.72.0"
+  },
+  "ReportID": "019f3848-e172-717a-9824-a944b024868c",
+  "CreatedAt": "2026-07-06T17:35:28.242099+01:00",
+  "ArtifactName": "/Users/mac/devops-lab/k8s-MSEF/pre-deployment/test-artifacts/vulnerable-workflow",
+  "ArtifactType": "filesystem"
+}

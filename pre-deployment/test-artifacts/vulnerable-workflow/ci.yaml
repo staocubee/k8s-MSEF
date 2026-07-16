@@ -1,0 +1,70 @@
+name: Vulnerable CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request_target:
+
+permissions: write-all
+
+env:
+  AWS_ACCESS_KEY_ID: AKIAIOSFODNN7EXAMPLE
+  AWS_SECRET_ACCESS_KEY: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+  GITHUB_TOKEN: ghp_abcdefghijklmnopqrstuvwxyz123456789
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: ubuntu:latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@main
+
+      - name: Setup Node
+        uses: actions/setup-node@main
+
+      - name: Install Dependencies
+        run: |
+          npm install
+
+      - name: Display Secrets (Bad Practice)
+        run: |
+          echo $AWS_SECRET_ACCESS_KEY
+          echo $GITHUB_TOKEN
+
+      - name: Install Packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl
+
+      - name: Download Script
+        run: |
+          curl -sSL http://example.com/install.sh | bash
+
+      - name: Docker Login
+        run: |
+          docker login \
+            -u testuser \
+            -p Password123
+
+      - name: Build Image
+        run: |
+          docker build -t vulnerable-app .
+
+      - name: Push Image
+        run: |
+          docker push vulnerable-app
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: app
+          path: .

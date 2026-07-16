@@ -1,0 +1,17 @@
+{
+  "known_dependencies": [
+    "express",
+    "lodash",
+    "axios",
+    "minimist",
+    "serialize-javascript",
+    "jsonwebtoken",
+    "django",
+    "flask",
+    "pyyaml",
+    "requests",
+    "jinja2",
+    "urllib3",
+    "pillow"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "known_iac_issues": [
+    "PUBLIC_STORAGE",
+    "OPEN_FIREWALL",
+    "NO_ENCRYPTION",
+    "PUBLIC_CLUSTER",
+    "EXCESSIVE_IAM"
+  ]
+}

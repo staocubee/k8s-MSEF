@@ -1,0 +1,2608 @@
+{
+  "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "0.72.0"
+  },
+  "ReportID": "019f3848-d8e3-72c6-9b30-68cf8ee26ed7",
+  "CreatedAt": "2026-07-06T17:35:26.051184+01:00",
+  "ArtifactName": "/Users/mac/devops-lab/k8s-MSEF/pre-deployment/test-artifacts/vulnerable-terraform",
+  "ArtifactType": "filesystem",
+  "Results": [
+    {
+      "Target": ".",
+      "Class": "config",
+      "Type": "terraform",
+      "MisconfSummary": {
+        "Successes": 64,
+        "Failures": 0
+      }
+    },
+    {
+      "Target": "main.tf",
+      "Class": "config",
+      "Type": "terraform",
+      "MisconfSummary": {
+        "Successes": 0,
+        "Failures": 21
+      },
+      "Misconfigurations": [
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0001",
+          "Title": "Ensure that Cloud Storage bucket is not anonymously or publicly accessible.",
+          "Description": "Using 'allUsers' or 'allAuthenticatedUsers' as members in an IAM member/binding causes data to be exposed outside of the organisation.\n",
+          "Message": "Bucket allows public access.",
+          "Namespace": "builtin.google.storage.google0001",
+          "Query": "data.builtin.google.storage.google0001.deny",
+          "Resolution": "Restrict public access to the bucket.",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0001",
+          "References": [
+            "https://jbrojbrojbro.medium.com/you-make-the-rules-with-authentication-controls-for-cloud-storage-53c32543747b",
+            "https://avd.aquasec.com/misconfig/gcp-0001"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_storage_bucket_iam_member.public_access",
+            "Provider": "Google",
+            "Service": "storage",
+            "StartLine": 40,
+            "EndLine": 40,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 34,
+                  "Content": "resource \"google_storage_bucket_iam_member\" \"public_access\" {",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_storage_bucket_iam_member\"\u001b[0m \u001b[38;5;37m\"public_access\"\u001b[0m {",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 35,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 36,
+                  "Content": "  bucket = google_storage_bucket.public_bucket.name",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mbucket\u001b[0m = google_storage_bucket.public_bucket.name",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 37,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 38,
+                  "Content": "  role = \"roles/storage.objectViewer\"",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mrole\u001b[0m = \u001b[38;5;37m\"roles/storage.objectViewer\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 39,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 40,
+                  "Content": "  member = \"allUsers\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mmember\u001b[0m = \u001b[38;5;37m\"allUsers\"",
+                  "FirstCause": true,
+                  "LastCause": true
+                },
+                {
+                  "Number": 41,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 42,
+                  "Content": "}",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "}",
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "google_storage_bucket_iam_member.public_access",
+                "Filename": "main.tf",
+                "Location": {
+                  "StartLine": 34,
+                  "EndLine": 42
+                }
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0002",
+          "Title": "Ensure that Cloud Storage buckets have uniform bucket-level access enabled",
+          "Description": "When you enable uniform bucket-level access on a bucket, Access Control Lists (ACLs) are disabled, and only bucket-level Identity and Access Management (IAM) permissions grant access to that bucket and the objects it contains. You revoke all access granted by object ACLs and the ability to administrate permissions using bucket ACLs.\n",
+          "Message": "Bucket has uniform bucket level access disabled.",
+          "Namespace": "builtin.google.storage.google0002",
+          "Query": "data.builtin.google.storage.google0002.deny",
+          "Resolution": "Enable uniform bucket level access to provide a uniform permissioning system.",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0002",
+          "References": [
+            "https://cloud.google.com/storage/docs/uniform-bucket-level-access",
+            "https://jbrojbrojbro.medium.com/you-make-the-rules-with-authentication-controls-for-cloud-storage-53c32543747b",
+            "https://avd.aquasec.com/misconfig/gcp-0002"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_storage_bucket.public_bucket",
+            "Provider": "Google",
+            "Service": "storage",
+            "StartLine": 27,
+            "EndLine": 27,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 21,
+                  "Content": "resource \"google_storage_bucket\" \"public_bucket\" {",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_storage_bucket\"\u001b[0m \u001b[38;5;37m\"public_bucket\"\u001b[0m {",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 22,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 27,
+                  "Content": "  uniform_bucket_level_access = false",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245muniform_bucket_level_access\u001b[0m = \u001b[38;5;166mfalse",
+                  "FirstCause": true,
+                  "LastCause": true
+                },
+                {
+                  "Number": 31,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 32,
+                  "Content": "}",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m}",
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "google_storage_bucket.public_bucket",
+                "Filename": "main.tf",
+                "Location": {
+                  "StartLine": 21,
+                  "EndLine": 32
+                }
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0003",
+          "Title": "IAM granted directly to user.",
+          "Description": "Permissions should not be directly granted to users, you identify roles that contain the appropriate permissions, and then grant those roles to the user.\n\nGranting permissions to users quickly become unwieldy and complex to make large scale changes to remove access to a particular resource.\n\nPermissions should be granted on roles, groups, services accounts instead.\n",
+          "Message": "Permissions are granted directly to a user.",
+          "Namespace": "builtin.google.iam.google0003",
+          "Query": "data.builtin.google.iam.google0003.deny",
+          "Resolution": "Roles should be granted permissions and assigned to users",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0003",
+          "References": [
+            "https://cloud.google.com/iam/docs/overview#permissions",
+            "https://cloud.google.com/resource-manager/reference/rest/v1/projects/setIamPolicy",
+            "https://avd.aquasec.com/misconfig/gcp-0003"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_project_iam_member.owner",
+            "Provider": "Google",
+            "Service": "iam",
+            "StartLine": 106,
+            "EndLine": 106,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 100,
+                  "Content": "resource \"google_project_iam_member\" \"owner\" {",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_project_iam_member\"\u001b[0m \u001b[38;5;37m\"owner\"\u001b[0m {",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 101,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 102,
+                  "Content": "  project = \"demo-project\"",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mproject\u001b[0m = \u001b[38;5;37m\"demo-project\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 103,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 104,
+                  "Content": "  role = \"roles/owner\"",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mrole\u001b[0m = \u001b[38;5;37m\"roles/owner\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 105,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 106,
+                  "Content": "  member = \"user:test@example.com\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mmember\u001b[0m = \u001b[38;5;37m\"user:test@example.com\"",
+                  "FirstCause": true,
+                  "LastCause": true
+                },
+                {
+                  "Number": 107,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 108,
+                  "Content": "}",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "}",
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "google_project_iam_member.owner",
+                "Filename": "main.tf",
+                "Location": {
+                  "StartLine": 100,
+                  "EndLine": 108
+                }
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0027",
+          "Title": "A firewall rule should not allow unrestricted ingress from any IP address.",
+          "Description": "Opening up ports to allow connections from the public internet is generally to be avoided. You should restrict access to IP addresses or ranges that are explicitly required where possible.\n",
+          "Message": "Firewall rule allows unrestricted ingress from any IP address.",
+          "Namespace": "builtin.google.compute.google0027",
+          "Query": "data.builtin.google.compute.google0027.deny",
+          "Resolution": "Set a more restrictive cidr range",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0027",
+          "References": [
+            "https://cloud.google.com/vpc/docs/using-firewalls",
+            "https://avd.aquasec.com/misconfig/gcp-0027"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_compute_firewall.allow_all",
+            "Provider": "Google",
+            "Service": "compute",
+            "StartLine": 72,
+            "EndLine": 76,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 64,
+                  "Content": "resource \"google_compute_firewall\" \"allow_all\" {",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_compute_firewall\"\u001b[0m \u001b[38;5;37m\"allow_all\"\u001b[0m {",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 65,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 72,
+                  "Content": "  source_ranges = [",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245msource_ranges\u001b[0m = [",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 73,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 74,
+                  "Content": "    \"0.0.0.0/0\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "    \u001b[38;5;37m\"0.0.0.0/0\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 75,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 76,
+                  "Content": "  ]",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  ]",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 93,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 94,
+                  "Content": "}",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "}",
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "google_compute_firewall.allow_all",
+                "Filename": "main.tf",
+                "Location": {
+                  "StartLine": 64,
+                  "EndLine": 94
+                }
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0030",
+          "Title": "Disable project-wide SSH keys for all instances",
+          "Description": "Use of project-wide SSH keys means that a compromise of any one of these key pairs can result in all instances being compromised. It is recommended to use instance-level keys.\n",
+          "Message": "Instance allows use of project-level SSH keys.",
+          "Namespace": "builtin.google.compute.google0030",
+          "Query": "data.builtin.google.compute.google0030.deny",
+          "Resolution": "Disable project-wide SSH keys",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0030",
+          "References": [
+            "https://avd.aquasec.com/misconfig/gcp-0030"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_compute_instance.public_vm",
+            "Provider": "Google",
+            "Service": "compute",
+            "StartLine": 114,
+            "EndLine": 146,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 114,
+                  "Content": "resource \"google_compute_instance\" \"public_vm\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_compute_instance\"\u001b[0m \u001b[38;5;37m\"public_vm\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 115,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 116,
+                  "Content": "  name = \"public-vm\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m = \u001b[38;5;37m\"public-vm\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 117,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 118,
+                  "Content": "  machine_type = \"e2-micro\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mmachine_type\u001b[0m = \u001b[38;5;37m\"e2-micro\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 119,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 120,
+                  "Content": "  zone = \"us-central1-a\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mzone\u001b[0m = \u001b[38;5;37m\"us-central1-a\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 121,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 122,
+                  "Content": "  tags = [",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mtags\u001b[0m = [",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 123,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0031",
+          "Title": "Instances should not have public IP addresses",
+          "Description": "Instances should not be publicly exposed to the internet\n",
+          "Message": "Instance has a public IP allocated.",
+          "Namespace": "builtin.google.compute.google0031",
+          "Query": "data.builtin.google.compute.google0031.deny",
+          "Resolution": "Remove public IP",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0031",
+          "References": [
+            "https://cloud.google.com/compute/docs/ip-addresses#externaladdresses",
+            "https://avd.aquasec.com/misconfig/gcp-0031"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_compute_instance.public_vm",
+            "Provider": "Google",
+            "Service": "compute",
+            "StartLine": 142,
+            "EndLine": 142,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 114,
+                  "Content": "resource \"google_compute_instance\" \"public_vm\" {",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_compute_instance\"\u001b[0m \u001b[38;5;37m\"public_vm\"\u001b[0m {",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 115,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 142,
+                  "Content": "    access_config {}",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "    access_config {}",
+                  "FirstCause": true,
+                  "LastCause": true
+                },
+                {
+                  "Number": 145,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 146,
+                  "Content": "}",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "}",
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "network_interface",
+                "Filename": "main.tf",
+                "Location": {
+                  "StartLine": 138,
+                  "EndLine": 144
+                }
+              },
+              {
+                "Resource": "google_compute_instance.public_vm",
+                "Filename": "main.tf",
+                "Location": {
+                  "StartLine": 114,
+                  "EndLine": 146
+                }
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0033",
+          "Title": "VM disks should be encrypted with Customer Supplied Encryption Keys",
+          "Description": "Using unmanaged keys makes rotation and general management difficult.\n",
+          "Message": "Instance disk encryption does not use a customer managed key.",
+          "Namespace": "builtin.google.compute.google0033",
+          "Query": "data.builtin.google.compute.google0033.deny",
+          "Resolution": "Use managed keys",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0033",
+          "References": [
+            "https://avd.aquasec.com/misconfig/gcp-0033"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_compute_instance.public_vm",
+            "Provider": "Google",
+            "Service": "compute",
+            "StartLine": 128,
+            "EndLine": 136,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 114,
+                  "Content": "resource \"google_compute_instance\" \"public_vm\" {",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_compute_instance\"\u001b[0m \u001b[38;5;37m\"public_vm\"\u001b[0m {",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 115,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 128,
+                  "Content": "  boot_disk {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  boot_disk {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 129,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 130,
+                  "Content": "    initialize_params {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "    initialize_params {",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 131,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 132,
+                  "Content": "      image = \"debian-cloud/debian-12\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      \u001b[38;5;245mimage\u001b[0m = \u001b[38;5;37m\"debian-cloud/debian-12\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 133,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 134,
+                  "Content": "    }",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "    }",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 135,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "google_compute_instance.public_vm",
+                "Filename": "main.tf",
+                "Location": {
+                  "StartLine": 114,
+                  "EndLine": 146
+                }
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0034",
+          "Title": "Disks should be encrypted with customer managed encryption keys",
+          "Description": "Using unmanaged keys makes rotation and general management difficult.\n",
+          "Message": "Disk is not encrypted with a customer managed key.",
+          "Namespace": "builtin.google.compute.google0034",
+          "Query": "data.builtin.google.compute.google0034.deny",
+          "Resolution": "Use managed keys to encrypt disks.",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0034",
+          "References": [
+            "https://avd.aquasec.com/misconfig/gcp-0034"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_compute_disk.disk",
+            "Provider": "Google",
+            "Service": "compute",
+            "StartLine": 48,
+            "EndLine": 58,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 48,
+                  "Content": "resource \"google_compute_disk\" \"disk\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_compute_disk\"\u001b[0m \u001b[38;5;37m\"disk\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 49,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 50,
+                  "Content": "  name = \"unencrypted-disk\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m = \u001b[38;5;37m\"unencrypted-disk\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 51,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 52,
+                  "Content": "  type = \"pd-standard\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mtype\u001b[0m = \u001b[38;5;37m\"pd-standard\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 53,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 54,
+                  "Content": "  zone = \"us-central1-a\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mzone\u001b[0m = \u001b[38;5;37m\"us-central1-a\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 55,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 56,
+                  "Content": "  size = 100",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245msize\u001b[0m = \u001b[38;5;37m100",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 57,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0041",
+          "Title": "Instances should have Shielded VM VTPM enabled",
+          "Description": "The virtual TPM provides numerous security measures to your VM.\n",
+          "Message": "Instance does not have VTPM for shielded VMs enabled.",
+          "Namespace": "builtin.google.compute.google0041",
+          "Query": "data.builtin.google.compute.google0041.deny",
+          "Resolution": "Enable Shielded VM VTPM",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0041",
+          "References": [
+            "https://cloud.google.com/blog/products/identity-security/virtual-trusted-platform-module-for-shielded-vms-security-in-plaintext",
+            "https://avd.aquasec.com/misconfig/gcp-0041"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_compute_instance.public_vm",
+            "Provider": "Google",
+            "Service": "compute",
+            "StartLine": 114,
+            "EndLine": 146,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 114,
+                  "Content": "resource \"google_compute_instance\" \"public_vm\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_compute_instance\"\u001b[0m \u001b[38;5;37m\"public_vm\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 115,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 116,
+                  "Content": "  name = \"public-vm\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m = \u001b[38;5;37m\"public-vm\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 117,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 118,
+                  "Content": "  machine_type = \"e2-micro\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mmachine_type\u001b[0m = \u001b[38;5;37m\"e2-micro\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 119,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 120,
+                  "Content": "  zone = \"us-central1-a\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mzone\u001b[0m = \u001b[38;5;37m\"us-central1-a\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 121,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 122,
+                  "Content": "  tags = [",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mtags\u001b[0m = [",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 123,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0045",
+          "Title": "Instances should have Shielded VM integrity monitoring enabled",
+          "Description": "Integrity monitoring helps you understand and make decisions about the state of your VM instances.\n",
+          "Message": "Instance does not have shielded VM integrity monitoring enabled.",
+          "Namespace": "builtin.google.compute.google0045",
+          "Query": "data.builtin.google.compute.google0045.deny",
+          "Resolution": "Enable Shielded VM Integrity Monitoring",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0045",
+          "References": [
+            "https://cloud.google.com/security/shielded-cloud/shielded-vm#integrity-monitoring",
+            "https://avd.aquasec.com/misconfig/gcp-0045"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_compute_instance.public_vm",
+            "Provider": "Google",
+            "Service": "compute",
+            "StartLine": 114,
+            "EndLine": 146,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 114,
+                  "Content": "resource \"google_compute_instance\" \"public_vm\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_compute_instance\"\u001b[0m \u001b[38;5;37m\"public_vm\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 115,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 116,
+                  "Content": "  name = \"public-vm\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m = \u001b[38;5;37m\"public-vm\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 117,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 118,
+                  "Content": "  machine_type = \"e2-micro\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mmachine_type\u001b[0m = \u001b[38;5;37m\"e2-micro\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 119,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 120,
+                  "Content": "  zone = \"us-central1-a\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mzone\u001b[0m = \u001b[38;5;37m\"us-central1-a\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 121,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 122,
+                  "Content": "  tags = [",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mtags\u001b[0m = [",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 123,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0049",
+          "Title": "Clusters should have IP aliasing enabled",
+          "Description": "IP aliasing allows the reuse of public IPs internally, removing the need for a NAT gateway.\n",
+          "Message": "Cluster has IP aliasing disabled.",
+          "Namespace": "builtin.google.gke.google0049",
+          "Query": "data.builtin.google.gke.google0049.deny",
+          "Resolution": "Enable IP aliasing",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0049",
+          "References": [
+            "https://avd.aquasec.com/misconfig/gcp-0049"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_container_cluster.cluster",
+            "Provider": "Google",
+            "Service": "gke",
+            "StartLine": 152,
+            "EndLine": 166,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 152,
+                  "Content": "resource \"google_container_cluster\" \"cluster\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_container_cluster\"\u001b[0m \u001b[38;5;37m\"cluster\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 153,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 154,
+                  "Content": "  name = \"vulnerable-cluster\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m = \u001b[38;5;37m\"vulnerable-cluster\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 155,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 156,
+                  "Content": "  location = \"us-central1\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mlocation\u001b[0m = \u001b[38;5;37m\"us-central1\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 157,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 158,
+                  "Content": "  deletion_protection = false",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mdeletion_protection\u001b[0m = \u001b[38;5;166mfalse",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 159,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 160,
+                  "Content": "  remove_default_node_pool = true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mremove_default_node_pool\u001b[0m = \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 161,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0051",
+          "Title": "Clusters should be configured with Labels",
+          "Description": "Labels make it easier to manage assets and differentiate between clusters and environments, allowing the mapping of computational resources to the wider organisational structure.\n",
+          "Message": "Cluster does not use GCE resource labels.",
+          "Namespace": "builtin.google.gke.google0051",
+          "Query": "data.builtin.google.gke.google0051.deny",
+          "Resolution": "Set cluster resource labels",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0051",
+          "References": [
+            "https://avd.aquasec.com/misconfig/gcp-0051"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_container_cluster.cluster",
+            "Provider": "Google",
+            "Service": "gke",
+            "StartLine": 152,
+            "EndLine": 166,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 152,
+                  "Content": "resource \"google_container_cluster\" \"cluster\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_container_cluster\"\u001b[0m \u001b[38;5;37m\"cluster\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 153,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 154,
+                  "Content": "  name = \"vulnerable-cluster\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m = \u001b[38;5;37m\"vulnerable-cluster\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 155,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 156,
+                  "Content": "  location = \"us-central1\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mlocation\u001b[0m = \u001b[38;5;37m\"us-central1\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 157,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 158,
+                  "Content": "  deletion_protection = false",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mdeletion_protection\u001b[0m = \u001b[38;5;166mfalse",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 159,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 160,
+                  "Content": "  remove_default_node_pool = true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mremove_default_node_pool\u001b[0m = \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 161,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0056",
+          "Title": "Network Policy should be enabled on GKE clusters",
+          "Description": "Enabling a network policy allows the segregation of network traffic by namespace\n",
+          "Message": "Cluster does not have a network policy enabled.",
+          "Namespace": "builtin.google.gke.google0056",
+          "Query": "data.builtin.google.gke.google0056.deny",
+          "Resolution": "Enable network policy",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0056",
+          "References": [
+            "https://avd.aquasec.com/misconfig/gcp-0056"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_container_cluster.cluster",
+            "Provider": "Google",
+            "Service": "gke",
+            "StartLine": 152,
+            "EndLine": 166,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 152,
+                  "Content": "resource \"google_container_cluster\" \"cluster\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_container_cluster\"\u001b[0m \u001b[38;5;37m\"cluster\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 153,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 154,
+                  "Content": "  name = \"vulnerable-cluster\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m = \u001b[38;5;37m\"vulnerable-cluster\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 155,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 156,
+                  "Content": "  location = \"us-central1\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mlocation\u001b[0m = \u001b[38;5;37m\"us-central1\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 157,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 158,
+                  "Content": "  deletion_protection = false",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mdeletion_protection\u001b[0m = \u001b[38;5;166mfalse",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 159,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 160,
+                  "Content": "  remove_default_node_pool = true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mremove_default_node_pool\u001b[0m = \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 161,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0059",
+          "Title": "Clusters should be set to private",
+          "Description": "Enabling private nodes on a cluster ensures the nodes are only available internally as they will only be assigned internal addresses.\n",
+          "Message": "Cluster does not have private nodes.",
+          "Namespace": "builtin.google.gke.google0059",
+          "Query": "data.builtin.google.gke.google0059.deny",
+          "Resolution": "Enable private cluster",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0059",
+          "References": [
+            "https://avd.aquasec.com/misconfig/gcp-0059"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_container_cluster.cluster",
+            "Provider": "Google",
+            "Service": "gke",
+            "StartLine": 152,
+            "EndLine": 166,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 152,
+                  "Content": "resource \"google_container_cluster\" \"cluster\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_container_cluster\"\u001b[0m \u001b[38;5;37m\"cluster\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 153,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 154,
+                  "Content": "  name = \"vulnerable-cluster\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m = \u001b[38;5;37m\"vulnerable-cluster\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 155,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 156,
+                  "Content": "  location = \"us-central1\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mlocation\u001b[0m = \u001b[38;5;37m\"us-central1\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 157,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 158,
+                  "Content": "  deletion_protection = false",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mdeletion_protection\u001b[0m = \u001b[38;5;166mfalse",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 159,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 160,
+                  "Content": "  remove_default_node_pool = true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mremove_default_node_pool\u001b[0m = \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 161,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0061",
+          "Title": "Master authorized networks should be configured on GKE clusters",
+          "Description": "Enabling authorized networks means you can restrict master access to a fixed set of CIDR ranges\n",
+          "Message": "Cluster does not have master authorized networks enabled.",
+          "Namespace": "builtin.google.gke.google0061",
+          "Query": "data.builtin.google.gke.google0061.deny",
+          "Resolution": "Enable master authorized networks",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0061",
+          "References": [
+            "https://avd.aquasec.com/misconfig/gcp-0061"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_container_cluster.cluster",
+            "Provider": "Google",
+            "Service": "gke",
+            "StartLine": 152,
+            "EndLine": 166,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 152,
+                  "Content": "resource \"google_container_cluster\" \"cluster\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_container_cluster\"\u001b[0m \u001b[38;5;37m\"cluster\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 153,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 154,
+                  "Content": "  name = \"vulnerable-cluster\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m = \u001b[38;5;37m\"vulnerable-cluster\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 155,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 156,
+                  "Content": "  location = \"us-central1\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mlocation\u001b[0m = \u001b[38;5;37m\"us-central1\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 157,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 158,
+                  "Content": "  deletion_protection = false",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mdeletion_protection\u001b[0m = \u001b[38;5;166mfalse",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 159,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 160,
+                  "Content": "  remove_default_node_pool = true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mremove_default_node_pool\u001b[0m = \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 161,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0066",
+          "Title": "Cloud Storage buckets should be encrypted with a customer-managed key.",
+          "Description": "Using unmanaged keys makes rotation and general management difficult.\n",
+          "Message": "Storage bucket encryption does not use a customer-managed key.",
+          "Namespace": "builtin.google.storage.google0066",
+          "Query": "data.builtin.google.storage.google0066.deny",
+          "Resolution": "Encrypt Cloud Storage buckets using customer-managed keys.",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0066",
+          "References": [
+            "https://cloud.google.com/storage/docs/encryption/customer-managed-keys",
+            "https://avd.aquasec.com/misconfig/gcp-0066"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_storage_bucket.public_bucket",
+            "Provider": "Google",
+            "Service": "storage",
+            "StartLine": 21,
+            "EndLine": 32,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 21,
+                  "Content": "resource \"google_storage_bucket\" \"public_bucket\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_storage_bucket\"\u001b[0m \u001b[38;5;37m\"public_bucket\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 22,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 23,
+                  "Content": "  name     = \"msef-public-bucket-demo\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m     = \u001b[38;5;37m\"msef-public-bucket-demo\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 24,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 25,
+                  "Content": "  location = \"US\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mlocation\u001b[0m = \u001b[38;5;37m\"US\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 26,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 27,
+                  "Content": "  uniform_bucket_level_access = false",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245muniform_bucket_level_access\u001b[0m = \u001b[38;5;166mfalse",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 28,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 29,
+                  "Content": "  public_access_prevention = \"inherited\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mpublic_access_prevention\u001b[0m = \u001b[38;5;37m\"inherited\"",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 30,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0067",
+          "Title": "Instances should have Shielded VM secure boot enabled",
+          "Description": "Secure boot helps ensure that the system only runs authentic software.\n",
+          "Message": "Instance does not have shielded VM secure boot enabled.",
+          "Namespace": "builtin.google.compute.google0067",
+          "Query": "data.builtin.google.compute.google0067.deny",
+          "Resolution": "Enable Shielded VM secure boot",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0067",
+          "References": [
+            "https://cloud.google.com/security/shielded-cloud/shielded-vm#secure-boot",
+            "https://avd.aquasec.com/misconfig/gcp-0067"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_compute_instance.public_vm",
+            "Provider": "Google",
+            "Service": "compute",
+            "StartLine": 114,
+            "EndLine": 146,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 114,
+                  "Content": "resource \"google_compute_instance\" \"public_vm\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_compute_instance\"\u001b[0m \u001b[38;5;37m\"public_vm\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 115,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 116,
+                  "Content": "  name = \"public-vm\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m = \u001b[38;5;37m\"public-vm\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 117,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 118,
+                  "Content": "  machine_type = \"e2-micro\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mmachine_type\u001b[0m = \u001b[38;5;37m\"e2-micro\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 119,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 120,
+                  "Content": "  zone = \"us-central1-a\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mzone\u001b[0m = \u001b[38;5;37m\"us-central1-a\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 121,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 122,
+                  "Content": "  tags = [",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mtags\u001b[0m = [",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 123,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0071",
+          "Title": "SSH Access Is Not Restricted",
+          "Description": "Firewall rules should restrict SSH (TCP/22) access to specific IPs. Open SSH can be a security risk.\n",
+          "Message": "Firewall rule allows SSH access from the public internet.",
+          "Namespace": "builtin.google.compute.google0071",
+          "Query": "data.builtin.google.compute.google0071.deny",
+          "Resolution": "Restrict SSH (TCP port 22) access in firewall rules to known IP addresses or ranges. Avoid open 0.0.0.0/0 access for SSH.\n",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0071",
+          "References": [
+            "https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall",
+            "https://avd.aquasec.com/misconfig/gcp-0071"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_compute_firewall.allow_all",
+            "Provider": "Google",
+            "Service": "compute",
+            "StartLine": 72,
+            "EndLine": 76,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 64,
+                  "Content": "resource \"google_compute_firewall\" \"allow_all\" {",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_compute_firewall\"\u001b[0m \u001b[38;5;37m\"allow_all\"\u001b[0m {",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 65,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 72,
+                  "Content": "  source_ranges = [",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245msource_ranges\u001b[0m = [",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 73,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 74,
+                  "Content": "    \"0.0.0.0/0\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "    \u001b[38;5;37m\"0.0.0.0/0\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 75,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 76,
+                  "Content": "  ]",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  ]",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 93,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 94,
+                  "Content": "}",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "}",
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "google_compute_firewall.allow_all",
+                "Filename": "main.tf",
+                "Location": {
+                  "StartLine": 64,
+                  "EndLine": 94
+                }
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0073",
+          "Title": "Disable Default Firewall Rules",
+          "Description": "Ensures that Google Cloud's default firewall rules are disabled, as they may be overly permissive and pose security risks.\nThe default network comes with pre-populated firewall rules that allow broad access and should be replaced with more restrictive custom rules.\n",
+          "Message": "Default firewall rule should be disabled and replaced with more restrictive rules.",
+          "Namespace": "builtin.google.compute.google0073",
+          "Query": "data.builtin.google.compute.google0073.deny",
+          "Resolution": "Replace default firewall rules with custom, more restrictive rules appropriate for your security requirements",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0073",
+          "References": [
+            "https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall",
+            "https://cloud.google.com/firewall/docs/firewalls#more_rules_default_vpc",
+            "https://avd.aquasec.com/misconfig/gcp-0073"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_compute_firewall.allow_all",
+            "Provider": "Google",
+            "Service": "compute",
+            "StartLine": 64,
+            "EndLine": 94,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 64,
+                  "Content": "resource \"google_compute_firewall\" \"allow_all\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_compute_firewall\"\u001b[0m \u001b[38;5;37m\"allow_all\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 65,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 66,
+                  "Content": "  name = \"allow-all\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m = \u001b[38;5;37m\"allow-all\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 67,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 68,
+                  "Content": "  network = \"default\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mnetwork\u001b[0m = \u001b[38;5;37m\"default\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 69,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 70,
+                  "Content": "  direction = \"INGRESS\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mdirection\u001b[0m = \u001b[38;5;37m\"INGRESS\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 71,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 72,
+                  "Content": "  source_ranges = [",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245msource_ranges\u001b[0m = [",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 73,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0077",
+          "Title": "Cloud Storage Bucket Logging Not Enabled",
+          "Description": "Cloud Storage bucket access logs should be enabled for audit purposes.\n",
+          "Message": "Storage bucket logging is not configured with a target log bucket.",
+          "Namespace": "builtin.google.storage.google0077",
+          "Query": "data.builtin.google.storage.google0077.deny",
+          "Resolution": "Enable Access and Storage logs for Cloud Storage buckets by configuring a log sink or specifying a `log_bucket` in Terraform.\n",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0077",
+          "References": [
+            "https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket#log_bucket",
+            "https://avd.aquasec.com/misconfig/gcp-0077"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_storage_bucket.public_bucket",
+            "Provider": "Google",
+            "Service": "storage",
+            "StartLine": 21,
+            "EndLine": 32,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 21,
+                  "Content": "resource \"google_storage_bucket\" \"public_bucket\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_storage_bucket\"\u001b[0m \u001b[38;5;37m\"public_bucket\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 22,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 23,
+                  "Content": "  name     = \"msef-public-bucket-demo\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m     = \u001b[38;5;37m\"msef-public-bucket-demo\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 24,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 25,
+                  "Content": "  location = \"US\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mlocation\u001b[0m = \u001b[38;5;37m\"US\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 26,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 27,
+                  "Content": "  uniform_bucket_level_access = false",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245muniform_bucket_level_access\u001b[0m = \u001b[38;5;166mfalse",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 28,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 29,
+                  "Content": "  public_access_prevention = \"inherited\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mpublic_access_prevention\u001b[0m = \u001b[38;5;37m\"inherited\"",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 30,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "GCP-0078",
+          "Title": "Cloud Storage Bucket Versioning Disabled",
+          "Description": "Object versioning in Cloud Storage is recommended to protect against accidental or malicious deletions.\n",
+          "Message": "Storage bucket versioning is not enabled.",
+          "Namespace": "builtin.google.storage.google0078",
+          "Query": "data.builtin.google.storage.google0078.deny",
+          "Resolution": "Enable object versioning on Cloud Storage buckets to preserve older versions of objects. In Terraform, set `versioning { enabled = true }` for the bucket resource.\n",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/gcp-0078",
+          "References": [
+            "https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket#enabled",
+            "https://avd.aquasec.com/misconfig/gcp-0078"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "google_storage_bucket.public_bucket",
+            "Provider": "Google",
+            "Service": "storage",
+            "StartLine": 21,
+            "EndLine": 32,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 21,
+                  "Content": "resource \"google_storage_bucket\" \"public_bucket\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"google_storage_bucket\"\u001b[0m \u001b[38;5;37m\"public_bucket\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 22,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 23,
+                  "Content": "  name     = \"msef-public-bucket-demo\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m     = \u001b[38;5;37m\"msef-public-bucket-demo\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 24,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 25,
+                  "Content": "  location = \"US\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mlocation\u001b[0m = \u001b[38;5;37m\"US\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 26,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 27,
+                  "Content": "  uniform_bucket_level_access = false",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245muniform_bucket_level_access\u001b[0m = \u001b[38;5;166mfalse",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 28,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 29,
+                  "Content": "  public_access_prevention = \"inherited\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mpublic_access_prevention\u001b[0m = \u001b[38;5;37m\"inherited\"",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 30,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

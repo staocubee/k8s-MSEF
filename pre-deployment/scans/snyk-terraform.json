@@ -1,0 +1,652 @@
+{
+  "meta": {
+    "isPrivate": true,
+    "isLicensesEnabled": false,
+    "ignoreSettings": {
+      "adminOnly": false,
+      "reasonRequired": false,
+      "disregardFilesystemIgnores": false
+    },
+    "org": "staocube88",
+    "orgPublicId": "5a99f336-7fa3-464e-af3b-7a6ea8256235",
+    "policy": ""
+  },
+  "filesystemPolicy": false,
+  "vulnerabilities": [],
+  "dependencyCount": 0,
+  "licensesPolicy": null,
+  "ignoreSettings": null,
+  "targetFile": "main.tf",
+  "projectName": "pre-deployment",
+  "org": "staocube88",
+  "policy": "",
+  "isPrivate": true,
+  "targetFilePath": "/Users/mac/devops-lab/k8s-MSEF/pre-deployment/test-artifacts/vulnerable-terraform/main.tf",
+  "packageManager": "terraformconfig",
+  "path": "/Users/mac/devops-lab/k8s-MSEF/pre-deployment/test-artifacts/vulnerable-terraform",
+  "projectType": "terraformconfig",
+  "ok": false,
+  "infrastructureAsCodeIssues": [
+    {
+      "id": "SNYK-CC-GCP-271",
+      "title": "Object versioning is not enabled",
+      "severity": "low",
+      "isIgnored": false,
+      "subType": "Cloud Storage",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-GCP-271",
+      "isGeneratedByCustomRule": false,
+      "issue": "Object versioning is not enabled",
+      "impact": "The accidental or malicious changes to object will not be reversible",
+      "resolve": "Set `versioning.enabled` attribute to `true`",
+      "remediation": {
+        "terraform": "Set `versioning.enabled` attribute to `true`"
+      },
+      "lineNumber": 21,
+      "iacDescription": {
+        "issue": "Object versioning is not enabled",
+        "impact": "The accidental or malicious changes to object will not be reversible",
+        "resolve": "Set `versioning.enabled` attribute to `true`"
+      },
+      "publicId": "SNYK-CC-GCP-271",
+      "msg": "resource.google_storage_bucket[public_bucket].versioning",
+      "references": [
+        "https://cloud.google.com/storage/docs/object-versioning"
+      ],
+      "path": [
+        "resource",
+        "google_storage_bucket[public_bucket]",
+        "versioning"
+      ],
+      "compliance": []
+    },
+    {
+      "id": "SNYK-CC-GCP-281",
+      "title": "Project wide ssh keys are allowed",
+      "severity": "low",
+      "isIgnored": false,
+      "subType": "Compute Engine",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-GCP-281",
+      "isGeneratedByCustomRule": false,
+      "issue": "Project wide ssh keys grant access to compute instance",
+      "impact": "Anyone with access to generic key can access the instance",
+      "resolve": "Set `metadata.block-project-ssh-keys` attribute to `true`",
+      "remediation": {
+        "terraform": "Set `metadata.block-project-ssh-keys` attribute to `true`"
+      },
+      "lineNumber": 114,
+      "iacDescription": {
+        "issue": "Project wide ssh keys grant access to compute instance",
+        "impact": "Anyone with access to generic key can access the instance",
+        "resolve": "Set `metadata.block-project-ssh-keys` attribute to `true`"
+      },
+      "publicId": "SNYK-CC-GCP-281",
+      "msg": "resource.google_compute_instance[public_vm]",
+      "references": [
+        "https://cloud.google.com/compute/docs/instances/adding-removing-ssh-keys#block-project-keys"
+      ],
+      "path": [
+        "resource",
+        "google_compute_instance[public_vm]"
+      ],
+      "compliance": []
+    },
+    {
+      "id": "SNYK-CC-TF-240",
+      "title": "Uniform bucket-level access disabled",
+      "severity": "medium",
+      "isIgnored": false,
+      "subType": "Cloud Storage",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-TF-240",
+      "isGeneratedByCustomRule": false,
+      "issue": "Cloud Storage uniform bucket-level access is not enabled",
+      "impact": "Both bucket ACLs and IAM permissions can be used to grant permissions",
+      "resolve": "Set `uniform_bucket_level_access` attribute to `true",
+      "remediation": {
+        "terraform": "Set `uniform_bucket_level_access` attribute to `true"
+      },
+      "lineNumber": 27,
+      "iacDescription": {
+        "issue": "Cloud Storage uniform bucket-level access is not enabled",
+        "impact": "Both bucket ACLs and IAM permissions can be used to grant permissions",
+        "resolve": "Set `uniform_bucket_level_access` attribute to `true"
+      },
+      "publicId": "SNYK-CC-TF-240",
+      "msg": "resource.google_storage_bucket[public_bucket].uniform_bucket_level_access",
+      "references": [
+        "https://cloud.google.com/storage/docs/uniform-bucket-level-access"
+      ],
+      "path": [
+        "resource",
+        "google_storage_bucket[public_bucket]",
+        "uniform_bucket_level_access"
+      ],
+      "compliance": []
+    },
+    {
+      "id": "SNYK-CC-TF-269",
+      "title": "GKE Alias IP disabled",
+      "severity": "low",
+      "isIgnored": false,
+      "subType": "Kubernetes (Container) Engine",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-TF-269",
+      "isGeneratedByCustomRule": false,
+      "issue": "GKE cluster does not have Alias IP range defined",
+      "impact": "GCP will not perform anti-spoofing checks against traffic",
+      "resolve": "Set `ip_allocation_policy` attribute with dedicated IP ranges",
+      "remediation": {
+        "terraform": "Set `ip_allocation_policy` attribute with dedicated IP ranges"
+      },
+      "lineNumber": 152,
+      "iacDescription": {
+        "issue": "GKE cluster does not have Alias IP range defined",
+        "impact": "GCP will not perform anti-spoofing checks against traffic",
+        "resolve": "Set `ip_allocation_policy` attribute with dedicated IP ranges"
+      },
+      "publicId": "SNYK-CC-TF-269",
+      "msg": "resource.google_container_cluster[cluster].ip_allocation_policy",
+      "references": [
+        "https://cloud.google.com/vpc/docs/alias-ip#key_benefits_of_alias_ip_ranges"
+      ],
+      "path": [
+        "resource",
+        "google_container_cluster[cluster]",
+        "ip_allocation_policy"
+      ],
+      "compliance": []
+    },
+    {
+      "id": "SNYK-CC-TF-239",
+      "title": "Cloud Storage bucket is publicly accessible",
+      "severity": "high",
+      "isIgnored": false,
+      "subType": "Cloud Storage",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-TF-239",
+      "isGeneratedByCustomRule": false,
+      "issue": "Cloud Storage bucket grants all users access",
+      "impact": "Potentially anyone can access data stored in the bucket",
+      "resolve": "Remove `allUsers` and `allAuthenticatedUsers` values from `members` attribute",
+      "remediation": {
+        "terraform": "Remove `allUsers` and `allAuthenticatedUsers` values from `members` attribute"
+      },
+      "lineNumber": 40,
+      "iacDescription": {
+        "issue": "Cloud Storage bucket grants all users access",
+        "impact": "Potentially anyone can access data stored in the bucket",
+        "resolve": "Remove `allUsers` and `allAuthenticatedUsers` values from `members` attribute"
+      },
+      "publicId": "SNYK-CC-TF-239",
+      "msg": "resource.google_storage_bucket_iam_member[public_access].member",
+      "references": [
+        "https://cloud.google.com/storage/docs/creating-buckets",
+        "https://cloud.google.com/storage/docs/access-control/making-data-public"
+      ],
+      "path": [
+        "resource",
+        "google_storage_bucket_iam_member[public_access]",
+        "member"
+      ],
+      "compliance": []
+    },
+    {
+      "id": "SNYK-CC-GCP-284",
+      "title": "Default service account used",
+      "severity": "high",
+      "isIgnored": false,
+      "subType": "Compute Engine",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-GCP-284",
+      "isGeneratedByCustomRule": false,
+      "issue": "Default service account granted to the instance",
+      "impact": "Default compute engine account grants editor role permissions to the instance",
+      "resolve": "Set `service_account` attribute with custom service account information",
+      "remediation": {
+        "terraform": "Set `service_account` attribute with custom service account information"
+      },
+      "lineNumber": 114,
+      "iacDescription": {
+        "issue": "Default service account granted to the instance",
+        "impact": "Default compute engine account grants editor role permissions to the instance",
+        "resolve": "Set `service_account` attribute with custom service account information"
+      },
+      "publicId": "SNYK-CC-GCP-284",
+      "msg": "resource.google_compute_instance[public_vm].service_account",
+      "references": [
+        "https://cloud.google.com/compute/docs/access/service-accounts#default_service_account"
+      ],
+      "path": [
+        "resource",
+        "google_compute_instance[public_vm]",
+        "service_account"
+      ],
+      "compliance": []
+    },
+    {
+      "id": "SNYK-CC-TF-87",
+      "title": "GKE client certificate auth is enabled",
+      "severity": "high",
+      "isIgnored": false,
+      "subType": "Kubernetes (Container) Engine",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-TF-87",
+      "isGeneratedByCustomRule": false,
+      "issue": "The client certificate authentication is not disabled",
+      "impact": "The client certificate authentication methods is considered legacy and increase the attack surface for the cluster",
+      "resolve": "Set `master_auth.issue_client_certificate` attribute to `false`",
+      "remediation": {
+        "terraform": "Set `master_auth.issue_client_certificate` attribute to `false`"
+      },
+      "lineNumber": 152,
+      "iacDescription": {
+        "issue": "The client certificate authentication is not disabled",
+        "impact": "The client certificate authentication methods is considered legacy and increase the attack surface for the cluster",
+        "resolve": "Set `master_auth.issue_client_certificate` attribute to `false`"
+      },
+      "publicId": "SNYK-CC-TF-87",
+      "msg": "resource.google_container_cluster[cluster].master_auth",
+      "references": [
+        "https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster",
+        "https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication#legacy-auth"
+      ],
+      "path": [
+        "resource",
+        "google_container_cluster[cluster]",
+        "master_auth"
+      ],
+      "compliance": []
+    },
+    {
+      "id": "SNYK-CC-GCP-461",
+      "title": "Delete protection is disabled",
+      "severity": "low",
+      "isIgnored": false,
+      "subType": "Compute Engine",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-GCP-461",
+      "isGeneratedByCustomRule": false,
+      "issue": "Deletion protection is disabled for this Google Compute Instance",
+      "impact": "This critical system is not protected against deletion, accidental or intentionally malicious",
+      "resolve": "Set `deletion_protection` attribute to `true`",
+      "remediation": {
+        "terraform": "Set `deletion_protection` attribute to `true`"
+      },
+      "lineNumber": 114,
+      "iacDescription": {
+        "issue": "Deletion protection is disabled for this Google Compute Instance",
+        "impact": "This critical system is not protected against deletion, accidental or intentionally malicious",
+        "resolve": "Set `deletion_protection` attribute to `true`"
+      },
+      "publicId": "SNYK-CC-GCP-461",
+      "msg": "resource.google_compute_instance[public_vm].deletion_protection",
+      "references": [
+        "https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#deletion_protection",
+        "https://cloud.google.com/compute/docs/instances/preventing-accidental-vm-deletion"
+      ],
+      "path": [
+        "resource",
+        "google_compute_instance[public_vm]",
+        "deletion_protection"
+      ],
+      "compliance": []
+    },
+    {
+      "id": "SNYK-CC-TF-32",
+      "title": "GCP Compute Firewall allows public access",
+      "severity": "medium",
+      "isIgnored": false,
+      "subType": "Compute Engine",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-TF-32",
+      "isGeneratedByCustomRule": false,
+      "issue": "That inbound traffic is allowed to a resource from any source instead of a restricted range",
+      "impact": "That potentially everyone can access your resource",
+      "resolve": "Set source_ranges to specific IP range only, e.g. `192.168.1.0/24`",
+      "remediation": {
+        "terraform": "Set source_ranges to specific IP range only, e.g. `192.168.1.0/24`"
+      },
+      "lineNumber": 72,
+      "iacDescription": {
+        "issue": "That inbound traffic is allowed to a resource from any source instead of a restricted range",
+        "impact": "That potentially everyone can access your resource",
+        "resolve": "Set source_ranges to specific IP range only, e.g. `192.168.1.0/24`"
+      },
+      "publicId": "SNYK-CC-TF-32",
+      "msg": "resource.google_compute_firewall[allow_all].source_ranges",
+      "references": [],
+      "path": [
+        "resource",
+        "google_compute_firewall[allow_all]",
+        "source_ranges"
+      ],
+      "compliance": []
+    },
+    {
+      "id": "SNYK-CC-TF-238",
+      "title": "GKE cluster might be publicly exposed",
+      "severity": "medium",
+      "isIgnored": false,
+      "subType": "Kubernetes (Container) Engine",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-TF-238",
+      "isGeneratedByCustomRule": false,
+      "issue": "GKE cluster might be publicly exposed",
+      "impact": "Master endpoints or nodes may be configured with public addresses",
+      "resolve": "Configure `private_cluster_config` block by setting `enable_private_nodes` and `enable_private_endpoint` attributes to true",
+      "remediation": {
+        "terraform": "Configure `private_cluster_config` block by setting `enable_private_nodes` and `enable_private_endpoint` attributes to true"
+      },
+      "lineNumber": 152,
+      "iacDescription": {
+        "issue": "GKE cluster might be publicly exposed",
+        "impact": "Master endpoints or nodes may be configured with public addresses",
+        "resolve": "Configure `private_cluster_config` block by setting `enable_private_nodes` and `enable_private_endpoint` attributes to true"
+      },
+      "publicId": "SNYK-CC-TF-238",
+      "msg": "resource.google_container_cluster[cluster].private_cluster_config",
+      "references": [
+        "https://cloud.google.com/kubernetes-engine/docs/concepts/control-plane-security",
+        "https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters"
+      ],
+      "path": [
+        "resource",
+        "google_container_cluster[cluster]",
+        "private_cluster_config"
+      ],
+      "compliance": []
+    },
+    {
+      "id": "SNYK-CC-TF-185",
+      "title": "Google storage bucket does not use customer-managed keys to encrypt data",
+      "severity": "low",
+      "isIgnored": false,
+      "subType": "Cloud Storage",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-TF-185",
+      "isGeneratedByCustomRule": false,
+      "issue": "Google storage bucket does not use customer-managed keys to encrypt data",
+      "impact": "Google will manage the encryption keys on its servers and could access the data without authorization",
+      "resolve": "Use encryption keys from self-managed key management service and configure the `encryption` block accordingly.",
+      "remediation": {
+        "terraform": "Use encryption keys from self-managed key management service and configure the `encryption` block accordingly."
+      },
+      "lineNumber": 21,
+      "iacDescription": {
+        "issue": "Google storage bucket does not use customer-managed keys to encrypt data",
+        "impact": "Google will manage the encryption keys on its servers and could access the data without authorization",
+        "resolve": "Use encryption keys from self-managed key management service and configure the `encryption` block accordingly."
+      },
+      "publicId": "SNYK-CC-TF-185",
+      "msg": "resource.google_storage_bucket[public_bucket].encryption.default_kms_key_name",
+      "references": [
+        "https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket#encryption",
+        "https://cloud.google.com/storage/docs/encryption",
+        "https://cloud.google.com/storage/docs/encryption/using-customer-managed-keys"
+      ],
+      "path": [
+        "resource",
+        "google_storage_bucket[public_bucket]",
+        "encryption",
+        "default_kms_key_name"
+      ],
+      "compliance": []
+    },
+    {
+      "id": "SNYK-CC-TF-196",
+      "title": "GKE Network Policies enforcement disabled",
+      "severity": "low",
+      "isIgnored": false,
+      "subType": "Kubernetes (Container) Engine",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-TF-196",
+      "isGeneratedByCustomRule": false,
+      "issue": "GKE network policies enforcement is disabled",
+      "impact": "Network policies cannot be used as part of defense in depth controls",
+      "resolve": "Set `network_policy.enabled` attribute to `true`",
+      "remediation": {
+        "terraform": "Set `network_policy.enabled` attribute to `true`"
+      },
+      "lineNumber": 152,
+      "iacDescription": {
+        "issue": "GKE network policies enforcement is disabled",
+        "impact": "Network policies cannot be used as part of defense in depth controls",
+        "resolve": "Set `network_policy.enabled` attribute to `true`"
+      },
+      "publicId": "SNYK-CC-TF-196",
+      "msg": "resource.google_container_cluster[cluster].network_policy.enabled",
+      "references": [
+        "https://cloud.google.com/kubernetes-engine/docs/how-to/network-policy",
+        "https://cloud.google.com/kubernetes-engine/docs/tutorials/network-policy"
+      ],
+      "path": [
+        "resource",
+        "google_container_cluster[cluster]",
+        "network_policy",
+        "enabled"
+      ],
+      "compliance": []
+    },
+    {
+      "id": "SNYK-CC-TF-88",
+      "title": "GKE PodSecurityPolicy controller is disabled",
+      "severity": "medium",
+      "isIgnored": false,
+      "subType": "Kubernetes (Container) Engine",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-TF-88",
+      "isGeneratedByCustomRule": false,
+      "issue": "The PodSecurityPolicy controller is not enabled on the cluster",
+      "impact": "The Pods cannot be constrained with PodSecurityPolicies, which increases the security management overhead",
+      "resolve": "Set `pod_security_policy_config.enabled` attribute to `true`",
+      "remediation": {
+        "terraform": "Set `pod_security_policy_config.enabled` attribute to `true`"
+      },
+      "lineNumber": 152,
+      "iacDescription": {
+        "issue": "The PodSecurityPolicy controller is not enabled on the cluster",
+        "impact": "The Pods cannot be constrained with PodSecurityPolicies, which increases the security management overhead",
+        "resolve": "Set `pod_security_policy_config.enabled` attribute to `true`"
+      },
+      "publicId": "SNYK-CC-TF-88",
+      "msg": "resource.google_container_cluster[cluster].pod_security_policy_config",
+      "references": [
+        "https://cloud.google.com/kubernetes-engine/docs/how-to/pod-security-policies",
+        "https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster"
+      ],
+      "path": [
+        "resource",
+        "google_container_cluster[cluster]",
+        "pod_security_policy_config"
+      ],
+      "compliance": []
+    },
+    {
+      "id": "SNYK-CC-GCP-274",
+      "title": "Logging is not enabled on storage bucket",
+      "severity": "low",
+      "isIgnored": false,
+      "subType": "Cloud Storage",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-GCP-274",
+      "isGeneratedByCustomRule": false,
+      "issue": "Logging is not enabled on storage bucket",
+      "impact": "Usage information will not be collected. This may impact ability to determine who accessed data stored in the bucket",
+      "resolve": "Set `logging` block attribute",
+      "remediation": {
+        "terraform": "Set `logging` block attribute"
+      },
+      "lineNumber": 21,
+      "iacDescription": {
+        "issue": "Logging is not enabled on storage bucket",
+        "impact": "Usage information will not be collected. This may impact ability to determine who accessed data stored in the bucket",
+        "resolve": "Set `logging` block attribute"
+      },
+      "publicId": "SNYK-CC-GCP-274",
+      "msg": "resource.google_storage_bucket[public_bucket].logging",
+      "references": [
+        "https://cloud.google.com/storage/docs/xml-api/put-bucket-logging",
+        "https://cloud.google.com/storage/docs/access-logs"
+      ],
+      "path": [
+        "resource",
+        "google_storage_bucket[public_bucket]",
+        "logging"
+      ],
+      "compliance": []
+    },
+    {
+      "id": "SNYK-CC-TF-202",
+      "title": "GKE cluster labels are missing",
+      "severity": "low",
+      "isIgnored": false,
+      "subType": "Kubernetes (Container) Engine",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-TF-202",
+      "isGeneratedByCustomRule": false,
+      "issue": "GKE cluster does not have resource labels",
+      "impact": "Increases the security management overhead",
+      "resolve": "Set `resource_labels` attribute",
+      "remediation": {
+        "terraform": "Set `resource_labels` attribute"
+      },
+      "lineNumber": 152,
+      "iacDescription": {
+        "issue": "GKE cluster does not have resource labels",
+        "impact": "Increases the security management overhead",
+        "resolve": "Set `resource_labels` attribute"
+      },
+      "publicId": "SNYK-CC-TF-202",
+      "msg": "resource.google_container_cluster[cluster].resource_labels",
+      "references": [
+        "https://cloud.google.com/kubernetes-engine/docs/how-to/creating-managing-labels"
+      ],
+      "path": [
+        "resource",
+        "google_container_cluster[cluster]",
+        "resource_labels"
+      ],
+      "compliance": []
+    },
+    {
+      "id": "SNYK-CC-TF-184",
+      "title": "Customer supplied encryption keys are not used to encrypt VM compute instance",
+      "severity": "low",
+      "isIgnored": false,
+      "subType": "Compute Engine",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-TF-184",
+      "isGeneratedByCustomRule": false,
+      "issue": "Customer Supplied Encryption Keys are not used to encrypt VM compute instance",
+      "impact": "Google will store your keys on it's servers and could access the data without your authorization",
+      "resolve": "Ensure encrypting your VM with Customer Supplied Encryption Keys",
+      "remediation": {
+        "terraform": "Ensure encrypting your VM with Customer Supplied Encryption Keys"
+      },
+      "lineNumber": 128,
+      "iacDescription": {
+        "issue": "Customer Supplied Encryption Keys are not used to encrypt VM compute instance",
+        "impact": "Google will store your keys on it's servers and could access the data without your authorization",
+        "resolve": "Ensure encrypting your VM with Customer Supplied Encryption Keys"
+      },
+      "publicId": "SNYK-CC-TF-184",
+      "msg": "resource.google_compute_instance[public_vm].boot_disk",
+      "references": [
+        "https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#disk_encryption_key_raw",
+        "https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#kms_key_self_link",
+        "https://cloud.google.com/compute/docs/disks/customer-supplied-encryption",
+        "https://cloud.google.com/security/encryption-at-rest/customer-supplied-encryption-keys"
+      ],
+      "path": [
+        "resource",
+        "google_compute_instance[public_vm]",
+        "boot_disk"
+      ],
+      "compliance": []
+    },
+    {
+      "id": "SNYK-CC-GCP-282",
+      "title": "Shielded VM disabled",
+      "severity": "medium",
+      "isIgnored": false,
+      "subType": "Compute Engine",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-GCP-282",
+      "isGeneratedByCustomRule": false,
+      "issue": "Shielded VM feature is not enabled on compute instance",
+      "impact": "Advanced security features such as secure boot and firmware integrity checks will not be enabled on the instance",
+      "resolve": "Set `shielded_instance_config.enable_integrity_monitoring`, `shielded_instance_config.enable_secure_boot` and `shielded_instance_config.enable_vtpm` attributes to `true`",
+      "remediation": {
+        "terraform": "Set `shielded_instance_config.enable_integrity_monitoring`, `shielded_instance_config.enable_secure_boot` and `shielded_instance_config.enable_vtpm` attributes to `true`"
+      },
+      "lineNumber": 114,
+      "iacDescription": {
+        "issue": "Shielded VM feature is not enabled on compute instance",
+        "impact": "Advanced security features such as secure boot and firmware integrity checks will not be enabled on the instance",
+        "resolve": "Set `shielded_instance_config.enable_integrity_monitoring`, `shielded_instance_config.enable_secure_boot` and `shielded_instance_config.enable_vtpm` attributes to `true`"
+      },
+      "publicId": "SNYK-CC-GCP-282",
+      "msg": "resource.google_compute_instance[public_vm]",
+      "references": [
+        "https://cloud.google.com/security/shielded-cloud/shielded-vm",
+        "https://cloud.google.com/compute/docs/instances/modifying-shielded-vm",
+        "https://cloud.google.com/compute/docs/images/os-details#security-features"
+      ],
+      "path": [
+        "resource",
+        "google_compute_instance[public_vm]"
+      ],
+      "compliance": []
+    },
+    {
+      "id": "SNYK-CC-GCP-295",
+      "title": "Unrestricted SSH access",
+      "severity": "high",
+      "isIgnored": false,
+      "subType": "Compute Engine",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-GCP-295",
+      "isGeneratedByCustomRule": false,
+      "issue": "Compute firewall allows all access to the SSH port",
+      "impact": "SSH service may be accessible over the internet which defeats network segmentation controls",
+      "resolve": "Set `source_ranges` attribute to specific IP range for example `192.168.0.0/24`",
+      "remediation": {
+        "terraform": "Set `source_ranges` attribute to specific IP range for example `192.168.0.0/24`"
+      },
+      "lineNumber": 64,
+      "iacDescription": {
+        "issue": "Compute firewall allows all access to the SSH port",
+        "impact": "SSH service may be accessible over the internet which defeats network segmentation controls",
+        "resolve": "Set `source_ranges` attribute to specific IP range for example `192.168.0.0/24`"
+      },
+      "publicId": "SNYK-CC-GCP-295",
+      "msg": "resource.google_compute_firewall[allow_all]",
+      "references": [
+        "https://cloud.google.com/vpc/docs/firewalls"
+      ],
+      "path": [
+        "resource",
+        "google_compute_firewall[allow_all]"
+      ],
+      "compliance": []
+    },
+    {
+      "id": "SNYK-CC-TF-183",
+      "title": "Customer supplied encryption keys are not used to encrypt compute disk",
+      "severity": "low",
+      "isIgnored": false,
+      "subType": "Compute Engine",
+      "documentation": "https://security.snyk.io/rules/cloud/SNYK-CC-TF-183",
+      "isGeneratedByCustomRule": false,
+      "issue": "Customer Supplied Encryption Keys are not used to encrypt compute disk",
+      "impact": "Google will store your keys on it's servers and could access the data without your authorization",
+      "resolve": "Ensure encrypting your VM with Customer Supplied Encryption Keys",
+      "remediation": {
+        "terraform": "Ensure encrypting your VM with Customer Supplied Encryption Keys"
+      },
+      "lineNumber": 48,
+      "iacDescription": {
+        "issue": "Customer Supplied Encryption Keys are not used to encrypt compute disk",
+        "impact": "Google will store your keys on it's servers and could access the data without your authorization",
+        "resolve": "Ensure encrypting your VM with Customer Supplied Encryption Keys"
+      },
+      "publicId": "SNYK-CC-TF-183",
+      "msg": "resource.google_compute_disk[disk].disk_encryption_key",
+      "references": [
+        "https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_disk#disk_encryption_key",
+        "https://cloud.google.com/compute/docs/disks/customer-supplied-encryption",
+        "https://cloud.google.com/security/encryption-at-rest/customer-supplied-encryption-keys"
+      ],
+      "path": [
+        "resource",
+        "google_compute_disk[disk]",
+        "disk_encryption_key"
+      ],
+      "compliance": []
+    }
+  ]
+}

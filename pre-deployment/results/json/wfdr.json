@@ -1,0 +1,15 @@
+{
+  "metric":"WFDR",
+
+  "known":9,
+
+  "trivy":{
+      "detected":5,
+      "score":0.56
+  },
+
+  "snyk":{
+      "detected":3,
+      "score":0.33
+  }
+}

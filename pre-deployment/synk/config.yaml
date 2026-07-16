@@ -1,0 +1,6 @@
+severity-threshold: high
+
+fail-on: all-projects
+
+exclude:
+  - node_modules

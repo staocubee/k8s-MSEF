@@ -1,0 +1,14 @@
+{
+    "trivy":{
+        "image":1.27,
+        "manifest":1.66,
+        "terraform":1.54,
+        "mst":1.49
+    },
+    "snyk":{
+        "image":19.08,
+        "manifest":16.20,
+        "terraform":11.87,
+        "mst":15.72
+    }
+}

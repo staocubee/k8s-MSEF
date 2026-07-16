@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: latest-tag
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: latest
+
+  template:
+    metadata:
+      labels:
+        app: latest
+
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest

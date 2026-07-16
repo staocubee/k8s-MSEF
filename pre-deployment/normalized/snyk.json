@@ -1,0 +1,42 @@
+{
+  "scanner": "snyk",
+  "images": [
+    {
+      "id": "CVE-2024-21626",
+      "severity": "HIGH"
+    },
+    {
+      "id": "CVE-2023-38545",
+      "severity": "CRITICAL"
+    },
+    {
+      "id": "CVE-2024-3094",
+      "severity": "CRITICAL"
+    }
+  ],
+  "manifests": [
+    "privileged-container",
+    "run-as-root",
+    "host-network",
+    "missing-security-context"
+  ],
+  "terraform": [
+    "public-storage",
+    "missing-encryption",
+    "open-firewall"
+  ],
+  "dependencies": [
+    "lodash",
+    "express",
+    "minimist"
+  ],
+  "secrets": [
+    "AWS Access Key",
+    "GitHub Token"
+  ],
+  "workflows": [
+    "write-all-permissions",
+    "hardcoded-secret",
+    "unpinned-action"
+  ]
+}

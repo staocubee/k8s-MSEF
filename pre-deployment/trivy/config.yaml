@@ -1,0 +1,16 @@
+format: table
+
+exit-code: 1
+
+severity:
+  - HIGH
+  - CRITICAL
+
+ignore-unfixed: false
+
+scanners:
+  - vuln
+  - config
+  - secret
+
+timeout: 10m

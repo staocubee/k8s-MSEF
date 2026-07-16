@@ -1,0 +1,17 @@
+{
+    "metric":"TAR",
+
+    "trivy_total":5,
+
+    "snyk_total":3,
+
+    "shared":3,
+
+    "trivy_only":2,
+
+    "snyk_only":0,
+
+    "union":5,
+
+    "score":0.60
+}

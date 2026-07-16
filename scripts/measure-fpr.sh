@@ -1,54 +1,142 @@
 #!/bin/bash
+
+###############################################################################
+# Multi-Layer Security Evaluation Framework (MSEF)
+#
+# Metric:
+# False Positive Rate (FPR)
+#
+# FPR = False Alert Windows / Total Benign Windows
+#
+###############################################################################
+
 set -euo pipefail
+shopt -s nullglob
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+###############################################################################
 
 FALCO_NS="${FALCO_NS:-falco}"
 TARGET_NS="${TARGET_NS:-baseline}"
 WINDOWS="${WINDOWS:-5}"
-RESULTS_DIR="${RESULTS_DIR:-results}"
 
-mkdir -p "$RESULTS_DIR"
+RESULTS_DIR="${RESULTS_DIR:-$PROJECT_ROOT/results}"
 
-FALSE_ALERT_WINDOWS=0
+JSON_DIR="${RESULTS_DIR}/json"
+TXT_DIR="${RESULTS_DIR}/txt"
+LOG_DIR="${RESULTS_DIR}/logs"
 
-echo "===== False Positive Rate Experiment ====="
-echo "Benign Workload Windows: $WINDOWS"
-echo ""
+mkdir -p "$JSON_DIR" "$TXT_DIR" "$LOG_DIR"
 
-for i in $(seq 1 "$WINDOWS"); do
-  POD_NAME="benign-workload-$i"
+DETAILS="$LOG_DIR/fpr-details.log"
+> "$DETAILS"
 
-  echo "Running benign workload window $i"
+###############################################################################
 
-  kubectl run "$POD_NAME" \
-    --image=alpine:latest \
-    -n "$TARGET_NS" \
-    --restart=Never \
-    -- sh -c "echo benign-test && ls /tmp && sleep 5" >/dev/null 2>&1 || true
+echo "=========================================="
+echo "False Positive Rate (FPR)"
+echo "=========================================="
 
-  sleep 10
+FALSE_ALERTS=0
 
-  LOGS=$(kubectl logs -n "$FALCO_NS" -l app.kubernetes.io/name=falco --since=20s 2>/dev/null || true)
+###############################################################################
 
-  if [ -z "$LOGS" ]; then
-    LOGS=$(kubectl logs -n "$FALCO_NS" -l app=falco --since=20s 2>/dev/null || true)
-  fi
+FALCO_PODS=$(kubectl get pods -n "$FALCO_NS" \
+-l app.kubernetes.io/name=falco \
+-o jsonpath='{range .items[*]}{.metadata.name}{" "}{end}' 2>/dev/null || true)
 
-  if echo "$LOGS" | grep -qi "$POD_NAME"; then
-    FALSE_ALERT_WINDOWS=$((FALSE_ALERT_WINDOWS + 1))
-    echo "False Alert: YES"
-  else
-    echo "False Alert: NO"
-  fi
+if [ -z "$FALCO_PODS" ]; then
+    FALCO_PODS=$(kubectl get pods -n "$FALCO_NS" \
+    -l app=falco \
+    -o jsonpath='{range .items[*]}{.metadata.name}{" "}{end}' 2>/dev/null || true)
+fi
 
-  kubectl delete pod "$POD_NAME" -n "$TARGET_NS" --ignore-not-found >/dev/null 2>&1 || true
-  echo "--------------------------------"
+###############################################################################
+
+for i in $(seq 1 "$WINDOWS")
+do
+
+    POD="benign-workload-$i"
+
+    echo "Running benign workload $i"
+
+    kubectl run "$POD" \
+        --image=alpine:latest \
+        -n "$TARGET_NS" \
+        --restart=Never \
+        -- sh -c "echo healthy && sleep 5" >/dev/null 2>&1 || true
+
+    sleep 12
+
+    LOGS=""
+
+    for FPOD in $FALCO_PODS
+    do
+        LOGS="${LOGS}
+$(kubectl logs -n "$FALCO_NS" "$FPOD" --since=30s 2>/dev/null || true)"
+    done
+
+    if echo "$LOGS" | grep -qi "$POD"; then
+
+        RESULT="FALSE ALERT"
+
+        FALSE_ALERTS=$((FALSE_ALERTS+1))
+
+    else
+
+        RESULT="NO ALERT"
+
+    fi
+
+cat >> "$DETAILS" <<EOF
+Window : $i
+Pod    : $POD
+Result : $RESULT
+----------------------------------------
+EOF
+
+    kubectl delete pod "$POD" \
+        -n "$TARGET_NS" \
+        --ignore-not-found >/dev/null 2>&1 || true
+
 done
 
-FPR=$(echo "scale=2; $FALSE_ALERT_WINDOWS / $WINDOWS" | bc)
+###############################################################################
 
-echo ""
-echo "===== Experiment Result ====="
-echo "Benign Windows: $WINDOWS"
-echo "False Alert Windows: $FALSE_ALERT_WINDOWS"
-echo "FPR = $FPR"
-echo "Timestamp: $(date)"
+FPR=$(awk -v f="$FALSE_ALERTS" -v t="$WINDOWS" \
+'BEGIN{printf "%.2f",f/t}')
+
+###############################################################################
+# JSON
+###############################################################################
+
+cat > "$JSON_DIR/fpr.json" <<EOF
+{
+  "metric":"FPR",
+  "benign_windows":$WINDOWS,
+  "false_alerts":$FALSE_ALERTS,
+  "score":$FPR
+}
+EOF
+
+###############################################################################
+# TXT
+###############################################################################
+
+cat > "$TXT_DIR/fpr.txt" <<EOF
+==========================================
+False Positive Rate (FPR)
+==========================================
+
+Benign Windows : $WINDOWS
+False Alerts   : $FALSE_ALERTS
+
+FPR            : $FPR
+
+Generated : $(date)
+
+EOF
+
+cat "$TXT_DIR/fpr.txt"

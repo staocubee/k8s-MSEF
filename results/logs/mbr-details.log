@@ -1,0 +1,63 @@
+Manifest: insecure-allclusterroletodefaultsa-pod.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-allclusterrolewildcardaccess-pod.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-alldangeroussysctl-pod.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-alldefaultsa-pod.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-alldropnocap.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-allhostnetenab-pods.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-allhostpathmount-pods.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-allhostpid-pods.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-allimagepullpolicyalways-pod.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-alllatesttagusage-pod.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-allnoresourcelimit.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-allnosecuritycontextatall-pod.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-allprivesca-pods.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-allpublicuntrustedimage-pod.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-allrolewithsecretaccess-pod.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-allrolewithsecretroletodefaultsa-pod.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-allsys_adm-pods.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-allwritablerootfilesystem-pod.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-prirunasroot-pods.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: insecure-privileged-pods.yaml
+Result: BLOCKED
+----------------------------------------
+Manifest: runtime-attacker.yaml
+Result: BLOCKED
+----------------------------------------

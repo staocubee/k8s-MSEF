@@ -1,42 +1,109 @@
 #!/bin/bash
+
+###############################################################################
+# Multi-Layer Security Evaluation Framework (MSEF)
+#
+# Master Evaluation Script
+#
+###############################################################################
+
 set -euo pipefail
+shopt -s nullglob
 
-echo "===================================="
-echo "Kubernetes Security Evaluation Start"
-echo "===================================="
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-echo ""
-echo "Experiment Timestamp: $(date)"
-echo ""
+RESULTS_DIR="${RESULTS_DIR:-$PROJECT_ROOT/results}"
 
-mkdir -p results
+mkdir -p \
+"$RESULTS_DIR" \
+"$RESULTS_DIR/json" \
+"$RESULTS_DIR/txt" \
+"$RESULTS_DIR/logs"
 
-echo "Running MBR Experiment (Prevention Layer: Admission Control)"
-scripts/measure-mbr.sh | tee results/mbr-result.txt
-sleep 5
+###############################################################################
 
-echo "Running SPR Experiment (Integrity Layer: Image Signature Enforcement)"
-scripts/measure-spr.sh | tee results/spr-result.txt
-sleep 5
+echo "======================================================="
+echo " Multi-Layer Security Evaluation Framework (MSEF)"
+echo " Kubernetes Security Evaluation"
+echo "======================================================="
+echo "Started : $(date)"
+echo
 
-echo "Running RDR Experiment (Detection Layer: Runtime Detection Coverage)"
-scripts/measure-rdr.sh | tee results/rdr-result.txt
-sleep 5
+###############################################################################
+# Prevention Layer
+###############################################################################
 
-echo "Running MTTD Experiment (Detection Layer: Detection Speed)"
-scripts/measure-mttd.sh | tee results/mttd-result.txt
-sleep 5
+echo "========== Prevention Layer =========="
 
-echo "Running FPR Experiment (Detection Layer: Alert Noise)"
-scripts/measure-fpr.sh | tee results/fpr-result.txt
-sleep 5
+scripts/measure-mbr.sh
+echo
 
-echo "Generating Final Metrics Report"
-scripts/generate-security-report.sh | tee results/final-security-report.txt
+scripts/measure-nper.sh
+echo
 
-echo "Generating HTML Report"
-scripts/generate-html-report.sh | tee results/html-report-result.txt
-echo ""
-echo "===================================="
-echo "Security Evaluation Completed"
-echo "===================================="
+scripts/measure-smer.sh
+echo
+
+scripts/measure-pes.sh
+echo
+
+###############################################################################
+# Integrity Layer
+###############################################################################
+
+echo "========== Integrity Layer =========="
+
+scripts/measure-spr.sh
+echo
+
+scripts/measure-ies.sh
+echo
+
+###############################################################################
+# Detection Layer
+###############################################################################
+
+echo "========== Detection Layer =========="
+
+scripts/measure-rdr.sh
+echo
+
+scripts/measure-mttd.sh
+echo
+
+scripts/measure-fpr.sh
+echo
+
+scripts/measure-rrsr.sh
+echo
+
+scripts/measure-des.sh
+echo
+
+###############################################################################
+# Reports
+###############################################################################
+
+echo "========== Generating Reports =========="
+
+scripts/generate-security-report.sh
+
+echo
+
+scripts/generate-html-report.sh
+
+###############################################################################
+
+echo
+echo "======================================================="
+echo " Evaluation Completed Successfully"
+echo "======================================================="
+echo
+echo "Reports Generated:"
+echo "  results/txt/"
+echo "  results/json/"
+echo "  results/logs/"
+echo "  results/index.html"
+echo
+echo "Completed : $(date)"

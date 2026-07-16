@@ -1,0 +1,15 @@
+{
+  "metric":"SDR",
+
+  "known":10,
+
+  "trivy":{
+      "detected":3,
+      "score":0.30
+  },
+
+  "snyk":{
+      "detected":2,
+      "score":0.20
+  }
+}

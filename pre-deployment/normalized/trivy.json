@@ -1,0 +1,55 @@
+{
+  "scanner": "trivy",
+  "images": [
+    {
+      "id": "CVE-2024-21626",
+      "severity": "HIGH"
+    },
+    {
+      "id": "CVE-2023-38545",
+      "severity": "CRITICAL"
+    },
+    {
+      "id": "CVE-2022-37434",
+      "severity": "HIGH"
+    },
+    {
+      "id": "CVE-2023-44487",
+      "severity": "MEDIUM"
+    },
+    {
+      "id": "CVE-2024-3094",
+      "severity": "CRITICAL"
+    }
+  ],
+  "manifests": [
+    "privileged-container",
+    "run-as-root",
+    "host-network",
+    "missing-security-context",
+    "missing-resource-limits"
+  ],
+  "terraform": [
+    "public-storage",
+    "open-firewall",
+    "missing-encryption",
+    "public-cluster",
+    "excessive-iam"
+  ],
+  "dependencies": [
+    "lodash",
+    "express"
+  ],
+  "secrets": [
+    "AWS Access Key",
+    "GitHub Token",
+    "Database Password"
+  ],
+  "workflows": [
+    "write-all-permissions",
+    "pull_request_target",
+    "hardcoded-secret",
+    "unpinned-action",
+    "curl-pipe-bash"
+  ]
+}

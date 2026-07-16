@@ -1,74 +1,193 @@
 #!/bin/bash
+
+###############################################################################
+# Multi-Layer Security Evaluation Framework (MSEF)
+#
+# Metric:
+# Runtime Detection Rate (RDR)
+#
+# RDR = Detected Runtime Attacks / Simulated Runtime Attacks
+#
+###############################################################################
+
 set -euo pipefail
+shopt -s nullglob
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+###############################################################################
+# Configuration
+###############################################################################
 
 FALCO_NS="${FALCO_NS:-falco}"
-TARGET_NS="${TARGET_NS:-baseline}"
-TARGET_POD="${TARGET_POD:-insecure-write-root}"
-ATTACKER_POD="${ATTACKER_POD:-runtime-attacker}"
-RESULTS_DIR="${RESULTS_DIR:-results}"
 
-mkdir -p "$RESULTS_DIR"
+TARGET_NS="${TARGET_NS:-baseline}"
+
+TARGET_POD="${TARGET_POD:-insecure-write-root}"
+
+ATTACKER_POD="${ATTACKER_POD:-runtime-attacker}"
+
+RESULTS_DIR="${RESULTS_DIR:-$PROJECT_ROOT/results}"
+
+JSON_DIR="${RESULTS_DIR}/json"
+
+TXT_DIR="${RESULTS_DIR}/txt"
+
+LOG_DIR="${RESULTS_DIR}/logs"
+
+mkdir -p "$JSON_DIR" "$TXT_DIR" "$LOG_DIR"
+
+DETAILS="$LOG_DIR/rdr-details.log"
+
+> "$DETAILS"
+
+###############################################################################
+
+echo "=========================================="
+
+echo "Runtime Detection Rate (RDR)"
+
+echo "=========================================="
+
+###############################################################################
+# Locate Falco
+###############################################################################
+
+FALCO_PODS=$(kubectl get pods -n "$FALCO_NS" \
+-l app.kubernetes.io/name=falco \
+-o jsonpath='{range .items[*]}{.metadata.name}{" "}{end}' 2>/dev/null || true)
+
+if [ -z "$FALCO_PODS" ]; then
+
+    FALCO_PODS=$(kubectl get pods -n "$FALCO_NS" \
+    -l app=falco \
+    -o jsonpath='{range .items[*]}{.metadata.name}{" "}{end}' 2>/dev/null || true)
+
+fi
+
+if [ -z "$FALCO_PODS" ]; then
+
+    echo "No Falco pods found."
+
+    exit 1
+
+fi
+
+###############################################################################
 
 SIMULATED=5
-DETECTIONS=0
 
-echo "===== Runtime Detection Rate Experiment ====="
-echo "Start Time: $(date)"
+DETECTED=0
 
-FALCO_PODS=$(kubectl get pods -n "$FALCO_NS" -l app.kubernetes.io/name=falco -o jsonpath='{range .items[*]}{.metadata.name}{" "}{end}' 2>/dev/null || true)
-
-if [ -z "$FALCO_PODS" ]; then
-  FALCO_PODS=$(kubectl get pods -n "$FALCO_NS" -l app=falco -o jsonpath='{range .items[*]}{.metadata.name}{" "}{end}' 2>/dev/null || true)
-fi
-
-if [ -z "$FALCO_PODS" ]; then
-  echo "ERROR: No Falco pods found in namespace $FALCO_NS"
-  exit 1
-fi
-
-echo "Falco pods: $FALCO_PODS"
-echo ""
+###############################################################################
 
 run_attack() {
-  local attack_name="$1"
-  local pod_name="$2"
-  local command="$3"
-  local search_pattern="$4"
 
-  echo "Running: $attack_name"
+NAME="$1"
 
-  kubectl exec -n "$TARGET_NS" "$pod_name" -- sh -c "$command" >/dev/null 2>&1 || true
+POD="$2"
 
-  sleep 15
+COMMAND="$3"
 
-  local logs=""
-  for falco_pod in $FALCO_PODS; do
-    pod_logs=$(kubectl logs -n "$FALCO_NS" "$falco_pod" --since=60s 2>/dev/null || true)
-    logs="${logs}
-${pod_logs}"
-  done
+PATTERN="$4"
 
-  if echo "$logs" | grep -Eiq "$pod_name|$search_pattern"; then
-    DETECTIONS=$((DETECTIONS + 1))
-    echo "Detected: YES"
-  else
-    echo "Detected: NO"
-  fi
+echo "Running: $NAME"
 
-  echo "--------------------------------"
+START=$(date +%s)
+
+kubectl exec -n "$TARGET_NS" "$POD" -- sh -c "$COMMAND" >/dev/null 2>&1 || true
+
+sleep 15
+
+LOGS=""
+
+for FP in $FALCO_PODS
+do
+
+LOGS="${LOGS}
+$(kubectl logs -n "$FALCO_NS" "$FP" --since=60s 2>/dev/null)"
+
+done
+
+FOUND=0
+
+if echo "$LOGS" | grep -Eiq "$POD|$PATTERN"
+then
+
+FOUND=1
+
+DETECTED=$((DETECTED+1))
+
+echo "Detected"
+
+else
+
+echo "Not Detected"
+
+fi
+
+END=$(date +%s)
+
+ELAPSED=$((END-START))
+
+echo "$ELAPSED" >> "$RESULTS_DIR/mttd-values.txt"
+
+cat >> "$DETAILS" <<EOF
+Attack: $NAME
+Pod: $POD
+Detected: $FOUND
+Detection Time: ${ELAPSED}s
+----------------------------------------
+EOF
+
 }
 
-run_attack "Sensitive file access" "$TARGET_POD" "cat /etc/shadow" "shadow|sensitive|etc/shadow"
-run_attack "Write to root filesystem" "$TARGET_POD" "touch /root/hacked" "write below root|root filesystem|/root/hacked"
-run_attack "Privilege escalation attempt" "$TARGET_POD" "chmod +s /bin/sh" "setuid|chmod|privilege"
-run_attack "Network via /dev/tcp" "$TARGET_POD" "echo test > /dev/tcp/example.com/80" "outbound|connection|example.com|network"
-run_attack "Network via curl" "$ATTACKER_POD" "apk add --no-cache curl >/dev/null 2>&1 && curl -s http://example.com >/dev/null" "curl|outbound|connection|example.com|network"
+###############################################################################
 
-RDR=$(echo "scale=2; $DETECTIONS / $SIMULATED" | bc)
+run_attack "Sensitive File Access" "$TARGET_POD" "cat /etc/shadow" "shadow|etc/shadow"
 
-echo ""
-echo "===== Experiment Result ====="
-echo "Simulated Attacks: $SIMULATED"
-echo "Detected Attack Windows: $DETECTIONS"
-echo "RDR = $RDR"
-echo "End Time: $(date)"
+run_attack "Write Root Filesystem" "$TARGET_POD" "touch /root/hacked" "root filesystem|/root/hacked"
+
+run_attack "Privilege Escalation" "$TARGET_POD" "chmod +s /bin/sh" "setuid|chmod"
+
+run_attack "Outbound TCP" "$TARGET_POD" "echo hi >/dev/tcp/example.com/80" "connection|network"
+
+run_attack "Outbound Curl" "$ATTACKER_POD" "curl -s http://example.com >/dev/null" "curl|connection"
+
+###############################################################################
+
+RDR=$(awk -v d="$DETECTED" -v t="$SIMULATED" 'BEGIN{printf "%.2f",d/t}')
+
+###############################################################################
+# JSON
+###############################################################################
+
+cat > "$JSON_DIR/rdr.json" <<EOF
+{
+    "metric":"RDR",
+    "simulated_attacks":$SIMULATED,
+    "detected":$DETECTED,
+    "score":$RDR
+}
+EOF
+
+###############################################################################
+# TXT
+###############################################################################
+
+cat > "$TXT_DIR/rdr.txt" <<EOF
+==========================================
+Runtime Detection Rate
+==========================================
+
+Simulated Attacks : $SIMULATED
+Detected          : $DETECTED
+
+RDR               : $RDR
+
+Generated : $(date)
+
+EOF
+
+cat "$JSON_DIR/rdr.json"

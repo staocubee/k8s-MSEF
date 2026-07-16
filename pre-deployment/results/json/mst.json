@@ -1,0 +1,23 @@
+{
+  "metric":"MST",
+  "unit":"seconds",
+
+  "trivy":{
+    "image":2,
+    "manifest":2,
+    "terraform":2,
+    "secret":0,
+    "dependency":0,
+    "mean":1.20
+  },
+
+  "snyk":{
+    "image":19,
+    "manifest":20,
+    "terraform":11,
+    "secret":5,
+    "dependency":11,
+    "mean":13.20
+  }
+
+}

@@ -1,0 +1,24 @@
+==========================================
+Supply-Chain Policy Rejection Rate (SPR)
+==========================================
+
+Total Unsigned Images
+
+10
+
+Blocked
+
+10
+
+Allowed
+
+0
+
+SPR
+
+1.00
+
+Generated
+
+Thu Jul 16 15:58:23 WAT 2026
+

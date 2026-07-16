@@ -1,71 +1,163 @@
 #!/bin/bash
 
-echo "===== Network Policy Enforcement Rate Experiment ====="
+###############################################################################
+# Multi-Layer Security Evaluation Framework (MSEF)
+#
+# Metric:
+# Network Policy Enforcement Rate (NPER)
+#
+# NPER = Correct Network Policy Decisions / Total Tests
+#
+###############################################################################
 
-TEST_DIR="k8s/network-tests"
+set -euo pipefail
+shopt -s nullglob
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+###############################################################################
+
+TEST_DIR="${TEST_DIR:-k8s/network-test}"
+
+NAMESPACE="${NAMESPACE:-hardened}"
+
+RESULTS_DIR="${RESULTS_DIR:-$PROJECT_ROOT/results}"
+
+JSON_DIR="${RESULTS_DIR}/json"
+
+TXT_DIR="${RESULTS_DIR}/txt"
+
+LOG_DIR="${RESULTS_DIR}/logs"
+
+mkdir -p "$JSON_DIR" "$TXT_DIR" "$LOG_DIR"
+
+DETAILS="$LOG_DIR/nper-details.log"
+
+> "$DETAILS"
+
+###############################################################################
+
+echo "=========================================="
+
+echo "Network Policy Enforcement Rate (NPER)"
+
+echo "=========================================="
 
 TOTAL=0
+
 PASSED=0
+
 FAILED=0
 
-echo
+###############################################################################
 
-for file in "$TEST_DIR"/*.yaml
+for FILE in "$TEST_DIR"/*.yaml
 do
 
     TOTAL=$((TOTAL+1))
 
-    echo "Testing: $file"
+    NAME=$(basename "$FILE")
 
-    kubectl delete -f "$file" --ignore-not-found >/dev/null 2>&1
+    POD=$(basename "$FILE" .yaml)
 
-    kubectl apply -f "$file" >/dev/null
+    echo "Testing: $NAME"
 
-    POD=$(basename "$file" .yaml)
+    kubectl delete -f "$FILE" --ignore-not-found >/dev/null 2>&1 || true
+
+    kubectl apply -f "$FILE" >/dev/null
 
     kubectl wait \
-      --for=condition=Ready pod/$POD \
-      -n hardened \
-      --timeout=60s >/dev/null 2>&1
+        --for=condition=Ready \
+        pod/"$POD" \
+        -n "$NAMESPACE" \
+        --timeout=60s >/dev/null 2>&1 || true
 
     sleep 10
 
-    LOGS=$(kubectl logs $POD -n hardened 2>/dev/null)
+    LOGS=$(kubectl logs "$POD" -n "$NAMESPACE" 2>/dev/null || true)
 
-    if [[ "$file" == *allowed* ]]; then
+    if [[ "$NAME" == *allowed* ]]; then
 
         if echo "$LOGS" | grep -qi success; then
-            echo "Result: ALLOWED"
+
+            RESULT="ALLOWED"
+
             PASSED=$((PASSED+1))
+
         else
-            echo "Result: BLOCKED (Unexpected)"
+
+            RESULT="BLOCKED (Unexpected)"
+
             FAILED=$((FAILED+1))
+
         fi
 
     else
 
-        if echo "$LOGS" | grep -qi denied; then
-            echo "Result: BLOCKED"
+        if echo "$LOGS" | grep -Eiq "denied|timeout|connection refused"; then
+
+            RESULT="BLOCKED"
+
             PASSED=$((PASSED+1))
+
         else
-            echo "Result: ALLOWED (Unexpected)"
+
+            RESULT="ALLOWED (Unexpected)"
+
             FAILED=$((FAILED+1))
+
         fi
 
     fi
 
-    kubectl delete pod $POD -n hardened --ignore-not-found >/dev/null
+cat >> "$DETAILS" <<EOF
+Test: $NAME
+Result: $RESULT
+----------------------------------------
+EOF
 
-    echo "--------------------------------"
+    kubectl delete pod "$POD" \
+        -n "$NAMESPACE" \
+        --ignore-not-found >/dev/null 2>&1 || true
 
 done
 
-NPER=$(awk "BEGIN {printf \"%.2f\", $PASSED/$TOTAL}")
+###############################################################################
 
-echo
-echo "===== Experiment Result ====="
-echo "Total Network Tests: $TOTAL"
-echo "Correct Decisions: $PASSED"
-echo "Incorrect Decisions: $FAILED"
-echo "NPER = $NPER"
-echo "Timestamp: $(date)"
+NPER=$(awk -v p="$PASSED" -v t="$TOTAL" 'BEGIN{printf "%.2f",p/t}')
+
+###############################################################################
+# JSON
+###############################################################################
+
+cat > "$JSON_DIR/nper.json" <<EOF
+{
+    "metric":"NPER",
+    "total_tests":$TOTAL,
+    "correct_decisions":$PASSED,
+    "incorrect_decisions":$FAILED,
+    "score":$NPER
+}
+EOF
+
+###############################################################################
+# TXT
+###############################################################################
+
+cat > "$TXT_DIR/nper.txt" <<EOF
+==========================================
+Network Policy Enforcement Rate
+==========================================
+
+Total Tests         : $TOTAL
+Correct Decisions   : $PASSED
+Incorrect Decisions : $FAILED
+
+NPER                : $NPER
+
+Generated : $(date)
+
+EOF
+
+cat "$JSON_DIR/nper.json"
