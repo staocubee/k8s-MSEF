@@ -345,3 +345,15 @@ HTML Dashboard
 }
 22. License
 MIT
+
+terraform destroy
+
+gcloud storage rm -r gs://msef-2026-dev-tfstate
+
+gcloud artifacts repositories delete dev-k8s-msef \
+  --location=us-central1 \
+  --quiet
+
+gcloud iam workload-identity-pools delete dev-github-pool \
+  --location=global \
+  --quiet
