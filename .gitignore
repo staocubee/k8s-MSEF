@@ -26,4 +26,3 @@ nexus-data/
 .DS_Store
 .envcosign.key
 *.key
-terraform/bootstrap-state/envs/dev
