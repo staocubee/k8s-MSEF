@@ -1,11 +1,8 @@
-name: Terraform Foundation
+name: Bootstrap State
 
 on:
-
   workflow_dispatch:
-
     inputs:
-
       environment:
         description: Target environment
         required: true
@@ -32,10 +29,9 @@ on:
 
 permissions:
   contents: read
-  id-token: write
 
 concurrency:
-  group: foundation-${{ github.event.inputs.environment }}
+  group: bootstrap-state-${{ github.event.inputs.environment }}
   cancel-in-progress: false
 
 env:
@@ -44,27 +40,26 @@ env:
 
 jobs:
 
-  foundation:
+  bootstrap-state:
 
     runs-on: ubuntu-latest
 
     defaults:
       run:
         shell: bash
-        working-directory: terraform/foundation/envs/${{ github.event.inputs.environment }}
+        working-directory: terraform/bootstrap-state/envs/${{ github.event.inputs.environment }}
 
     steps:
 
       - uses: actions/checkout@v4
 
-      ##########################################################
-      # Workload Identity Authentication
-      ##########################################################
+      ######################################################
+      # Bootstrap authentication using SA Key
+      ######################################################
 
       - uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ vars.GCP_GITHUB_ACTIONS_SA }}
+          credentials_json: '${{ secrets.GCP_BOOTSTRAP_KEY }}'
 
       - uses: google-github-actions/setup-gcloud@v2
 
@@ -72,30 +67,23 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - name: Terraform fmt
+      - run: terraform fmt -recursive
         if: github.event.inputs.action == 'fmt'
-        run: terraform fmt -recursive
 
-      - name: Terraform init
+      - run: terraform init
         if: contains('init validate plan apply destroy-plan destroy', github.event.inputs.action)
-        run: terraform init
 
-      - name: Terraform validate
+      - run: terraform validate
         if: github.event.inputs.action == 'validate'
-        run: terraform validate
 
-      - name: Terraform plan
+      - run: terraform plan
         if: github.event.inputs.action == 'plan'
-        run: terraform plan
 
-      - name: Terraform apply
+      - run: terraform apply -auto-approve
         if: github.event.inputs.action == 'apply'
-        run: terraform apply -auto-approve
 
-      - name: Terraform destroy plan
+      - run: terraform plan -destroy
         if: github.event.inputs.action == 'destroy-plan'
-        run: terraform plan -destroy
 
-      - name: Terraform destroy
+      - run: terraform destroy -auto-approve
         if: github.event.inputs.action == 'destroy'
-        run: terraform destroy -auto-approve
