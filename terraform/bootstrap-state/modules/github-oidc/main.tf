@@ -2,6 +2,14 @@ data "google_project" "current" {
   project_id = var.project_id
 }
 
+resource "random_id" "pool" {
+  byte_length = 3
+
+  keepers = {
+    env = var.env
+  }
+}
+
 resource "google_service_account" "github_actions" {
   project      = var.project_id
   account_id   = "${var.env}-github-actions"
@@ -18,7 +26,7 @@ resource "google_iam_workload_identity_pool" "github_pool" {
 
 resource "google_iam_workload_identity_pool_provider" "github_provider" {
   project                            = var.project_id
-  workload_identity_pool_id          = google_iam_workload_identity_pool.github_pool.workload_identity_pool_id
+  workload_identity_pool_id = "${var.env}-github-pool-${lower(random_id.pool.hex)}"
   workload_identity_pool_provider_id = "${var.env}-github-provider"
   display_name                       = "${var.env} GitHub Actions Provider"
 

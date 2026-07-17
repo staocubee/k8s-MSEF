@@ -357,3 +357,5 @@ gcloud artifacts repositories delete dev-k8s-msef \
 gcloud iam workload-identity-pools delete dev-github-pool \
   --location=global \
   --quiet
+
+  TF_LOG=DEBUG terraform apply
