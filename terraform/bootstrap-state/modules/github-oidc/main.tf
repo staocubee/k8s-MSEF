@@ -11,7 +11,7 @@ resource "google_service_account" "github_actions" {
 
 resource "google_iam_workload_identity_pool" "github_pool" {
   project                   = var.project_id
-  workload_identity_pool_id = "${var.env}-github-pool"
+  workload_identity_pool_id = "${var.env}-${random_id.pool.hex}"
   display_name              = "${var.env} GitHub Actions Pool"
   description               = "Workload Identity Pool for GitHub Actions OIDC"
 }
