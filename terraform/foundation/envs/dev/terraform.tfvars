@@ -1,5 +1,5 @@
 project_id             = "msef-2026"
-region                 = "us-central1"
+region                 = "us-east5"
 github_owner           = "staocubee"
 env                    = "dev"
 github_repo            = "k8s-MSEF"
