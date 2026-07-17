@@ -20,6 +20,7 @@ on:
         type: choice
         options:
           - fmt
+          - init
           - validate
           - plan
           - apply
@@ -80,7 +81,7 @@ jobs:
         run: terraform fmt -recursive -check
 
       - name: Terraform init
-        if: github.event.inputs.action != 'fmt'
+        if: github.event.inputs.action == 'init'
         run: terraform init
 
       - name: Terraform validate
