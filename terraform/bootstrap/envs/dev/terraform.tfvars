@@ -1,5 +1,5 @@
 project_id = "msef-2026"
-region     = "us-central1"
+region     = "us-east1"
 env        = "dev"
 
 cluster_name = "dev-msef-gke"
