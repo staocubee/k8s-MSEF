@@ -13,8 +13,8 @@ spec:
     targetRevision: 3.3.7
     helm:
       values: |
-        crds:
-          enabled: true
+        installCRDs: true
+
         admissionController:
           replicas: 1
 
@@ -36,11 +36,6 @@ spec:
             - cert-manager
             - falco
 
-        features:
-          admissionReports:
-            enabled: true
-          policyReports:
-            enabled: true
   destination:
     server: https://kubernetes.default.svc
     namespace: kyverno
