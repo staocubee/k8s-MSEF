@@ -89,3 +89,15 @@ jobs:
           name: security-orchestrator-${{ github.event.inputs.environment }}
           path: |
             results/
+
+  trigger-build-sign-deploy:
+    needs: generate-reports
+    if: github.event.inputs.environment == 'dev' && success()
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          gh workflow run build-sign-deploy.yaml --ref main \
+            -f environment=dev \
+            -f source_run_id=${{ github.run_id }}
+        env:
+          GH_TOKEN: ${{ github.token }}

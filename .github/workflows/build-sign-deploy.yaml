@@ -8,14 +8,17 @@ on:
         required: true
         default: "dev"
         type: choice
-        options:
-          - dev
-          - stg
-          - prod
+        options: [dev, stg, prod]
+      source_run_id:
+        description: "Run ID of the security-orchestrator run to pull results/index.html from"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read
   id-token: write
+  actions: read   # required to download artifacts from another run
 
 env:
   GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
@@ -27,66 +30,67 @@ jobs:
   build-sign-deploy:
     name: Build, Sign, Deploy Report
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}-apply
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
+      - name: Download orchestrator results
+        if: github.event.inputs.source_run_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: security-orchestrator-${{ github.event.inputs.environment }}
+          run-id: ${{ github.event.inputs.source_run_id }}
+          github-token: ${{ github.token }}
+          path: results/
+
+      - name: Verify results present
+        run: |
+          if [ ! -f results/index.html ]; then
+            echo "::warning::results/index.html not found — was source_run_id provided? Continuing with a manual/standalone run."
+          fi
+
+      - uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
 
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
+      - uses: google-github-actions/setup-gcloud@v2
 
       - name: Install GKE auth plugin
-        if: github.event.inputs.action != 'fmt'
         run: |
           gcloud components install gke-gcloud-auth-plugin --quiet || true
           echo "USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> "$GITHUB_ENV"
 
       - name: Reset kubeconfig
-        if: github.event.inputs.action != 'fmt'
-        run: |
-          rm -rf "$HOME/.kube"
-          mkdir -p "$HOME/.kube"
+        run: rm -rf "$HOME/.kube" && mkdir -p "$HOME/.kube"
 
       - name: Get GKE credentials
-        if: github.event.inputs.action != 'fmt'
-        continue-on-error: ${{ github.event.inputs.action == 'destroy' || github.event.inputs.action == 'destroy-plan' }}
         run: |
           gcloud container clusters get-credentials "${{ github.event.inputs.environment }}-msef-gke" \
             --region "$GCP_REGION" \
             --project "$GCP_PROJECT_ID"
 
       - name: Verify cluster access
-        if: github.event.inputs.action != 'fmt' && github.event.inputs.action != 'destroy' && github.event.inputs.action != 'destroy-plan'
         run: |
           kubectl config current-context
           kubectl get nodes
           kubectl get ns
 
-      - name: Docker login
-        uses: docker/login-action@v3
+      - uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Set image tag
-        run: |
-          echo "IMAGE=${DOCKERHUB_USERNAME}/${REPORT_IMAGE_NAME}:${{ github.sha }}" >> "$GITHUB_ENV"
+        run: echo "IMAGE=${DOCKERHUB_USERNAME}/${REPORT_IMAGE_NAME}:${{ github.sha }}" >> "$GITHUB_ENV"
 
       - name: Build report image
-        run: |
-          docker build -f Dockerfile.report -t "$IMAGE" .
+        run: docker build -f Dockerfile.report -t "$IMAGE" .
 
-      - name: Push report image
-        run: docker push "$IMAGE"
+      - run: docker push "$IMAGE"
 
-      - name: Install Cosign
-        uses: sigstore/cosign-installer@v3
+      - uses: sigstore/cosign-installer@v3
 
       - name: Write Cosign key
         run: |
@@ -96,13 +100,11 @@ jobs:
       - name: Sign image
         env:
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
-        run: |
-          cosign sign --yes --key cosign.key "$IMAGE"
+        run: cosign sign --yes --key cosign.key "$IMAGE"
 
       - name: Update report deployment image
         run: |
           sed -i "s|image: .*k8s-security-report.*|image: ${IMAGE}|g" k8s/report-server/report-deployment.yaml
-          cat k8s/report-server/report-deployment.yaml
 
       - name: Deploy report server
         run: |
@@ -110,8 +112,7 @@ jobs:
           kubectl rollout status deployment/security-report-server -n hardened --timeout=180s
           kubectl get svc security-report-service -n hardened
 
-      - name: Upload report HTML
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: report-html-${{ github.event.inputs.environment }}
           path: results/index.html

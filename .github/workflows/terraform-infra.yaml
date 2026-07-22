@@ -8,27 +8,18 @@ on:
         required: true
         default: "dev"
         type: choice
-        options:
-          - dev
-          - stg
-          - prod
-
+        options: [dev, stg, prod]
       action:
         description: "Terraform action"
         required: true
         default: "plan"
         type: choice
-        options:
-          - fmt
-          - validate
-          - plan
-          - apply
-          - destroy-plan
-          - destroy
+        options: [fmt, validate, plan, apply, destroy-plan, destroy]
 
 permissions:
   contents: read
   id-token: write
+  actions: write
 
 concurrency:
   group: terraform-infra-${{ github.event.inputs.environment }}
@@ -39,73 +30,102 @@ env:
   GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
   GCP_REGION: ${{ vars.GCP_REGION }}
   TF_IN_AUTOMATION: "true"
-  
 
 jobs:
-  terraform-infra:
-    name: Terraform Infra - ${{ github.event.inputs.environment }} - ${{ github.event.inputs.action }}
-    runs-on: ubuntu-latest
 
+  ##########################################################
+  # Everything except apply
+  ##########################################################
+
+  infra:
+    if: github.event.inputs.action != 'apply'
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
         working-directory: terraform/infra/envs/${{ github.event.inputs.environment }}
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
           export_environment_variables: true
-
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
-
-      - name: Debug Identity Info
-        run: |
-          gcloud config list
-          gcloud auth list
-      
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+      - uses: google-github-actions/setup-gcloud@v2
+      - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - name: Show selected environment
-        run: |
-          echo "Environment: ${{ github.event.inputs.environment }}"
-          echo "Action: ${{ github.event.inputs.action }}"
-          echo "Project: $GCP_PROJECT_ID"
-          echo "Region: $GCP_REGION"
-
-      - name: Terraform fmt
+      - run: terraform fmt -recursive -check
         if: github.event.inputs.action == 'fmt'
-        run: terraform fmt -recursive -check
-
-      - name: Terraform init
-        if: github.event.inputs.action != 'fmt'
-        run: terraform init
-
-      - name: Terraform validate
+      - run: terraform init
+        if: contains('validate plan destroy-plan destroy', github.event.inputs.action)
+      - run: terraform validate
         if: github.event.inputs.action == 'validate'
-        run: terraform validate
-
-      - name: Terraform plan
+      - run: terraform plan -input=false
         if: github.event.inputs.action == 'plan'
-        run: terraform plan -input=false
-
-      - name: Terraform apply
-        if: github.event.inputs.action == 'apply'
-        run: terraform apply -auto-approve -input=false
-
-      - name: Terraform destroy plan
+      - run: terraform plan -destroy -input=false
         if: github.event.inputs.action == 'destroy-plan'
-        run: terraform plan -destroy -input=false
-
-      - name: Terraform destroy
+      - run: terraform destroy -auto-approve -input=false
         if: github.event.inputs.action == 'destroy'
-        run: terraform destroy -auto-approve -input=false
+
+  ##########################################################
+  # Apply — plan first, then gated apply
+  ##########################################################
+
+  plan-before-apply:
+    if: github.event.inputs.action == 'apply'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform/infra/envs/${{ github.event.inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+          export_environment_variables: true
+      - uses: google-github-actions/setup-gcloud@v2
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      - run: terraform init
+      - run: terraform plan -input=false
+
+  apply:
+    needs: plan-before-apply
+    if: github.event.inputs.action == 'apply'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}-apply
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform/infra/envs/${{ github.event.inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+          export_environment_variables: true
+      - uses: google-github-actions/setup-gcloud@v2
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      - run: terraform init
+      - run: terraform apply -auto-approve -input=false
+
+  ##########################################################
+  # Chain — dev only, fires build-sign-deploy after dev apply
+  ##########################################################
+
+  trigger-build-sign-deploy:
+    needs: apply
+    if: github.event.inputs.environment == 'dev' && success()
+    runs-on: ubuntu-latest
+    steps:
+      - run: gh workflow run terraform-bootstrap.yaml --ref main -f environment=dev
+        env:
+          GH_TOKEN: ${{ github.token }}

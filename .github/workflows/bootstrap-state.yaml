@@ -1,6 +1,8 @@
 name: Bootstrap State
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       environment:
@@ -8,30 +10,21 @@ on:
         required: true
         default: dev
         type: choice
-        options:
-          - dev
-          - stg
-          - prod
-
+        options: [dev, stg, prod]
       action:
         description: Terraform action
         required: true
         default: plan
         type: choice
-        options:
-          - fmt
-          - init
-          - validate
-          - plan
-          - apply
-          - destroy-plan
-          - destroy
+        options: [fmt, init, validate, plan, apply, destroy-plan, destroy]
 
 permissions:
   contents: read
+  id-token: write
+  actions: write
 
 concurrency:
-  group: bootstrap-state-${{ github.event.inputs.environment }}
+  group: bootstrap-state-${{ github.event.inputs.environment || 'push' }}
   cancel-in-progress: false
 
 env:
@@ -40,22 +33,19 @@ env:
 
 jobs:
 
-  bootstrap-state:
+  ##########################################################
+  # Manual runs — any environment, any action (unchanged)
+  ##########################################################
 
+  manual:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-
     defaults:
       run:
         shell: bash
         working-directory: terraform/bootstrap-state/envs/${{ github.event.inputs.environment }}
-
     steps:
-
       - uses: actions/checkout@v4
-
-      ######################################################
-      # Bootstrap authentication using SA Key
-      ######################################################
 
       - uses: google-github-actions/auth@v2
         with:
@@ -88,3 +78,118 @@ jobs:
 
       - run: terraform destroy -auto-approve
         if: github.event.inputs.action == 'destroy'
+
+  ##########################################################
+  # Push to main — plan all three environments (ungated)
+  ##########################################################
+
+  plan:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [dev, stg, prod]
+      fail-fast: false
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform/bootstrap-state/envs/${{ matrix.environment }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - run: terraform init
+      - run: terraform plan
+
+  ##########################################################
+  # Apply — gated per environment, dev/stg/prod independent
+  ##########################################################
+
+  apply-dev:
+    needs: plan
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: dev-apply
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform/bootstrap-state/envs/dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      - run: terraform init
+      - run: terraform apply -auto-approve
+
+  apply-stg:
+    needs: plan
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: stg-apply
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform/bootstrap-state/envs/stg
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      - run: terraform init
+      - run: terraform apply -auto-approve
+
+  apply-prod:
+    needs: plan
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: prod-apply
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform/bootstrap-state/envs/prod
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      - run: terraform init
+      - run: terraform apply -auto-approve
+
+  ##########################################################
+  # Chain — dev only, fires foundation after dev apply
+  ##########################################################
+
+  trigger-foundation:
+    needs: apply-dev
+    if: github.event_name == 'push' && success()
+    runs-on: ubuntu-latest
+    steps:
+      - run: gh workflow run terraform-foundation.yaml --ref main -f environment=dev -f action=apply
+        env:
+          GH_TOKEN: ${{ github.token }}
