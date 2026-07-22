@@ -13,15 +13,6 @@ variable "region" {
   type        = string
 }
 
-variable "node_locations" {
-  type = list(string)
-
-  default = [
-    "us-central1-a",
-    "us-central1-b"
-  ]
-}
-
 variable "cluster_name" {
   description = "GKE cluster name."
   type        = string
@@ -50,13 +41,13 @@ variable "services_range_name" {
 variable "node_machine_type" {
   description = "GKE node machine type."
   type        = string
-  default     = "e2-standard-4"
+  default     = "e2-standard-2"
 }
 
 variable "node_count" {
   description = "Initial node count."
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "min_node_count" {
@@ -68,7 +59,7 @@ variable "min_node_count" {
 variable "max_node_count" {
   description = "Maximum node count for autoscaling."
   type        = number
-  default     = 3
+  default     = 2
 }
 
 variable "disk_size_gb" {
