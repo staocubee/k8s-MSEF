@@ -7,3 +7,8 @@ resources:
   - secure-app-deployment.yaml
   - secure-app-service.yaml
   - network-policy.yaml
+  - namespace-default-deny.yaml
+  - allow-dns.yaml
+  - allow-web.yaml
+  - allow-monitoring.yaml
+  - allow-falco.yaml

@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - baseline-app.yaml
   - hardened-app.yaml
+  - report-server.yaml
