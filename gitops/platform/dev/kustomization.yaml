@@ -10,4 +10,3 @@ resources:
   - falco-side-kick/application.yaml
   - security-policy.yaml
   - external-secrets/application.yaml
-  - network-policies
