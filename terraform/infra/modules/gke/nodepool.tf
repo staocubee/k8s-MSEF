@@ -3,6 +3,7 @@ resource "google_container_node_pool" "primary" {
   name     = "${var.env}-msef-node-pool"
   cluster  = google_container_cluster.cluster.name
   location = var.region
+  node_locations = var.node_locations
 
   initial_node_count = var.node_count
 

@@ -13,6 +13,15 @@ variable "region" {
   type        = string
 }
 
+variable "node_locations" {
+  type = list(string)
+
+  default = [
+    "us-central1-a",
+    "us-central1-b"
+  ]
+}
+
 variable "cluster_name" {
   description = "GKE cluster name."
   type        = string
@@ -65,5 +74,5 @@ variable "max_node_count" {
 variable "disk_size_gb" {
   description = "Node disk size."
   type        = number
-  default     = 80
+  default     = 50
 }
