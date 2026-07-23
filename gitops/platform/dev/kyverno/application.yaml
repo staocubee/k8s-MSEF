@@ -4,7 +4,7 @@ metadata:
   name: dev-kyverno
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   project: default
 
@@ -12,9 +12,10 @@ spec:
     repoURL: https://kyverno.github.io/kyverno
     chart: kyverno
     targetRevision: 3.3.7
+
     helm:
       values: |
-        installCRDs: false
+        installCRDs: true
 
         admissionController:
           replicas: 1
@@ -37,6 +38,13 @@ spec:
             - cert-manager
             - falco
 
+        features:
+          admissionReports:
+            enabled: true
+
+          policyReports:
+            enabled: true
+
   destination:
     server: https://kubernetes.default.svc
     namespace: kyverno
@@ -48,3 +56,4 @@ spec:
 
     syncOptions:
       - CreateNamespace=true
+      - ServerSideApply=true
