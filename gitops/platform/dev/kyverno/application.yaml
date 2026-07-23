@@ -29,6 +29,7 @@ spec:
             - argocd
             - cert-manager
             - falco
+            - gatekeeper-system
         features:
           admissionReports:
             enabled: true
@@ -44,3 +45,5 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+      - SkipDryRunOnMissingResource=true
+      - RespectIgnoreDifferences=true
