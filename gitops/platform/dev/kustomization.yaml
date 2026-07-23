@@ -13,7 +13,8 @@ resources:
   - external-secrets/application.yaml
   - eck/application.yaml
   - elasticsearch/application.yaml
-  - kafka/application.yaml
+  - kafka/kafka-resources/application.yaml
+  - kafka/strimzi-kafka/application.yaml
   - istio/application.yaml
   - sealedsecret/application.yaml
   - monitoring/application.yaml
