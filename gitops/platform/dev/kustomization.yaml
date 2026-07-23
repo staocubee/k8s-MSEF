@@ -15,7 +15,9 @@ resources:
   - elasticsearch/application.yaml
   - kafka/kafka-resources/application.yaml
   - kafka/strimzi-kafka/application.yaml
-  - istio/application.yaml
+  - istio/istiod/application.yaml
+  - istio/istio-base/application.yaml
+  - istio/istio-ingress/application.yaml
   - sealedsecret/application.yaml
   - monitoring/application.yaml
   - gateway/application.yaml
