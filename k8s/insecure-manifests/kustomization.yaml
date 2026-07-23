@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - insecure-privileged-pods.yaml
+  - insecure-prirunasroot-pods.yaml
+  - insecure-allwritablerootfilesystem-pod.yaml
+  - insecure-allsys_adm-pod.yaml
+  - insecure-allrolewithsecretroletodefaultsa-pod.yaml
+  - insecure-allrolewithsecretaccess-pod.yaml
+  - insecure-allpublicuntrustedimage-pod.yaml
+  - insecure-allprivesa-pod.yaml
+  - insecure-allnosecuritycontextatall-pod.yaml
+  - insecure-allnoresourcelimit-pod.yaml
+  - insecure-alllatesttagusage-pod.yaml
+  - insecure-allimagepullpolicyalways-pod.yaml
+  - insecure-allhostpid-pod.yaml
+  - insecure-allhostpathmount-pods.yaml
+  - insecure-allhostetenab-pods.yaml
+  - insecure-allhostdropnocap.yaml
+  - insecure-alldefaultsa-pod.yaml
+  - insecure-alldangeroussysctl-pod.yaml
+  - insecure-allclusterrolewildcardaccess-pod.yaml
+  - insecure-allclusterroletodefaultsa-pod.yaml
