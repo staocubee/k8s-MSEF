@@ -4,7 +4,7 @@ metadata:
   name: monitoring
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/sync-wave: "5"
 spec:
   project: default
   source:
@@ -14,7 +14,7 @@ spec:
     helm:
       values: |
         crds:
-          enabled: false
+          enabled: true # Keep enabled so Prometheus Operator CRDs are managed correctly
 
         kubeEtcd:
           enabled: false
@@ -26,12 +26,14 @@ spec:
           enabled: false
         kubeDns:
           enabled: false
+        coreDns:
+          enabled: false
 
         grafana:
           grafana.ini:
             server:
               root_url: http://grafana.34.170.137.139.nip.io
-              serve_from_sub_path: true
+              serve_from_sub_path: false # Disabled since it's on its own subdomain
 
         prometheus-node-exporter:
           tolerations:
@@ -41,9 +43,6 @@ spec:
               key: kubernetes.io/arch
               operator: Equal
               value: amd64
-
-        coreDns:
-          enabled: false
   ignoreDifferences:
     - group: apps
       kind: DaemonSet
@@ -60,4 +59,5 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - ServerSideApply=true
       - SkipDryRunOnMissingResource=true
