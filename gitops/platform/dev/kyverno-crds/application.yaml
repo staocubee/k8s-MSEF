@@ -1,41 +1,32 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: dev-kyverno
+  name: dev-kyverno-crds
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   project: default
 
   source:
     repoURL: https://kyverno.github.io/kyverno
     chart: kyverno
-    targetRevision: 3.3.7
+    targetRevision: 3.8.2
     helm:
       values: |
-        installCRDs: false
+        installCRDs: true
 
         admissionController:
-          replicas: 1
+          enabled: false
 
         backgroundController:
-          replicas: 1
+          enabled: false
 
         cleanupController:
-          replicas: 1
+          enabled: false
 
         reportsController:
-          replicas: 1
-
-        config:
-          resourceFiltersExcludeNamespaces:
-            - kube-system
-            - kyverno
-            - argocd
-            - gatekeeper-system
-            - cert-manager
-            - falco
+          enabled: false
 
   destination:
     server: https://kubernetes.default.svc
