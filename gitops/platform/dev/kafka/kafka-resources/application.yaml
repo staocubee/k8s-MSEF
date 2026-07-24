@@ -8,9 +8,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/staocubee/platform-services.git
+    repoURL: https://github.com/staocubee/k8s-MSEF.git
     targetRevision: HEAD
-    path: manifests/platform/kafka
+    path: gitops/platform/dev/kafka
   destination:
     server: https://kubernetes.default.svc
     namespace: kafka

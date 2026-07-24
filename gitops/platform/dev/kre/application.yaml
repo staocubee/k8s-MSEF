@@ -1,23 +1,28 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
+
 metadata:
-  name: elasticsearch
+  name: kre-handler
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "4"
+    argocd.argoproj.io/sync-wave: "8"
+
 spec:
   project: default
+
   source:
     repoURL: https://github.com/staocubee/k8s-MSEF.git
     targetRevision: HEAD
-    path: gitops/platform/dev/elasticsearch
+    path: gitops/platform/dev/kre
+
   destination:
     server: https://kubernetes.default.svc
-    namespace: elastic
+    namespace: hardened
+
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+
     syncOptions:
       - CreateNamespace=true
-      - SkipDryRunOnMissingResource=true

@@ -8,9 +8,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/staocubee/platform-services.git
-    path: manifests/gateway
+    repoURL: https://github.com/staocubee/k8s-MSEF.git
     targetRevision: HEAD
+    path: gitops/platform/dev/gateway
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system

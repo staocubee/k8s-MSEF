@@ -20,3 +20,4 @@ resources:
   - sealedsecret/application.yaml
   - monitoring/application.yaml
   - gateway/application.yaml
+  - kre/application.yaml

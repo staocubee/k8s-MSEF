@@ -32,7 +32,7 @@ spec:
         grafana:
           grafana.ini:
             server:
-              root_url: http://grafana.34.170.137.139.nip.io
+              root_url: http://grafana.<CLUSTER_DOMAIN>.nip.io
               serve_from_sub_path: false # Disabled since it's on its own subdomain
 
         prometheus-node-exporter:

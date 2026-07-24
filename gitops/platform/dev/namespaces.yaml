@@ -29,3 +29,21 @@ metadata:
   labels:
     environment: dev
     platform-component: falco
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: baseline
+  labels:
+    environment: dev
+    workload-tier: baseline
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hardened
+  labels:
+    environment: dev
+    workload-tier: hardened

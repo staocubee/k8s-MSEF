@@ -15,7 +15,7 @@ spec:
       values: |
         service:
           type: LoadBalancer
-          loadBalancerIP: 34.170.137.139
+          loadBalancerIP: 
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-ingress
