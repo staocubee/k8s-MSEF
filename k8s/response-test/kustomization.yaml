@@ -2,7 +2,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - network-attack.yaml
-  - write-root.yaml
-  - runtime-attacker.yaml
-  - privileged.yaml
+  - trigger-outbound-connection.yaml
+  - trigger-write-root.yaml
+  - trigger-sensitive-files.yaml
+  - trigger-terminal-shell.yaml
+  - trigger-outbound-curl.yaml

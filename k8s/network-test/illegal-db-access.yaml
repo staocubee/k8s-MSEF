@@ -3,13 +3,31 @@ kind: Pod
 metadata:
   name: illegal-db-access
   namespace: hardened
+
 spec:
   restartPolicy: Never
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    seccompProfile:
+      type: RuntimeDefault
+
   containers:
     - name: curl
       image: curlimages/curl:8.8.0
+
       command:
+        - sleep
+        - infinity
         - sh
         - -c
         - |
           nc -zv db-service.database.svc.cluster.local 5432
+
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL

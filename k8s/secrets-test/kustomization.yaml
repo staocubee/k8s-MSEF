@@ -6,3 +6,7 @@ resources:
   - missing-secret.yaml
   - plaintext-configmap.yaml
   - valid-external-secret.yaml
+  - external-secret-with-clustersecretstore.yaml
+  - sealed-secret.yaml
+  - secret-volume-without-policy.yaml
+  - secret-env-variable.yaml

@@ -1,8 +1,10 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: write-root
+  name: trigger-sensitive-file
   namespace: hardened
+  labels:
+    app: trigger-sensitive-file
 spec:
   restartPolicy: Never
   containers:
@@ -12,7 +14,7 @@ spec:
         - sh
         - -c
         - |
-          sleep 10
-          touch /root/hacked
-          echo hacked >/root/test.txt
+          sleep 5
+          # Triggers Falco rule: "Read sensitive file untrusted" / "Sensitive File Access"
+          cat /etc/shadow
           sleep 300

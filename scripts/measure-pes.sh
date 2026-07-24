@@ -1,26 +1,61 @@
 #!/usr/bin/env bash
 
-#############################################################
+###############################################################################
+# Multi-Layer Security Evaluation Framework (MSEF)
+#
+# Metric:
 # Prevention Effectiveness Score (PES)
-#############################################################
+#
+# PES = (MBR + NPER + SMER) / 3
+#
+###############################################################################
 
 set -euo pipefail
-shopt -s nullglob
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+source "$SCRIPT_DIR/lib/common.sh"
+
 RESULTS_DIR="${RESULTS_DIR:-$PROJECT_ROOT/results}"
-JSON_DIR="${RESULTS_DIR}/json"
-TXT_DIR="${RESULTS_DIR}/txt"
+JSON_DIR="$RESULTS_DIR/json"
+TXT_DIR="$RESULTS_DIR/txt"
 
 mkdir -p "$JSON_DIR" "$TXT_DIR"
 
-MBR=$(jq '.trivy.score' "$JSON_DIR/mbr.json")
-NPER=$(jq '.score' "$JSON_DIR/nper.json")
-SMER=$(jq '.score' "$JSON_DIR/smer.json")
+###############################################################################
+# Verify required metric files exist
+###############################################################################
 
-PES=$(awk -v a="$MBR" -v b="$NPER" -v c="$SMER" \
-'BEGIN{printf "%.2f",(a+b+c)/3}')
+for file in mbr.json nper.json smer.json
+do
+    if [[ ! -f "$JSON_DIR/$file" ]]; then
+        echo "Missing required file:"
+        echo "  $JSON_DIR/$file"
+        exit 1
+    fi
+done
+
+###############################################################################
+# Load metric values
+###############################################################################
+
+MBR=$(jq -r '.score' "$JSON_DIR/mbr.json")
+NPER=$(jq -r '.score' "$JSON_DIR/nper.json")
+SMER=$(jq -r '.score' "$JSON_DIR/smer.json")
+
+###############################################################################
+# Calculate PES
+###############################################################################
+
+PES=$(awk \
+    -v a="$MBR" \
+    -v b="$NPER" \
+    -v c="$SMER" \
+    'BEGIN { printf "%.2f", (a+b+c)/3 }')
+
+###############################################################################
+# JSON
+###############################################################################
 
 cat > "$JSON_DIR/pes.json" <<EOF
 {
@@ -32,18 +67,25 @@ cat > "$JSON_DIR/pes.json" <<EOF
 }
 EOF
 
+###############################################################################
+# TXT
+###############################################################################
+
 cat > "$TXT_DIR/pes.txt" <<EOF
 ==========================================
-Prevention Effectiveness Score
+Prevention Effectiveness Score (PES)
 ==========================================
 
-Manifest Blocking Rate      : $MBR
-Network Policy Enforcement  : $NPER
-Secrets Management          : $SMER
+Manifest Blocking Rate        : $MBR
+Network Policy Enforcement    : $NPER
+Secrets Management            : $SMER
 
 ------------------------------------------
 
-PES                         : $PES
+PES                           : $PES
+
+Generated: $(date)
+
 EOF
 
-cat "$TXT_DIR/pes.txt"
+cat "$JSON_DIR/pes.json"

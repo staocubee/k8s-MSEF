@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: benign-volume-reader
+  namespace: baseline
+  labels:
+    app: benign-volume-reader
+spec:
+  restartPolicy: Never
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: volume-reader
+    image: busybox:1.36
+    command: ["sh", "-c", "ls -la /mnt/data && sleep 5"]
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop: ["ALL"]
+    volumeMounts:
+    - name: read-only-storage
+      mountPath: /mnt/data
+      readOnly: true
+  volumes:
+  - name: read-only-storage
+    emptyDir: {}

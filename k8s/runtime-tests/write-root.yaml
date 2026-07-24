@@ -1,0 +1,46 @@
+# Evaluation Focus: Detects file writes to immutable or root filesystems (/, /bin, /sbin, /usr), violating read-only root filesystem policies (readOnlyRootFilesystem: false).
+apiVersion: v1
+kind: Pod
+metadata:
+  name: write-root-test
+  namespace: hardened
+  annotations:
+    msef.io/falco-rule: Detects file writes to root filesystem
+  labels:
+    app: write-root-test
+    environment: hardened
+spec:
+  serviceAccountName: hardened-app-sa
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: write-root-trigger
+    image: busybox:1.36
+    # Attempts to write binary/executable drops into root directory paths
+    command: ["/bin/sh", "-c"]
+    args:
+      - |
+        echo "[+] Attempting file creation in root directory..."
+        echo "malicious_payload" > /root_write_test.tmp
+        echo "payload" > /bin/pwned 2>/dev/null || true
+        sleep 3600
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+      runAsUser: 101
+      readOnlyRootFilesystem: false
+      seccompProfile:
+        type: RuntimeDefault
+      capabilities:
+        drop:
+        - ALL
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        cpu: "100m"
+        memory: "128Mi"

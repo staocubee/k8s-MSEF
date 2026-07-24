@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: digest-mismatch-test-nginx
+  namespace: hardened
+  labels:
+    app: digest-mismatch-test-nginx
+    environment: hardened
+spec:
+  serviceAccountName: hardened-app-sa
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: digest-mismatch-test
+    # References tag v1.0 but explicitly pins a deliberately altered or tampered digest
+    image: staocube/digest-mismatch-test:1.0@sha256:0000000000000000000000000000000000000000000000000000000000000000
+    ports:
+    - containerPort: 80
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+      runAsUser: 101
+      seccompProfile:
+        type: RuntimeDefault
+      capabilities:
+        drop:
+        - ALL
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        cpu: "100m"
+        memory: "128Mi"

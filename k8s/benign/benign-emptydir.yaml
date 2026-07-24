@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: benign-emptydir
+  namespace: baseline
+  labels:
+    app: benign-emptydir
+spec:
+  restartPolicy: Never
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: temp-writer
+    image: busybox:1.36
+    command: ["sh", "-c", "echo 'scratch data' > /tmp/scratch.txt && cat /tmp/scratch.txt"]
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop: ["ALL"]
+    volumeMounts:
+    - name: scratch-space
+      mountPath: /tmp
+  volumes:
+  - name: scratch-space
+    emptyDir: {}

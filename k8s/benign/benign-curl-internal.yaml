@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: benign-curl-internal
+  namespace: baseline
+  labels:
+    app: benign-curl-internal
+spec:
+  restartPolicy: Never
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: curl
+    image: curlimages/curl:8.7.1
+    command: ["sh", "-c", "curl -s -f http://kubernetes.default.svc.cluster.local/healthz || exit 0"]
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop: ["ALL"]

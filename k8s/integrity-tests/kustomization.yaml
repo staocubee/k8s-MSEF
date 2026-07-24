@@ -5,3 +5,6 @@ resources:
   - staocube-signed-test.yaml
   - nginx-unsigned-test.yaml
   - default-unsigned-image.yaml
+  - digest-mismatch.yaml
+  - wrong-attestor.yaml
+  - wrong-signature.yaml

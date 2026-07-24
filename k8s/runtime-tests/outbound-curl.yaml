@@ -1,0 +1,45 @@
+# Evaluation Focus: Detects unexpected interactive or command-line HTTP/HTTPS egress tooling (curl, wget) originating from inside a container runtime.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: outbound-curl-test
+  namespace: hardened
+  annotations:
+    msef.io/falco-rule: Detects outbound curl execution
+  labels:
+    app: outbound-curl-test
+    environment: hardened
+spec:
+  serviceAccountName: hardened-app-sa
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: outbound-curl-trigger
+    image: curlimages/curl:8.7.1
+    # Executes an outbound HTTP request to an external IP/endpoint
+    args:
+      - /bin/sh
+      - -c
+      - |
+        echo "[+] Executing outbound curl execution..."
+        curl -s -m 5 https://example.com || true
+        sleep 3600
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+      runAsUser: 1000
+      seccompProfile:
+        type: RuntimeDefault
+      capabilities:
+        drop:
+        - ALL
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        cpu: "100m"
+        memory: "128Mi"

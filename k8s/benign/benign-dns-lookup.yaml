@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: benign-dns-lookup
+  namespace: baseline
+  labels:
+    app: benign-dns-lookup
+spec:
+  restartPolicy: Never
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: dns-lookup
+    image: busybox:1.36
+    command: ["sh", "-c", "nslookup kubernetes.default.svc.cluster.local && sleep 5"]
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop: ["ALL"]

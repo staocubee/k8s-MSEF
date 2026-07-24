@@ -1,60 +1,67 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ###############################################################################
 # Multi-Layer Security Evaluation Framework (MSEF)
 #
-# Metric:
 # Mean Time To Detect (MTTD)
 #
-# MTTD = Average Detection Time (seconds)
-#
+# MTTD = Average Detection Time for Detected Runtime Attacks
 ###############################################################################
 
 set -euo pipefail
-shopt -s nullglob
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-###############################################################################
-# Configuration
+source "$SCRIPT_DIR/lib/common.sh"
+
 ###############################################################################
 
 RESULTS_DIR="${RESULTS_DIR:-$PROJECT_ROOT/results}"
 
-JSON_DIR="${RESULTS_DIR}/json"
+JSON_DIR="$RESULTS_DIR/json"
+TXT_DIR="$RESULTS_DIR/txt"
 
-TXT_DIR="${RESULTS_DIR}/txt"
+mkdir -p \
+    "$JSON_DIR" \
+    "$TXT_DIR"
 
-mkdir -p "$JSON_DIR" "$TXT_DIR"
-
-VALUES_FILE="${RESULTS_DIR}/mttd-values.txt"
+RDR_JSON="$JSON_DIR/rdr.json"
 
 ###############################################################################
 
 echo "=========================================="
-
 echo "Mean Time To Detect (MTTD)"
-
 echo "=========================================="
 
+[[ -f "$RDR_JSON" ]] || fail "Run measure-rdr.sh first."
+
+###############################################################################
+# Extract detected attack times
 ###############################################################################
 
-if [ ! -f "$VALUES_FILE" ]; then
+COUNT=$(jq '[.attacks[] | select(.detected==true)] | length' "$RDR_JSON")
 
-    echo "ERROR: $VALUES_FILE not found."
+if [[ "$COUNT" -eq 0 ]]; then
 
-    echo "Run measure-rdr.sh first."
+    TOTAL_TIME=0
+    MTTD=0
 
-    exit 1
+else
+
+    TOTAL_TIME=$(
+        jq '[.attacks[]
+            | select(.detected==true)
+            | .time_seconds]
+            | add' "$RDR_JSON"
+    )
+
+    MTTD=$(awk \
+        -v s="$TOTAL_TIME" \
+        -v c="$COUNT" \
+        'BEGIN{printf "%.2f",s/c}')
 
 fi
-
-COUNT=$(wc -l < "$VALUES_FILE")
-
-SUM=$(awk '{s+=$1} END{print s}' "$VALUES_FILE")
-
-MEAN=$(awk -v s="$SUM" -v c="$COUNT" 'BEGIN{printf "%.2f",s/c}')
 
 ###############################################################################
 # JSON
@@ -62,11 +69,11 @@ MEAN=$(awk -v s="$SUM" -v c="$COUNT" 'BEGIN{printf "%.2f",s/c}')
 
 cat > "$JSON_DIR/mttd.json" <<EOF
 {
-    "metric":"MTTD",
-    "detections":$COUNT,
-    "total_time_seconds":$SUM,
-    "score":$MEAN,
-    "unit":"seconds"
+  "metric":"MTTD",
+  "detections":$COUNT,
+  "total_time_seconds":$TOTAL_TIME,
+  "score":$MTTD,
+  "unit":"seconds"
 }
 EOF
 
@@ -80,13 +87,12 @@ Mean Time To Detect
 ==========================================
 
 Detection Events : $COUNT
+Total Time       : $TOTAL_TIME seconds
 
-Total Time       : $SUM seconds
-
-MTTD             : $MEAN seconds
+MTTD             : $MTTD seconds
 
 Generated : $(date)
 
 EOF
 
-cat "$JSON_DIR/mttd.json"
+cat "$TXT_DIR/mttd.txt"

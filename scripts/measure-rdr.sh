@@ -1,13 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ###############################################################################
 # Multi-Layer Security Evaluation Framework (MSEF)
 #
-# Metric:
 # Runtime Detection Rate (RDR)
 #
-# RDR = Detected Runtime Attacks / Simulated Runtime Attacks
-#
+# RDR = Detected Runtime Attacks / Total Runtime Attacks
 ###############################################################################
 
 set -euo pipefail
@@ -16,27 +14,26 @@ shopt -s nullglob
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
+source "$SCRIPT_DIR/lib/common.sh"
+source "$SCRIPT_DIR/lib/kubernetes.sh"
+source "$SCRIPT_DIR/lib/falco.sh"
+
 ###############################################################################
 # Configuration
 ###############################################################################
 
-FALCO_NS="${FALCO_NS:-falco}"
-
-TARGET_NS="${TARGET_NS:-baseline}"
-
-TARGET_POD="${TARGET_POD:-insecure-write-root}"
-
-ATTACKER_POD="${ATTACKER_POD:-runtime-attacker}"
+TEST_DIR="${TEST_DIR:-$PROJECT_ROOT/k8s/runtime-tests}"
 
 RESULTS_DIR="${RESULTS_DIR:-$PROJECT_ROOT/results}"
 
-JSON_DIR="${RESULTS_DIR}/json"
+JSON_DIR="$RESULTS_DIR/json"
+TXT_DIR="$RESULTS_DIR/txt"
+LOG_DIR="$RESULTS_DIR/logs"
 
-TXT_DIR="${RESULTS_DIR}/txt"
-
-LOG_DIR="${RESULTS_DIR}/logs"
-
-mkdir -p "$JSON_DIR" "$TXT_DIR" "$LOG_DIR"
+mkdir -p \
+    "$JSON_DIR" \
+    "$TXT_DIR" \
+    "$LOG_DIR"
 
 DETAILS="$LOG_DIR/rdr-details.log"
 
@@ -45,119 +42,108 @@ DETAILS="$LOG_DIR/rdr-details.log"
 ###############################################################################
 
 echo "=========================================="
-
 echo "Runtime Detection Rate (RDR)"
-
 echo "=========================================="
 
-###############################################################################
-# Locate Falco
-###############################################################################
-
-FALCO_PODS=$(kubectl get pods -n "$FALCO_NS" \
--l app.kubernetes.io/name=falco \
--o jsonpath='{range .items[*]}{.metadata.name}{" "}{end}' 2>/dev/null || true)
-
-if [ -z "$FALCO_PODS" ]; then
-
-    FALCO_PODS=$(kubectl get pods -n "$FALCO_NS" \
-    -l app=falco \
-    -o jsonpath='{range .items[*]}{.metadata.name}{" "}{end}' 2>/dev/null || true)
-
-fi
-
-if [ -z "$FALCO_PODS" ]; then
-
-    echo "No Falco pods found."
-
-    exit 1
-
-fi
+require_namespace baseline
+require_namespace falco
 
 ###############################################################################
 
-SIMULATED=5
-
+TOTAL=0
 DETECTED=0
 
+ATTACK_RESULTS=""
+
 ###############################################################################
 
-run_attack() {
-
-NAME="$1"
-
-POD="$2"
-
-COMMAND="$3"
-
-PATTERN="$4"
-
-echo "Running: $NAME"
-
-START=$(date +%s)
-
-kubectl exec -n "$TARGET_NS" "$POD" -- sh -c "$COMMAND" >/dev/null 2>&1 || true
-
-sleep 15
-
-LOGS=""
-
-for FP in $FALCO_PODS
+for FILE in "$TEST_DIR"/*.yaml
 do
 
-LOGS="${LOGS}
-$(kubectl logs -n "$FALCO_NS" "$FP" --since=60s 2>/dev/null)"
+    [[ -f "$FILE" ]] || continue
 
-done
+    TOTAL=$((TOTAL+1))
 
-FOUND=0
+    NAME=$(basename "$FILE" .yaml)
 
-if echo "$LOGS" | grep -Eiq "$POD|$PATTERN"
-then
+    POD=$(kubectl create \
+        --dry-run=client \
+        -f "$FILE" \
+        -o jsonpath='{.metadata.name}')
 
-FOUND=1
+    echo
+    echo "Running: $NAME"
 
-DETECTED=$((DETECTED+1))
+    kubectl delete \
+        -f "$FILE" \
+        --ignore-not-found >/dev/null 2>&1 || true
 
-echo "Detected"
+    kubectl apply -f "$FILE" >/dev/null
 
-else
+    START=$(date +%s)
 
-echo "Not Detected"
+    kubectl wait \
+        --for=condition=Ready \
+        pod/"$POD" \
+        -n baseline \
+        --timeout=60s >/dev/null 2>&1 || true
 
-fi
+    sleep 20
 
-END=$(date +%s)
+    TIME=$(measure_detection_time "$START")
 
-ELAPSED=$((END-START))
+    if falco_detected "$POD|$NAME"
+    then
 
-echo "$ELAPSED" >> "$RESULTS_DIR/mttd-values.txt"
+        FOUND=true
+
+        DETECTED=$((DETECTED+1))
+
+        echo "Detected"
+
+    else
+
+        FOUND=false
+
+        echo "Not Detected"
+
+    fi
+
+    ATTACK_RESULTS="${ATTACK_RESULTS}
+{
+  \"name\":\"${NAME}\",
+  \"pod\":\"${POD}\",
+  \"detected\":${FOUND},
+  \"time_seconds\":${TIME}
+},"
 
 cat >> "$DETAILS" <<EOF
-Attack: $NAME
-Pod: $POD
-Detected: $FOUND
-Detection Time: ${ELAPSED}s
+Attack : $NAME
+Pod    : $POD
+Detected : $FOUND
+Time     : ${TIME}s
 ----------------------------------------
 EOF
 
-}
+    kubectl delete \
+        -f "$FILE" \
+        --ignore-not-found >/dev/null 2>&1 || true
+
+done
 
 ###############################################################################
 
-run_attack "Sensitive File Access" "$TARGET_POD" "cat /etc/shadow" "shadow|etc/shadow"
-
-run_attack "Write Root Filesystem" "$TARGET_POD" "touch /root/hacked" "root filesystem|/root/hacked"
-
-run_attack "Privilege Escalation" "$TARGET_POD" "chmod +s /bin/sh" "setuid|chmod"
-
-run_attack "Outbound TCP" "$TARGET_POD" "echo hi >/dev/tcp/example.com/80" "connection|network"
-
-run_attack "Outbound Curl" "$ATTACKER_POD" "curl -s http://example.com >/dev/null" "curl|connection"
+[[ "$TOTAL" -gt 0 ]] || fail "No runtime tests found."
 
 ###############################################################################
 
-RDR=$(awk -v d="$DETECTED" -v t="$SIMULATED" 'BEGIN{printf "%.2f",d/t}')
+RDR=$(calculate_ratio "$DETECTED" "$TOTAL")
+
+###############################################################################
+# Remove trailing comma
+###############################################################################
+
+ATTACK_RESULTS=$(echo "$ATTACK_RESULTS" | sed '$ s/,$//')
 
 ###############################################################################
 # JSON
@@ -165,10 +151,13 @@ RDR=$(awk -v d="$DETECTED" -v t="$SIMULATED" 'BEGIN{printf "%.2f",d/t}')
 
 cat > "$JSON_DIR/rdr.json" <<EOF
 {
-    "metric":"RDR",
-    "simulated_attacks":$SIMULATED,
-    "detected":$DETECTED,
-    "score":$RDR
+  "metric":"RDR",
+  "total_attacks":$TOTAL,
+  "detected":$DETECTED,
+  "score":$RDR,
+  "attacks":[
+$ATTACK_RESULTS
+  ]
 }
 EOF
 
@@ -181,13 +170,12 @@ cat > "$TXT_DIR/rdr.txt" <<EOF
 Runtime Detection Rate
 ==========================================
 
-Simulated Attacks : $SIMULATED
-Detected          : $DETECTED
+Total Runtime Attacks : $TOTAL
+Detected              : $DETECTED
 
-RDR               : $RDR
+RDR                   : $RDR
 
 Generated : $(date)
-
 EOF
 
-cat "$JSON_DIR/rdr.json"
+cat "$TXT_DIR/rdr.txt"

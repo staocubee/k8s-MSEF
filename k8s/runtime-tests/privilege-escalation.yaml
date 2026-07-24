@@ -1,0 +1,38 @@
+# Evaluation Focus: Detects attempts to escalate privileges or spawn processes with elevated SUID permissions (allowPrivilegeEscalation: true combined with CAP_SYS_ADMIN or setuid execution).
+apiVersion: v1
+kind: Pod
+metadata:
+  name: privilege-escalation-test
+  namespace: hardened
+  annotations:
+    msef.io/falco-rule: Detects privilege escalation attempts
+  labels:
+    app: privilege-escalation-test
+    environment: hardened
+spec:
+  serviceAccountName: hardened-app-sa
+  containers:
+  - name: priv-esc-trigger
+    image: ubuntu:22.04
+    # Attempts to use setuid/su/sudo or administrative capabilities
+    command: ["/bin/bash", "-c"]
+    args:
+      - |
+        echo "[+] Attempting privilege escalation..."
+        unshare -m -u -i -p -f --mount-proc /bin/bash 2>/dev/null || true
+        su - root 2>/dev/null || true
+        sleep 3600
+    securityContext:
+      allowPrivilegeEscalation: true
+      runAsNonRoot: false
+      runAsUser: 0
+      capabilities:
+        add:
+        - SYS_ADMIN
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        cpu: "100m"
+        memory: "128Mi"

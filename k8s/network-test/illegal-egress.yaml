@@ -3,13 +3,31 @@ kind: Pod
 metadata:
   name: illegal-egress
   namespace: hardened
+
 spec:
   restartPolicy: Never
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    seccompProfile:
+      type: RuntimeDefault
+
   containers:
     - name: curl
       image: curlimages/curl:8.8.0
+
       command:
+        - sleep
+        - infinity
         - sh
         - -c
         - |
           curl --connect-timeout 5 https://www.google.com
+
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL

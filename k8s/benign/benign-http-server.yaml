@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: benign-http-server
+  namespace: baseline
+  labels:
+    app: benign-http-server
+spec:
+  restartPolicy: Never
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: http-server
+    image: python:3.12-alpine
+    command: ["python3", "-m", "http.server", "8080"]
+    ports:
+    - containerPort: 8080
+      name: http
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop: ["ALL"]

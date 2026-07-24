@@ -1,11 +1,4 @@
-#!/bin/bash
-
-###############################################################################
-# Multi-Layer Security Evaluation Framework (MSEF)
-#
-# Master Evaluation Script
-#
-###############################################################################
+#!/usr/bin/env bash
 
 set -euo pipefail
 shopt -s nullglob
@@ -13,97 +6,77 @@ shopt -s nullglob
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
+source "$SCRIPT_DIR/lib/common.sh"
+
 RESULTS_DIR="${RESULTS_DIR:-$PROJECT_ROOT/results}"
 
 mkdir -p \
-"$RESULTS_DIR" \
-"$RESULTS_DIR/json" \
-"$RESULTS_DIR/txt" \
-"$RESULTS_DIR/logs"
+"$RESULTS_DIR"/{json,txt,logs}
 
-###############################################################################
+section() {
 
-echo "======================================================="
-echo " Multi-Layer Security Evaluation Framework (MSEF)"
-echo " Kubernetes Security Evaluation"
-echo "======================================================="
-echo "Started : $(date)"
-echo
+    echo
+    echo "=================================================="
+    echo "$1"
+    echo "=================================================="
 
-###############################################################################
-# Prevention Layer
-###############################################################################
+}
 
-echo "========== Prevention Layer =========="
+run_metric() {
 
-scripts/measure-mbr.sh
-echo
+    local SCRIPT="$1"
 
-scripts/measure-nper.sh
-echo
+    echo
 
-scripts/measure-smer.sh
-echo
+    echo "Running $(basename "$SCRIPT")"
 
-scripts/measure-pes.sh
-echo
+    "$SCRIPT"
 
-###############################################################################
-# Integrity Layer
-###############################################################################
+}
 
-echo "========== Integrity Layer =========="
+banner "Multi-Layer Security Evaluation Framework"
 
-scripts/measure-spr.sh
-echo
+echo "Started: $(date)"
 
-scripts/measure-ies.sh
-echo
+section "Prevention Layer"
 
-###############################################################################
-# Detection Layer
-###############################################################################
+run_metric "$SCRIPT_DIR/measure-mbr.sh"
+run_metric "$SCRIPT_DIR/measure-nper.sh"
+run_metric "$SCRIPT_DIR/measure-smer.sh"
+run_metric "$SCRIPT_DIR/measure-pes.sh"
 
-echo "========== Detection Layer =========="
+section "Integrity Layer"
 
-scripts/measure-rdr.sh
-echo
+run_metric "$SCRIPT_DIR/measure-spr.sh"
+run_metric "$SCRIPT_DIR/measure-ies.sh"
 
-scripts/measure-mttd.sh
-echo
+section "Detection Layer"
 
-scripts/measure-fpr.sh
-echo
+run_metric "$SCRIPT_DIR/measure-rdr.sh"
+run_metric "$SCRIPT_DIR/measure-mttd.sh"
+run_metric "$SCRIPT_DIR/measure-fpr.sh"
+run_metric "$SCRIPT_DIR/measure-rrsr.sh"
+run_metric "$SCRIPT_DIR/measure-des.sh"
 
-scripts/measure-rrsr.sh
-echo
+section "Generating Reports"
 
-scripts/measure-des.sh
-echo
+run_metric "$SCRIPT_DIR/generate-security-report.sh"
+run_metric "$SCRIPT_DIR/generate-html-report.sh"
 
-###############################################################################
-# Reports
-###############################################################################
-
-echo "========== Generating Reports =========="
-
-scripts/generate-security-report.sh
+banner "Evaluation Completed"
 
 echo
 
-scripts/generate-html-report.sh
+echo "Results"
 
-###############################################################################
+echo "  $RESULTS_DIR/txt"
+
+echo "  $RESULTS_DIR/json"
+
+echo "  $RESULTS_DIR/logs"
+
+echo "  $RESULTS_DIR/index.html"
 
 echo
-echo "======================================================="
-echo " Evaluation Completed Successfully"
-echo "======================================================="
-echo
-echo "Reports Generated:"
-echo "  results/txt/"
-echo "  results/json/"
-echo "  results/logs/"
-echo "  results/index.html"
-echo
-echo "Completed : $(date)"
+
+echo "Completed: $(date)"

@@ -3,13 +3,32 @@ kind: Pod
 metadata:
   name: illegal-cross-namespace
   namespace: baseline
+
 spec:
   restartPolicy: Never
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    seccompProfile:
+      type: RuntimeDefault
+
   containers:
     - name: curl
       image: curlimages/curl:8.8.0
+
       command:
+        - sleep
+        - infinity
         - sh
         - -c
         - |
-          curl --connect-timeout 5 http://hardened-nginx.hardened.svc.cluster.local
+          curl --connect-timeout 5 \
+          http://hardened-nginx.hardened.svc.cluster.local
+
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL

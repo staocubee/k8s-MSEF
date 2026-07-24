@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: kre-config
+
+data:
+
+  TARGET_RULES: |
+    Sensitive File Access
+    Write below root
+    Terminal shell
+    Outbound connection
+    Outbound Curl

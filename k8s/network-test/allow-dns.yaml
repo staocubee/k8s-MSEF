@@ -3,13 +3,31 @@ kind: Pod
 metadata:
   name: allowed-dns
   namespace: hardened
+
 spec:
   restartPolicy: Never
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    seccompProfile:
+      type: RuntimeDefault
+
   containers:
     - name: nslookup
       image: busybox:1.36
+
       command:
+        - sleep
+        - infinity
         - sh
         - -c
         - |
           nslookup kubernetes.default.svc.cluster.local
+
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL

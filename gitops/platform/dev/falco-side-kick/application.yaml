@@ -17,6 +17,11 @@ spec:
           enabled: false
         config:
           debug: true
+          # --- Webhook configuration to route alerts to KRE Handler ---
+          webhook:
+            address: "http://kre-handler.hardened.svc.cluster.local:8080/remediate"
+            minimumpriority: "warning"
+            checkcert: false
         service:
           type: ClusterIP
         resources:

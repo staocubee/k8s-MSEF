@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ###############################################################################
 # Multi-Layer Security Evaluation Framework (MSEF)
@@ -6,50 +6,38 @@
 # Metric:
 # Secrets Management Enforcement Rate (SMER)
 #
-# SMER = Correct Secret Enforcement Decisions / Total Secret Tests
-#
+# SMER = Correct Secret Enforcement Decisions / Total Tests
 ###############################################################################
 
 set -euo pipefail
-shopt -s nullglob
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+source scripts/lib/common.sh
+source scripts/lib/kubernetes.sh
+source scripts/lib/validation.sh
+source scripts/lib/metrics.sh
+source scripts/lib/output.sh
 
-###############################################################################
-# Configuration
-###############################################################################
+init_framework
+
+print_banner "Secrets Management Enforcement Rate (SMER)"
 
 TEST_DIR="${TEST_DIR:-k8s/secrets-test}"
+TARGET_NS="${TARGET_NS:-hardened}"
 
-RESULTS_DIR="${RESULTS_DIR:-$PROJECT_ROOT/results}"
+require_namespace "$TARGET_NS"
 
-JSON_DIR="${RESULTS_DIR}/json"
-
-TXT_DIR="${RESULTS_DIR}/txt"
-
-LOG_DIR="${RESULTS_DIR}/logs"
-
-mkdir -p "$JSON_DIR" "$TXT_DIR" "$LOG_DIR"
-
-DETAILS="$LOG_DIR/smer-details.log"
-
-> "$DETAILS"
-
-###############################################################################
-
-echo "=========================================="
-
-echo "Secrets Management Enforcement Rate (SMER)"
-
-echo "=========================================="
+# Either Gatekeeper or Kyverno policies should exist
+require_policy_engine
 
 TOTAL=0
-
 PASSED=0
-
 FAILED=0
 
+DETAILS="$LOG_DIR/smer-details.log"
+: > "$DETAILS"
+
+###############################################################################
+# Execute tests
 ###############################################################################
 
 for FILE in "$TEST_DIR"/*.yaml
@@ -59,48 +47,56 @@ do
 
     NAME=$(basename "$FILE")
 
-    echo "Testing: $NAME"
+    log_info "Testing $NAME"
 
-    kubectl delete -f "$FILE" --ignore-not-found >/dev/null 2>&1 || true
+    OUTPUT=$(apply_dry_run "$FILE" "$TARGET_NS" || true)
 
-    OUTPUT=$(kubectl apply --dry-run=server -f "$FILE" 2>&1 || true)
+    ###########################################################
+    # Expected result
+    ###########################################################
 
-    if [[ "$NAME" == *valid-external-secret* ]]; then
+    case "$NAME" in
 
-        if ! echo "$OUTPUT" | grep -qi denied; then
+        valid-external-secret.yaml)
 
-            RESULT="ALLOWED"
+            EXPECTED="ALLOW"
+            ;;
 
-            PASSED=$((PASSED+1))
+        *)
 
-        else
+            EXPECTED="BLOCK"
+            ;;
 
-            RESULT="BLOCKED (Unexpected)"
+    esac
 
-            FAILED=$((FAILED+1))
+    ###########################################################
+    # Actual result
+    ###########################################################
 
-        fi
-
+    if admission_blocked "$OUTPUT"
+    then
+        ACTUAL="BLOCK"
     else
-
-        if echo "$OUTPUT" | grep -qi denied; then
-
-            RESULT="BLOCKED"
-
-            PASSED=$((PASSED+1))
-
-        else
-
-            RESULT="ALLOWED (Unexpected)"
-
-            FAILED=$((FAILED+1))
-
-        fi
-
+        ACTUAL="ALLOW"
     fi
 
-cat >> "$DETAILS" <<EOF
+    ###########################################################
+    # Score
+    ###########################################################
+
+    if [[ "$EXPECTED" == "$ACTUAL" ]]
+    then
+        RESULT="PASS"
+        PASSED=$((PASSED+1))
+    else
+        RESULT="FAIL"
+        FAILED=$((FAILED+1))
+    fi
+
+    cat >> "$DETAILS" <<EOF
 Test: $NAME
+Expected: $EXPECTED
+Actual: $ACTUAL
 Result: $RESULT
 ----------------------------------------
 EOF
@@ -109,25 +105,19 @@ done
 
 ###############################################################################
 
-SMER=$(awk -v p="$PASSED" -v t="$TOTAL" 'BEGIN{printf "%.2f",p/t}')
-
-###############################################################################
-# JSON
-###############################################################################
+SMER=$(score "$PASSED" "$TOTAL")
 
 cat > "$JSON_DIR/smer.json" <<EOF
 {
-    "metric":"SMER",
-    "total_tests":$TOTAL,
-    "correct_decisions":$PASSED,
-    "incorrect_decisions":$FAILED,
-    "score":$SMER
+  "framework":"Kubernetes MSEF",
+  "metric":"SMER",
+  "timestamp":"$(timestamp)",
+  "total_tests":$TOTAL,
+  "correct_decisions":$PASSED,
+  "incorrect_decisions":$FAILED,
+  "score":$SMER
 }
 EOF
-
-###############################################################################
-# TXT
-###############################################################################
 
 cat > "$TXT_DIR/smer.txt" <<EOF
 ==========================================
@@ -140,7 +130,7 @@ Incorrect Decisions : $FAILED
 
 SMER                : $SMER
 
-Generated : $(date)
+Generated : $(timestamp)
 
 EOF
 

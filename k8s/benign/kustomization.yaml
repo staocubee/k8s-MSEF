@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - benign-busybox.yaml
+  - benign-nginx.yaml
+  - benign-curl-internal.yaml
+  - benign-dns-lookup.yaml
+  - benign-configmap-reader.yaml
+  - benign-emptydir.yaml
+  - benign-http-server.yaml
+  - benign-serviceaccount.yaml
+  - benign-sleep.yaml
+  - benign-volume-reader.yaml

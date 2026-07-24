@@ -1,21 +1,49 @@
 #!/usr/bin/env bash
 
-#############################################################
+###############################################################################
+# Multi-Layer Security Evaluation Framework (MSEF)
+#
+# Metric:
 # Integrity Effectiveness Score (IES)
-#############################################################
+#
+# IES = SPR
+#
+###############################################################################
 
 set -euo pipefail
-shopt -s nullglob
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+source "$SCRIPT_DIR/lib/common.sh"
+
+###############################################################################
+
 RESULTS_DIR="${RESULTS_DIR:-$PROJECT_ROOT/results}"
-JSON_DIR="${RESULTS_DIR}/json"
-TXT_DIR="${RESULTS_DIR}/txt"
+
+JSON_DIR="$RESULTS_DIR/json"
+
+TXT_DIR="$RESULTS_DIR/txt"
 
 mkdir -p "$JSON_DIR" "$TXT_DIR"
 
-SPR=$(jq '.trivy.score' "$JSON_DIR/spr.json")
+###############################################################################
+
+if [[ ! -f "$JSON_DIR/spr.json" ]]; then
+
+    echo "Missing:"
+    echo "  $JSON_DIR/spr.json"
+
+    exit 1
+
+fi
+
+###############################################################################
+
+SPR=$(jq -r '.score' "$JSON_DIR/spr.json")
+
+###############################################################################
+# JSON
+###############################################################################
 
 cat > "$JSON_DIR/ies.json" <<EOF
 {
@@ -25,16 +53,23 @@ cat > "$JSON_DIR/ies.json" <<EOF
 }
 EOF
 
+###############################################################################
+# TXT
+###############################################################################
+
 cat > "$TXT_DIR/ies.txt" <<EOF
 ==========================================
-Integrity Effectiveness Score
+Integrity Effectiveness Score (IES)
 ==========================================
 
-Supply Chain Protection Rate : $SPR
+Supply-Chain Policy Rejection Rate : $SPR
 
 ------------------------------------------
 
-IES                          : $SPR
+IES                                : $SPR
+
+Generated : $(date)
+
 EOF
 
-cat "$TXT_DIR/ies.txt"
+cat "$JSON_DIR/ies.json"
