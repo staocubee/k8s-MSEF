@@ -5,6 +5,9 @@ metadata:
 spec:
   enforcementAction: deny
   match:
+    namespaceSelector:
+      matchLabels:
+        security-level: hardened
     kinds:
     - apiGroups: ["rbac.authorization.k8s.io"]
       kinds: ["Role", "ClusterRole", "RoleBinding", "ClusterRoleBinding"]

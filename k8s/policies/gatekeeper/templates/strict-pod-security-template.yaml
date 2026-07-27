@@ -11,14 +11,7 @@ spec:
   - target: admission.k8s.gatekeeper.sh
     rego: |
       package k8sstrictpodsecurity
-      excluded := {
-          "kube-system",
-          "gatekeeper-system",
-          "kyverno",
-          "cert-manager",
-          "argocd",
-          "falco"
-      }
+      
       violation[{"msg": msg}] {
         input.review.kind.kind == "Pod"
         c := input.review.object.spec.containers[_]
