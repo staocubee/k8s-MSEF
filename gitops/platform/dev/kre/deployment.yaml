@@ -3,29 +3,34 @@ kind: Deployment
 
 metadata:
   name: msef-kre-handler
+
 spec:
   replicas: 1
+
   selector:
     matchLabels:
       app: msef-kre-handler
+
   template:
     metadata:
       labels:
         app: msef-kre-handler
+
     spec:
       serviceAccountName: msef-kre-handler
+
       containers:
       - name: kre
         image: staocube/msef-kre-handler:latest
         imagePullPolicy: Always
+
         ports:
         - containerPort: 8080
-        volumeMounts:
-            - name: results-storage
-              mountPath: /data/results
+
         env:
         - name: PYTHONUNBUFFERED
           value: "1"
+
         resources:
           requests:
             cpu: 100m
