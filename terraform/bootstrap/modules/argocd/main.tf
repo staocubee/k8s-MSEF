@@ -62,8 +62,13 @@ resource "null_resource" "apply_root_app" {
       echo "Waiting for ArgoCD server..."
       kubectl rollout status deployment/argocd-server -n ${var.argocd_namespace} --timeout=300s
 
+      # Allow API discovery cache to sync / clear cache
+      echo "Flushing client discovery cache and applying..."
+      rm -rf ~/.kube/cache
+      sleep 5
+
       echo "Applying ArgoCD root application..."
-      kubectl apply -f ${var.root_app_manifest_path}
+      kubectl apply --validate=false -f ${var.root_app_manifest_path}
     EOT
   }
 }
