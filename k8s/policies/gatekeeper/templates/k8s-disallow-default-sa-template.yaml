@@ -12,6 +12,15 @@ spec:
     rego: |
       package k8sdisallowdefaultsa
 
+      excluded := {
+          "kube-system",
+          "gatekeeper-system",
+          "kyverno",
+          "cert-manager",
+          "argocd",
+          "falco"
+      }
+
       violation[{"msg": msg}] {
         input.review.kind.kind == "Pod"
         not input.review.object.spec.serviceAccountName

@@ -10,8 +10,16 @@ spec:
   targets:
   - target: admission.k8s.gatekeeper.sh
     rego: |
+      
       package k8srestrictwildcardrbac
-
+      excluded := {
+          "kube-system",
+          "gatekeeper-system",
+          "kyverno",
+          "cert-manager",
+          "argocd",
+          "falco"
+      }
       is_rbac_kind {
         input.review.kind.kind == "Role"
       }

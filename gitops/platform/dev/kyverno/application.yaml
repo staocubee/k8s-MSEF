@@ -13,19 +13,21 @@ spec:
     targetRevision: 3.3.7
     helm:
       values: |
-        installCRDs: true
+        installCRDs: false
+
         admissionController:
           replicas: 2
+
         backgroundController:
           replicas: 1
+
         cleanupController:
           replicas: 1
+
         reportsController:
           replicas: 1
+
         config:
-          resource.customizations.ignoreDifferences.apps_Deployment: |
-            jsonPointers:
-              - /status/terminatingReplicas
           resourceFiltersExcludeNamespaces:
             - kube-system
             - kyverno
@@ -33,9 +35,11 @@ spec:
             - cert-manager
             - falco
             - gatekeeper-system
+
         features:
           admissionReports:
             enabled: true
+
           policyReports:
             enabled: true
   destination:
