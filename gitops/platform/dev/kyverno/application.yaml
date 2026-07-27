@@ -23,6 +23,9 @@ spec:
         reportsController:
           replicas: 1
         config:
+          resource.customizations.ignoreDifferences.apps_Deployment: |
+            jsonPointers:
+              - /status/terminatingReplicas
           resourceFiltersExcludeNamespaces:
             - kube-system
             - kyverno
