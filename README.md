@@ -359,3 +359,9 @@ gcloud iam workload-identity-pools delete dev-github-pool \
   --quiet
 
   TF_LOG=DEBUG terraform apply
+
+  patch before destroy
+  kubectl patch application dev-kyverno \
+  -n argocd \
+  --type=merge \
+  -p '{"metadata":{"finalizers":[]}}'
