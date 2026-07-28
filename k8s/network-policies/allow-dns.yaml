@@ -1,27 +1,36 @@
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-
+apiVersion: v1
+kind: Pod
 metadata:
   name: allow-dns
+  namespace: hardened
 
 spec:
+  serviceAccountName: network-test-sa
+  restartPolicy: Never
 
-  podSelector: {}
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
 
-  policyTypes:
-  - Egress
+  containers:
+    - name: dns
+      image: busybox:1.36
 
-  egress:
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
 
-  - to:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
 
-    - namespaceSelector:
+        limits:
+          cpu: 100m
+          memory: 128Mi
 
-        matchLabels:
-
-          kubernetes.io/metadata.name: kube-system
-
-    ports:
-
-    - protocol: UDP
-      port: 53
+      command:
+        - sh
+        - -c
+        - |
+          nslookup kubernetes.default.svc.cluster.local

@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: allow-report-server
+  namespace: hardened
+
+spec:
+  serviceAccountName: network-test-sa
+
+  restartPolicy: Never
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+
+  containers:
+    - name: curl
+      image: curlimages/curl:8.8.0
+
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+
+        limits:
+          cpu: 100m
+          memory: 128Mi
+
+      command:
+        - sh
+        - -c
+        - |
+          curl http://report-server.hardened.svc.cluster.local

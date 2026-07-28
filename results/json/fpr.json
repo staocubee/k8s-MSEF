@@ -1,0 +1,6 @@
+{
+  "metric":"FPR",
+  "benign_windows":5,
+  "false_alerts":0,
+  "score":0.00
+}

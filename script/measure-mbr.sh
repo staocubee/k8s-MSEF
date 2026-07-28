@@ -56,15 +56,16 @@ ALLOWED=0
 
 for FILE in "$MANIFEST_DIR"/*.yaml
 do
-
     [ -e "$FILE" ] || continue
-
-    TOTAL=$((TOTAL+1))
-
     NAME=$(basename "$FILE")
-
+    # Skip non-test manifests
+    case "$NAME" in
+        kustomization.yaml|sa.yaml|namespace.yaml|serviceaccount.yaml|role.yaml|rolebinding.yaml|clusterrole.yaml|clusterrolebinding.yaml|configmap.yaml)
+            continue
+            ;;
+    esac
+    TOTAL=$((TOTAL+1))
     echo "Testing: $NAME"
-
     OUTPUT=$(kubectl apply \
         --dry-run=server \
         -f "$FILE" \

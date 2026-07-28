@@ -1,12 +1,11 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: deny-cross-namespace
-  namespace: baseline
+  name: allow-hardened-service
+  namespace: hardened
 
 spec:
   serviceAccountName: network-test-sa
-
   restartPolicy: Never
 
   securityContext:
@@ -34,4 +33,4 @@ spec:
         - sh
         - -c
         - |
-          curl --connect-timeout 5 http://hardened-nginx.hardened.svc.cluster.local
+          curl http://hardened-nginx.hardened.svc.cluster.local

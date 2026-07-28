@@ -3,7 +3,11 @@ kind: Kustomization
 
 resources:
   - allow-dns.yaml
-  - allow-web.yaml
-  - illegal-db-access.yaml
-  - illegal-egress.yaml
-  - illegal-cross-namespace.yaml
+  - allow-hardened-service.yaml
+  - allow-report-server.yaml
+  - deny-external-egress.yaml
+  - deny-cross-namespace.yaml
+  - deny-kube-api.yaml
+  - deny-database.yaml
+  - sa.yaml
+  

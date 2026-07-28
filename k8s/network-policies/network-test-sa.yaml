@@ -1,12 +1,5 @@
-apiVersion: v1
-kind: Pod
-metadata:
-  name: deny-cross-namespace
-  namespace: baseline
-
 spec:
   serviceAccountName: network-test-sa
-
   restartPolicy: Never
 
   securityContext:
@@ -14,7 +7,7 @@ spec:
     runAsUser: 1000
 
   containers:
-    - name: curl
+    - name: tester
       image: curlimages/curl:8.8.0
 
       securityContext:
@@ -29,9 +22,3 @@ spec:
         limits:
           cpu: 100m
           memory: 128Mi
-
-      command:
-        - sh
-        - -c
-        - |
-          curl --connect-timeout 5 http://hardened-nginx.hardened.svc.cluster.local

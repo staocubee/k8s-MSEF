@@ -2,13 +2,13 @@
 Manifest Blocking Rate
 ==========================================
 
-Total Manifests : 21
+Total Manifests : 20
 
-Blocked         : 21
+Blocked         : 20
 
 Allowed         : 0
 
 MBR             : 1.00
 
-Generated : Thu Jul 16 16:37:38 WAT 2026
+Generated : Mon Jul 27 20:16:24 WAT 2026
 

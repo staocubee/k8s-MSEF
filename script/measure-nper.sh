@@ -54,6 +54,16 @@ FAILED=0
 
 for FILE in "$TEST_DIR"/*.yaml
 do
+     [ -e "$FILE" ] || continue
+
+    NAME=$(basename "$FILE")
+
+    # Skip non-test manifests
+    case "$NAME" in
+        kustomization.yaml|sa.yaml|namespace.yaml|serviceaccount.yaml|role.yaml|rolebinding.yaml|clusterrole.yaml|clusterrolebinding.yaml|configmap.yaml)
+            continue
+            ;;
+    esac
 
     TOTAL=$((TOTAL+1))
 

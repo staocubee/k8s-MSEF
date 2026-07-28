@@ -58,6 +58,3 @@ Result: BLOCKED
 Manifest: insecure-privileged-pods.yaml
 Result: BLOCKED
 ----------------------------------------
-Manifest: runtime-attacker.yaml
-Result: BLOCKED
-----------------------------------------

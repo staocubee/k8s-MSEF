@@ -1,0 +1,24 @@
+Test: allow-dns.yaml
+Result: ALLOWED (Unexpected)
+----------------------------------------
+Test: allow-hardened-service.yaml
+Result: ALLOWED (Unexpected)
+----------------------------------------
+Test: allow-report-server.yaml
+Result: ALLOWED (Unexpected)
+----------------------------------------
+Test: db-service.yaml
+Result: ALLOWED (Unexpected)
+----------------------------------------
+Test: deny-cross-namespace.yaml
+Result: ALLOWED (Unexpected)
+----------------------------------------
+Test: deny-database.yaml
+Result: ALLOWED (Unexpected)
+----------------------------------------
+Test: deny-external-egress.yaml
+Result: ALLOWED (Unexpected)
+----------------------------------------
+Test: deny-kube-api.yaml
+Result: ALLOWED (Unexpected)
+----------------------------------------

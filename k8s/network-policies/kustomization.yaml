@@ -2,8 +2,12 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - namespace-default-deny.yaml
+  - network-test-sa.yaml
   - allow-dns.yaml
   - allow-web.yaml
-  - allow-monitoring.yaml
-  - allow-falco.yaml
+  - allow-hardened-service.yaml
+  - allow-report-server.yaml
+  - allow-cross-namespace.yaml
+  - deny-database.yaml
+  - deny-external-egress.yaml
+  - deny-kube-api.yaml

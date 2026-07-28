@@ -1,17 +1,18 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: deny-cross-namespace
-  namespace: baseline
+  name: deny-database
+  namespace: hardened
 
 spec:
   serviceAccountName: network-test-sa
-
   restartPolicy: Never
 
   securityContext:
     runAsNonRoot: true
     runAsUser: 1000
+    seccompProfile:
+      type: RuntimeDefault
 
   containers:
     - name: curl
@@ -20,18 +21,28 @@ spec:
       securityContext:
         allowPrivilegeEscalation: false
         readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
 
       resources:
         requests:
           cpu: 50m
           memory: 64Mi
-
         limits:
           cpu: 100m
           memory: 128Mi
+
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
 
       command:
         - sh
         - -c
         - |
-          curl --connect-timeout 5 http://hardened-nginx.hardened.svc.cluster.local
+          nc -zvw5 db-service.database.svc.cluster.local 5432
+
+  volumes:
+    - name: tmp
+      emptyDir: {}

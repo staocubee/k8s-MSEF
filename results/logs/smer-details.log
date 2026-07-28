@@ -1,0 +1,3 @@
+Test: external-secret-with-clustersecretstore.yaml
+Result: ALLOWED (Unexpected)
+----------------------------------------
