@@ -34,4 +34,4 @@ spec:
         - sh
         - -c
         - |
-          nc -zv db-service.database.svc.cluster.local 5432
+          nc -zv db-service.hardened.svc.cluster.local 5432

@@ -2,7 +2,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - network-test-sa.yaml
   - allow-dns.yaml
   - allow-web.yaml
   - allow-hardened-service.yaml
@@ -11,3 +10,4 @@ resources:
   - deny-database.yaml
   - deny-external-egress.yaml
   - deny-kube-api.yaml
+  - namespace-default-deny.yaml

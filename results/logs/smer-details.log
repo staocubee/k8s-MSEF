@@ -8,7 +8,7 @@ Test: kustomization.yaml
 Result: ALLOWED (Unexpected)
 ----------------------------------------
 Test: missing-secret.yaml
-Result: ALLOWED (Unexpected)
+Result: BLOCKED
 ----------------------------------------
 Test: plaintext-configmap.yaml
 Result: ALLOWED (Unexpected)
