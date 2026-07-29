@@ -18,12 +18,9 @@ source scripts/lib/metrics.sh
 source scripts/lib/output.sh
 
 init_framework
-
 print_banner "Network Policy Enforcement Rate (NPER)"
-
 TEST_DIR="${TEST_DIR:-k8s/network-test}"
 TARGET_NS="${TARGET_NS:-hardened}"
-
 require_namespace "$TARGET_NS"
 
 TOTAL=0
@@ -43,13 +40,9 @@ run_test() {
     local pod="$2"
     local expected="$3"
     local command="$4"
-
     delete_manifest "$manifest" "$TARGET_NS"
-
     apply_manifest "$manifest" "$TARGET_NS" >/dev/null
-
     wait_for_pod "$pod" "$TARGET_NS" 90s
-
     if pod_exec "$pod" "$TARGET_NS" sh -c "$command" >/dev/null 2>&1
     then
         actual="ALLOW"
