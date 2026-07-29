@@ -1,7 +1,7 @@
 {
     "metric":"NPER",
-    "total_tests":8,
+    "total_tests":7,
     "correct_decisions":1,
-    "incorrect_decisions":7,
-    "score":0.12
+    "incorrect_decisions":6,
+    "score":0.14
 }

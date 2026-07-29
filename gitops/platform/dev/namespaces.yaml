@@ -63,3 +63,23 @@ metadata:
   labels:
     environment: dev
     workload-tier: hardened
+---
+# 1. NAMESPACES
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: connectivity-tests
+  labels:
+    ns-type: test-source
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: isolated-target
+  labels:
+    ns-type: restricted-target
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: db-service

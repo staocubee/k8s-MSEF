@@ -1,0 +1,13 @@
+# --- DNS & Allow-Internet Test Pod ---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-allow-internet
+  namespace: connectivity-tests
+  labels:
+    role: internet-allow
+spec:
+  containers:
+    - name: network-runner
+      image: curlimages/curl:8.5.0
+      command: ["sleep", "3600"]

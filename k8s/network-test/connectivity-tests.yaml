@@ -1,0 +1,224 @@
+---
+# 1. NAMESPACES
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: connectivity-tests
+  labels:
+    ns-type: test-source
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: isolated-target
+  labels:
+    ns-type: restricted-target
+---
+# 2. NETWORK POLICIES
+
+# --- Test 1 & 2: Internet Allow + DNS Policy ---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns-and-internet
+  namespace: connectivity-tests
+spec:
+  podSelector:
+    matchLabels:
+      role: internet-allow
+  policyTypes:
+    - Egress
+  egress:
+    # Allow DNS lookup (CoreDNS/Kube-DNS)
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow outbound internet traffic (excluding private RFC1918 IPs)
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+---
+
+# --- Test 3: Internet Deny Policy ---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-internet-egress
+  namespace: connectivity-tests
+spec:
+  podSelector:
+    matchLabels:
+      role: internet-deny
+  policyTypes:
+    - Egress
+  egress: [] # Empty egress blocks all outbound traffic
+---
+
+# --- Test 4: Cross-Namespace Deny Policy ---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-cross-namespace-ingress
+  namespace: isolated-target
+spec:
+  podSelector: {} # Applies to all pods in target namespace
+  policyTypes:
+    - Ingress
+  ingress:
+    # Only allow ingress from pods within its own namespace
+    - from:
+        - podSelector: {}
+---
+# 3. WORKLOAD PODS
+
+# --- DNS & Allow-Internet Test Pod ---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-allow-internet
+  namespace: connectivity-tests
+  labels:
+    role: internet-allow
+spec:
+  restartPolicy: Never
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: network-runner
+      image: curlimages/curl:8.5.0
+      command:
+        - sleep
+        - "3600"
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+  volumes:
+    - name: tmp
+      emptyDir: {}
+---
+
+# --- Internet Deny Test Pod ---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-deny-internet
+  namespace: connectivity-tests
+  labels:
+    role: internet-deny
+spec:
+  restartPolicy: Never
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: network-runner
+      image: curlimages/curl:8.5.0
+      command:
+        - sleep
+        - "3600"
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+  volumes:
+    - name: tmp
+      emptyDir: {}
+---
+
+# --- Isolated Target Pod (Used for Cross-Namespace Deny Test) ---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: isolated-app
+  namespace: isolated-target
+  labels:
+    app: target-service
+spec:
+  restartPolicy: Never
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 101 # Unprivileged nginx user
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: web
+      image: nginxinc/nginx-unprivileged:alpine
+      ports:
+        - containerPort: 8080
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: cache
+          mountPath: /var/cache/nginx
+        - name: run
+          mountPath: /var/run
+  volumes:
+    - name: tmp
+      emptyDir: {}
+    - name: cache
+      emptyDir: {}
+    - name: run
+      emptyDir: {}
+---
+# Service for the isolated target pod
+apiVersion: v1
+kind: Service
+metadata:
+  name: isolated-service
+  namespace: isolated-target
+spec:
+  selector:
+    app: target-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

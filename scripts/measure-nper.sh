@@ -3,27 +3,23 @@
 ###############################################################################
 # Multi-Layer Security Evaluation Framework (MSEF)
 #
-# Metric:
 # Network Policy Enforcement Rate (NPER)
 #
-# NPER = Correct Network Policy Decisions / Total Tests
 ###############################################################################
 
 set -euo pipefail
 
 source scripts/lib/common.sh
 source scripts/lib/kubernetes.sh
-source scripts/lib/validation.sh
 source scripts/lib/metrics.sh
 source scripts/lib/output.sh
 
 init_framework
 print_banner "Network Policy Enforcement Rate (NPER)"
-TEST_DIR="${TEST_DIR:-k8s/network-test}"
-TARGET_NS="${TARGET_NS:-hardened}"
-require_namespace "$TARGET_NS"
 
-TOTAL=0
+TEST_FILE="${TEST_FILE:-k8s/network-test/network-policy-tests.yaml}"
+
+TOTAL=4
 PASSED=0
 FAILED=0
 
@@ -31,19 +27,40 @@ DETAILS="$LOG_DIR/nper-details.log"
 : > "$DETAILS"
 
 ###############################################################################
+# Deploy test environment
+###############################################################################
+
+kubectl apply -f "$TEST_FILE"
+
+kubectl wait \
+    --for=condition=Ready \
+    pod/test-allow-internet \
+    -n connectivity-tests \
+    --timeout=120s
+
+kubectl wait \
+    --for=condition=Ready \
+    pod/test-deny-internet \
+    -n connectivity-tests \
+    --timeout=120s
+
+kubectl wait \
+    --for=condition=Ready \
+    pod/isolated-app \
+    -n isolated-target \
+    --timeout=120s
+
+###############################################################################
 # Helper
 ###############################################################################
 
 run_test() {
 
-    local manifest="$1"
-    local pod="$2"
+    local description="$1"
+    local command="$2"
     local expected="$3"
-    local command="$4"
-    delete_manifest "$manifest" "$TARGET_NS"
-    apply_manifest "$manifest" "$TARGET_NS" >/dev/null
-    wait_for_pod "$pod" "$TARGET_NS" 90s
-    if pod_exec "$pod" "$TARGET_NS" sh -c "$command" >/dev/null 2>&1
+
+    if eval "$command" >/dev/null 2>&1
     then
         actual="ALLOW"
     else
@@ -52,86 +69,68 @@ run_test() {
 
     if [[ "$actual" == "$expected" ]]
     then
-        RESULT="PASS"
         PASSED=$((PASSED+1))
+        result="PASS"
     else
-        RESULT="FAIL"
         FAILED=$((FAILED+1))
+        result="FAIL"
     fi
 
-    printf "%s : %s\n" "$(basename "$manifest")" "$RESULT" >> "$DETAILS"
+    cat >> "$DETAILS" <<EOF
+Test: $description
+Expected: $expected
+Actual: $actual
+Result: $result
+----------------------------------------
+EOF
 
-    delete_manifest "$manifest" "$TARGET_NS"
 }
 
 ###############################################################################
-# Execute tests
+# Test 1
+# DNS resolution should work
 ###############################################################################
 
-for FILE in "$TEST_DIR"/*.yaml
-do
+run_test \
+"DNS Resolution" \
+"kubectl exec -n connectivity-tests test-allow-internet -- nslookup kubernetes.default.svc.cluster.local" \
+"ALLOW"
 
-    TOTAL=$((TOTAL+1))
+###############################################################################
+# Test 2
+# Internet should work
+###############################################################################
 
-    NAME=$(basename "$FILE")
+run_test \
+"Internet Access" \
+"kubectl exec -n connectivity-tests test-allow-internet -- curl -I https://example.com" \
+"ALLOW"
 
-    POD="${NAME%.yaml}"
+###############################################################################
+# Test 3
+# Internet should be blocked
+###############################################################################
 
-    log_info "Testing $NAME"
+run_test \
+"Internet Deny" \
+"kubectl exec -n connectivity-tests test-deny-internet -- curl -I https://example.com" \
+"BLOCK"
 
-    case "$NAME" in
+###############################################################################
+# Test 4
+# Cross namespace should be blocked
+###############################################################################
 
-        allow-dns.yaml)
+run_test \
+"Cross Namespace Access" \
+"kubectl exec -n connectivity-tests test-allow-internet -- curl -I http://isolated-service.isolated-target.svc.cluster.local" \
+"BLOCK"
 
-            run_test \
-                "$FILE" \
-                "$POD" \
-                "ALLOW" \
-                "nslookup kubernetes.default.svc.cluster.local"
+###############################################################################
+# Cleanup
+###############################################################################
 
-            ;;
-
-        allow-api.yaml)
-
-            run_test \
-                "$FILE" \
-                "$POD" \
-                "ALLOW" \
-                "wget --spider --timeout=5 https://kubernetes.default.svc"
-
-            ;;
-
-        deny-external.yaml)
-
-            run_test \
-                "$FILE" \
-                "$POD" \
-                "BLOCK" \
-                "wget --spider --timeout=5 https://google.com"
-
-            ;;
-
-        deny-cross-namespace.yaml)
-
-            run_test \
-                "$FILE" \
-                "$POD" \
-                "BLOCK" \
-                "wget --spider --timeout=5 http://nginx.baseline.svc.cluster.local"
-
-            ;;
-
-        *)
-
-            log_warn "Skipping unknown test $NAME"
-
-            TOTAL=$((TOTAL-1))
-
-            ;;
-
-    esac
-
-done
+kubectl delete -f "$TEST_FILE" --ignore-not-found
 
 ###############################################################################
 
@@ -139,29 +138,12 @@ NPER=$(score "$PASSED" "$TOTAL")
 
 cat > "$JSON_DIR/nper.json" <<EOF
 {
-  "framework":"Kubernetes MSEF",
   "metric":"NPER",
-  "timestamp":"$(timestamp)",
-  "total":$TOTAL,
+  "total_tests":$TOTAL,
   "correct_decisions":$PASSED,
   "incorrect_decisions":$FAILED,
   "score":$NPER
 }
-EOF
-
-cat > "$TXT_DIR/nper.txt" <<EOF
-==========================================
-Network Policy Enforcement Rate
-==========================================
-
-Total Tests         : $TOTAL
-Correct Decisions   : $PASSED
-Incorrect Decisions : $FAILED
-
-NPER                : $NPER
-
-Generated : $(timestamp)
-
 EOF
 
 cat "$JSON_DIR/nper.json"
