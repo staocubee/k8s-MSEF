@@ -8,7 +8,7 @@ resources:
   - kyverno/application.yaml
   - falco/application.yaml
   - falco-side-kick/application.yaml
-  - security-policy.yaml
+  - policy/application.yaml
   - external-secrets/application.yaml
   - eck/application.yaml
   - elasticsearch/application.yaml
