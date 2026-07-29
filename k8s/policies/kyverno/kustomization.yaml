@@ -8,3 +8,4 @@ resources:
   - require-external-secret-store.yaml
   - require-sealed-secret.yaml
   - restrict-secret-volume.yaml
+  - restrict-configmap.yaml

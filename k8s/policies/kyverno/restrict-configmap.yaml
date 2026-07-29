@@ -1,0 +1,47 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-sensitive-configmaps
+
+spec:
+  validationFailureAction: Enforce
+
+  background: true
+
+  rules:
+
+    - name: block-sensitive-configmap-data
+
+      match:
+        any:
+          - resources:
+              kinds:
+                - ConfigMap
+              namespaces:
+                - hardened
+
+      validate:
+
+        message: "Sensitive data must not be stored inside ConfigMaps."
+
+        deny:
+
+          conditions:
+
+            any:
+
+              - key: "{{ request.object.data.DB_PASSWORD || '' }}"
+                operator: NotEquals
+                value: ""
+
+              - key: "{{ request.object.data.API_KEY || '' }}"
+                operator: NotEquals
+                value: ""
+
+              - key: "{{ request.object.data.SECRET_KEY || '' }}"
+                operator: NotEquals
+                value: ""
+
+              - key: "{{ request.object.data.TOKEN || '' }}"
+                operator: NotEquals
+                value: ""

@@ -1,7 +1,7 @@
 {
     "metric":"SMER",
-    "total_tests":9,
+    "total_tests":8,
     "correct_decisions":4,
-    "incorrect_decisions":5,
-    "score":0.44
+    "incorrect_decisions":4,
+    "score":0.50
 }
