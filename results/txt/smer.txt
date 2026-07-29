@@ -3,10 +3,10 @@ Secrets Management Enforcement Rate
 ==========================================
 
 Total Tests         : 9
-Correct Decisions   : 2
-Incorrect Decisions : 7
+Correct Decisions   : 4
+Incorrect Decisions : 5
 
-SMER                : 0.22
+SMER                : 0.44
 
-Generated : Wed Jul 29 18:14:39 WAT 2026
+Generated : Wed Jul 29 18:37:52 WAT 2026
 

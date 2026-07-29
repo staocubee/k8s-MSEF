@@ -3,7 +3,6 @@ kind: Kustomization
 
 resources:
   - hardcoded-secret.yaml
-  - missing-secret.yaml
   - plaintext-configmap.yaml
   - valid-external-secret.yaml
   - external-secret-with-clustersecretstore.yaml

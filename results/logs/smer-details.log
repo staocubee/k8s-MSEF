@@ -2,13 +2,13 @@ Test: external-secret-with-clustersecretstore.yaml
 Result: ALLOWED (Unexpected)
 ----------------------------------------
 Test: hardcoded-secret.yaml
-Result: ALLOWED (Unexpected)
+Result: BLOCKED
 ----------------------------------------
 Test: kustomization.yaml
 Result: ALLOWED (Unexpected)
 ----------------------------------------
 Test: missing-secret.yaml
-Result: BLOCKED
+Result: ALLOWED (Unexpected)
 ----------------------------------------
 Test: plaintext-configmap.yaml
 Result: ALLOWED (Unexpected)
@@ -17,10 +17,10 @@ Test: sealed-secret.yaml
 Result: ALLOWED (Unexpected)
 ----------------------------------------
 Test: secret-env-variable.yaml
-Result: ALLOWED (Unexpected)
+Result: BLOCKED
 ----------------------------------------
 Test: secret-volume-without-policy.yaml
-Result: ALLOWED (Unexpected)
+Result: BLOCKED
 ----------------------------------------
 Test: valid-external-secret.yaml
 Result: ALLOWED

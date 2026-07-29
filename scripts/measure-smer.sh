@@ -18,24 +18,18 @@ source scripts/lib/metrics.sh
 source scripts/lib/output.sh
 
 init_framework
-
 print_banner "Secrets Management Enforcement Rate (SMER)"
-
 TEST_DIR="${TEST_DIR:-k8s/secrets-test}"
 TARGET_NS="${TARGET_NS:-hardened}"
-
 require_namespace "$TARGET_NS"
-
 # Either Gatekeeper or Kyverno policies should exist
 require_policy_engine
-
 TOTAL=0
 PASSED=0
 FAILED=0
 
 DETAILS="$LOG_DIR/smer-details.log"
 : > "$DETAILS"
-
 ###############################################################################
 # Execute tests
 ###############################################################################
@@ -44,11 +38,13 @@ for FILE in "$TEST_DIR"/*.yaml
 do
 
     TOTAL=$((TOTAL+1))
-
     NAME=$(basename "$FILE")
-
+    case "$NAME" in
+    kustomization.yaml)
+        continue
+        ;;
+    esac
     log_info "Testing $NAME"
-
     OUTPUT=$(apply_dry_run "$FILE" "$TARGET_NS" || true)
 
     ###########################################################
