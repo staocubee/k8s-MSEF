@@ -16,7 +16,7 @@ Result: ALLOWED (Unexpected)
 Test: sealed-secret.yaml
 Result: ALLOWED (Unexpected)
 ----------------------------------------
-Test: secret-enc-variable.yaml
+Test: secret-env-variable.yaml
 Result: ALLOWED (Unexpected)
 ----------------------------------------
 Test: secret-volume-without-policy.yaml
