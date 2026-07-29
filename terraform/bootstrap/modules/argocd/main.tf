@@ -39,6 +39,14 @@ resource "helm_release" "argocd" {
         params = {
           "server.insecure" = true
         }
+
+      cm = {
+        "resource.customizations.ignoreDifferences.apps_Deployment" = <<-EOT
+    jsonPointers:
+    - /status/terminatingReplicas
+    EOT
+          }
+
       }
     })
   ]
