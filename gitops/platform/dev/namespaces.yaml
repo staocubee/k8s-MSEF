@@ -9,6 +9,14 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: database
+  labels:
+    environment: dev
+    platform-component: database
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: gatekeeper-system
   labels:
     environment: dev
