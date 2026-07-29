@@ -30,6 +30,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Ensures complete git history for diff/metric scripts
+
+      - name: Create results directory
+        run: mkdir -p results
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -41,85 +46,45 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Install GKE auth plugin
-        if: github.event.inputs.action != 'fmt'
         run: |
           gcloud components install gke-gcloud-auth-plugin --quiet || true
           echo "USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> "$GITHUB_ENV"
 
-      - name: Reset kubeconfig
-        if: github.event.inputs.action != 'fmt'
-        run: |
-          rm -rf "$HOME/.kube"
-          mkdir -p "$HOME/.kube"
-
       - name: Get GKE credentials
-        if: github.event.inputs.action != 'fmt'
-        continue-on-error: ${{ github.event.inputs.action == 'destroy' || github.event.inputs.action == 'destroy-plan' }}
         run: |
           gcloud container clusters get-credentials "${{ github.event.inputs.environment }}-msef-gke" \
             --region "$GCP_REGION" \
             --project "$GCP_PROJECT_ID"
 
       - name: Verify cluster access
-        if: github.event.inputs.action != 'fmt' && github.event.inputs.action != 'destroy' && github.event.inputs.action != 'destroy-plan'
         run: |
           kubectl config current-context
           kubectl get nodes
-          kubectl get ns
+          kubectl get pods -n baseline
+          kubectl get pods -n hardened
+          kubectl get pods -n falco
 
       - name: Install required packages
         run: |
           sudo apt-get update
           sudo apt-get install -y bc
 
-      - name: Get GKE credentials
-        run: |
-          gcloud container clusters get-credentials "${{ github.event.inputs.environment }}-msef-gke" \
-            --region "$GCP_REGION" \
-            --project "$GCP_PROJECT_ID"
-
-      - name: Verify cluster access
-        run: |
-          kubectl get nodes
-          kubectl get pods -n baseline
-          kubectl get pods -n hardened
-          kubectl get pods -n falco
-
       - name: Make scripts executable
         run: chmod +x scripts/*.sh
 
-      - name: Run MBR
-        run: scripts/measure-mbr.sh | tee results/mbr-result.txt
-
-      - name: Run NPER
-        run: scripts/measure-nper.sh | tee results/nper-result.txt
-
-      - name: Run SMER
-        run: scripts/measure-smer.sh | tee results/smer-result.txt
-
-      - name: Run PES
-        run: scripts/measure-pes.sh | tee results/pes-result.txt
-
-      - name: Run SPR
-        run: scripts/measure-spr.sh | tee results/spr-result.txt
-
-      - name: Run IES
-        run: scripts/measure-ies.sh | tee results/ies-result.txt
-
-      - name: Run RDR
-        run: scripts/measure-rdr.sh | tee results/rdr-result.txt
-
-      - name: Run MTTD
-        run: scripts/measure-mttd.sh | tee results/mttd-result.txt
-
-      - name: Run FPR
-        run: scripts/measure-fpr.sh | tee results/fpr-result.txt
-
-      - name: Run RRSR
-        run: scripts/measure-rrsr.sh | tee results/rrsr-result.txt
-
-      - name: Run DES
-        run: scripts/measure-des.sh | tee results/des-result.txt
+      - name: Run Security Measurement Metrics
+        run: |
+          scripts/measure-mbr.sh | tee results/mbr-result.txt
+          scripts/measure-nper.sh | tee results/nper-result.txt
+          scripts/measure-smer.sh | tee results/smer-result.txt
+          scripts/measure-pes.sh | tee results/pes-result.txt
+          scripts/measure-spr.sh | tee results/spr-result.txt
+          scripts/measure-ies.sh | tee results/ies-result.txt
+          scripts/measure-rdr.sh | tee results/rdr-result.txt
+          scripts/measure-mttd.sh | tee results/mttd-result.txt
+          scripts/measure-fpr.sh | tee results/fpr-result.txt
+          scripts/measure-rrsr.sh | tee results/rrsr-result.txt
+          scripts/measure-des.sh | tee results/des-result.txt
 
       - name: Generate reports
         run: |
@@ -130,5 +95,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: security-evaluation-${{ github.event.inputs.environment }}
-          path: |
-            results/
+          path: results/
