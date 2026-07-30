@@ -22,7 +22,7 @@ spec:
 
       containers:
       - name: kre
-        image: staocube/msef-kre-handler:latest
+        image: staocube/msef-kre-handler:v1.0.0
 
         securityContext:
           allowPrivilegeEscalation: false
