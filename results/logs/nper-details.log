@@ -13,6 +13,9 @@ Result: ALLOWED (Unexpected)
 Test: isolated-service.yaml
 Result: ALLOWED (Unexpected)
 ----------------------------------------
+Test: network-policy-test.yaml
+Result: ALLOWED (Unexpected)
+----------------------------------------
 Test: test-allow-internet.yaml
 Result: ALLOWED (Unexpected)
 ----------------------------------------
