@@ -2,23 +2,13 @@
 Supply-Chain Policy Rejection Rate (SPR)
 ==========================================
 
-Total Unsigned Images
+Total Tests : 10
 
-10
+Blocked     : 10
 
-Blocked
+Allowed     : 0
 
-10
+SPR         : 1.00
 
-Allowed
-
-0
-
-SPR
-
-1.00
-
-Generated
-
-Thu Jul 16 15:58:23 WAT 2026
+Generated : Thu Jul 30 15:44:05 WAT 2026
 

@@ -1,0 +1,130 @@
+Attempt : 1
+Result  : BLOCKED
+
+Error from server: error when creating "/tmp/unsigned-image-1.yaml": admission webhook "mutate.kyverno.svc-fail" denied the request: 
+
+resource Pod/hardened/unsigned-test-1-nginx was blocked due to the following policies 
+
+verify-signed-images:
+  verify-staocube-cosign-signature: 'failed to verify image docker.io/staocube/unsigned-test:1.0:
+    .attestors[0].entries[0].keys: no signatures found'
+
+----------------------------------------
+
+Attempt : 2
+Result  : BLOCKED
+
+Error from server: error when creating "/tmp/unsigned-image-2.yaml": admission webhook "mutate.kyverno.svc-fail" denied the request: 
+
+resource Pod/hardened/unsigned-test-2-nginx was blocked due to the following policies 
+
+verify-signed-images:
+  verify-staocube-cosign-signature: 'failed to verify image docker.io/staocube/unsigned-test:1.0:
+    .attestors[0].entries[0].keys: no signatures found'
+
+----------------------------------------
+
+Attempt : 3
+Result  : BLOCKED
+
+Error from server: error when creating "/tmp/unsigned-image-3.yaml": admission webhook "mutate.kyverno.svc-fail" denied the request: 
+
+resource Pod/hardened/unsigned-test-3-nginx was blocked due to the following policies 
+
+verify-signed-images:
+  verify-staocube-cosign-signature: 'failed to verify image docker.io/staocube/unsigned-test:1.0:
+    .attestors[0].entries[0].keys: no signatures found'
+
+----------------------------------------
+
+Attempt : 4
+Result  : BLOCKED
+
+Error from server: error when creating "/tmp/unsigned-image-4.yaml": admission webhook "mutate.kyverno.svc-fail" denied the request: 
+
+resource Pod/hardened/unsigned-test-4-nginx was blocked due to the following policies 
+
+verify-signed-images:
+  verify-staocube-cosign-signature: 'failed to verify image docker.io/staocube/unsigned-test:1.0:
+    .attestors[0].entries[0].keys: no signatures found'
+
+----------------------------------------
+
+Attempt : 5
+Result  : BLOCKED
+
+Error from server: error when creating "/tmp/unsigned-image-5.yaml": admission webhook "mutate.kyverno.svc-fail" denied the request: 
+
+resource Pod/hardened/unsigned-test-5-nginx was blocked due to the following policies 
+
+verify-signed-images:
+  verify-staocube-cosign-signature: 'failed to verify image docker.io/staocube/unsigned-test:1.0:
+    .attestors[0].entries[0].keys: no signatures found'
+
+----------------------------------------
+
+Attempt : 6
+Result  : BLOCKED
+
+Error from server: error when creating "/tmp/unsigned-image-6.yaml": admission webhook "mutate.kyverno.svc-fail" denied the request: 
+
+resource Pod/hardened/unsigned-test-6-nginx was blocked due to the following policies 
+
+verify-signed-images:
+  verify-staocube-cosign-signature: 'failed to verify image docker.io/staocube/unsigned-test:1.0:
+    .attestors[0].entries[0].keys: no signatures found'
+
+----------------------------------------
+
+Attempt : 7
+Result  : BLOCKED
+
+Error from server: error when creating "/tmp/unsigned-image-7.yaml": admission webhook "mutate.kyverno.svc-fail" denied the request: 
+
+resource Pod/hardened/unsigned-test-7-nginx was blocked due to the following policies 
+
+verify-signed-images:
+  verify-staocube-cosign-signature: 'failed to verify image docker.io/staocube/unsigned-test:1.0:
+    .attestors[0].entries[0].keys: no signatures found'
+
+----------------------------------------
+
+Attempt : 8
+Result  : BLOCKED
+
+Error from server: error when creating "/tmp/unsigned-image-8.yaml": admission webhook "mutate.kyverno.svc-fail" denied the request: 
+
+resource Pod/hardened/unsigned-test-8-nginx was blocked due to the following policies 
+
+verify-signed-images:
+  verify-staocube-cosign-signature: 'failed to verify image docker.io/staocube/unsigned-test:1.0:
+    .attestors[0].entries[0].keys: no signatures found'
+
+----------------------------------------
+
+Attempt : 9
+Result  : BLOCKED
+
+Error from server: error when creating "/tmp/unsigned-image-9.yaml": admission webhook "mutate.kyverno.svc-fail" denied the request: 
+
+resource Pod/hardened/unsigned-test-9-nginx was blocked due to the following policies 
+
+verify-signed-images:
+  verify-staocube-cosign-signature: 'failed to verify image docker.io/staocube/unsigned-test:1.0:
+    .attestors[0].entries[0].keys: no signatures found'
+
+----------------------------------------
+
+Attempt : 10
+Result  : BLOCKED
+
+Error from server: error when creating "/tmp/unsigned-image-10.yaml": admission webhook "mutate.kyverno.svc-fail" denied the request: 
+
+resource Pod/hardened/unsigned-test-10-nginx was blocked due to the following policies 
+
+verify-signed-images:
+  verify-staocube-cosign-signature: 'failed to verify image docker.io/staocube/unsigned-test:1.0:
+    .attestors[0].entries[0].keys: no signatures found'
+
+----------------------------------------
+

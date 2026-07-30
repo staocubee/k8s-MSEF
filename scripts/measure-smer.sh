@@ -30,12 +30,7 @@ for FILE in "$TEST_DIR"/*.yaml
 do
 
     NAME=$(basename "$FILE")
-
-    case "$NAME" in
-        kustomization.yaml)
-            continue
-            ;;
-    esac
+    [[ "$NAME" == "kustomization.yaml" ]] && continue
 
     TOTAL=$((TOTAL+1))
 

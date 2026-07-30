@@ -23,13 +23,3 @@ Expected: BLOCK
 Actual: BLOCK
 Result: PASS
 ----------------------------------------
-Test: secret-volume-without-policy.yaml
-Expected: BLOCK
-Actual: BLOCK
-Result: PASS
-----------------------------------------
-Test: valid-external-secret.yaml
-Expected: ALLOW
-Actual: ALLOW
-Result: PASS
-----------------------------------------

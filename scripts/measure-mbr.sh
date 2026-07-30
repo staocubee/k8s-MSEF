@@ -31,6 +31,7 @@ do
     TOTAL=$((TOTAL+1))
 
     NAME=$(basename "$FILE")
+    [[ "$NAME" == "kustomization.yaml" ]] && continue
 
     log_info "Testing $NAME"
 

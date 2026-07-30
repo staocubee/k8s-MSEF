@@ -1,9 +1,12 @@
 ==========================================
-Integrity Effectiveness Score
+Integrity Effectiveness Score (IES)
 ==========================================
 
-Supply Chain Protection Rate : null
+Supply-Chain Policy Rejection Rate : 1.00
 
 ------------------------------------------
 
-IES                          : null
+IES                                : 1.00
+
+Generated : Thu Jul 30 15:58:57 WAT 2026
+

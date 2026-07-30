@@ -1,6 +1,6 @@
 {
   "metric":"SPR",
-  "total":10,
+  "total_tests":10,
   "blocked":10,
   "allowed":0,
   "score":1.00
