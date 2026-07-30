@@ -2,11 +2,5 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - allow-dns-and-internet.yaml
-  - deny-cross-namespace-ingress.yaml
-  - deny-internet-egress.yaml
-  - isolated-app.yaml
-  - isolated-service.yaml
-  - test-allow-internet.yaml
-  - test-deny-internet.yaml
+  - network-policy-test.yaml
   

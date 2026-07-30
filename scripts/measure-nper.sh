@@ -85,47 +85,37 @@ Result: $result
 EOF
 
 }
-
 ###############################################################################
-# Test 1
-# DNS resolution should work
+# Test 1: DNS resolution should work
 ###############################################################################
-
 run_test \
 "DNS Resolution" \
-"kubectl exec -n connectivity-tests test-allow-internet -- nslookup kubernetes.default.svc.cluster.local" \
+"kubectl exec -n connectivity-tests test-allow-internet -- curl -s --connect-timeout 5 https://kubernetes.default.svc.cluster.local -k" \
 "ALLOW"
 
 ###############################################################################
-# Test 2
-# Internet should work
+# Test 2: Internet should work
 ###############################################################################
-
 run_test \
 "Internet Access" \
-"kubectl exec -n connectivity-tests test-allow-internet -- curl -I https://example.com" \
+"kubectl exec -n connectivity-tests test-allow-internet -- curl -s -I --connect-timeout 5 --max-time 10 https://example.com" \
 "ALLOW"
 
 ###############################################################################
-# Test 3
-# Internet should be blocked
+# Test 3: Internet should be blocked
 ###############################################################################
-
 run_test \
 "Internet Deny" \
-"kubectl exec -n connectivity-tests test-deny-internet -- curl -I https://example.com" \
+"kubectl exec -n connectivity-tests test-deny-internet -- curl -s -I --connect-timeout 5 --max-time 10 https://example.com" \
 "BLOCK"
 
 ###############################################################################
-# Test 4
-# Cross namespace should be blocked
+# Test 4: Cross namespace should be blocked
 ###############################################################################
-
 run_test \
 "Cross Namespace Access" \
-"kubectl exec -n connectivity-tests test-allow-internet -- curl -I http://isolated-service.isolated-target.svc.cluster.local" \
+"kubectl exec -n connectivity-tests test-allow-internet -- curl -s -I --connect-timeout 5 --max-time 10 http://isolated-service.isolated-target.svc.cluster.local" \
 "BLOCK"
-
 ###############################################################################
 # Cleanup
 ###############################################################################
