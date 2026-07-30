@@ -35,6 +35,8 @@ spec:
             - cert-manager
             - falco
             - gatekeeper-system
+            - sealed-secret
+            - external-secret
 
         features:
           admissionReports:

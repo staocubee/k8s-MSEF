@@ -25,6 +25,8 @@ spec:
             - cert-manager
             - kyverno
             - falco
+            - sealed-secret
+            - external-secret
 
         audit:
           interval: 60
