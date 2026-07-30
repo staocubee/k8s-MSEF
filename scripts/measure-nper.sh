@@ -30,7 +30,11 @@ DETAILS="$LOG_DIR/nper-details.log"
 # Deploy test environment
 ###############################################################################
 
-kubectl apply -f "$TEST_FILE"
+if [ -d "$TEST_FILE" ]; then
+    kubectl apply -f "$TEST_FILE/"
+else
+    kubectl apply -f "$TEST_FILE"
+fi
 
 kubectl wait \
     --for=condition=Ready \
@@ -49,6 +53,9 @@ kubectl wait \
     pod/isolated-app \
     -n isolated-target \
     --timeout=120s
+
+# Give CNI 3 seconds to ensure eBPF/iptables rules are synchronized
+sleep 3
 
 ###############################################################################
 # Helper
@@ -90,7 +97,7 @@ EOF
 ###############################################################################
 run_test \
 "DNS Resolution" \
-"kubectl exec -n connectivity-tests test-allow-internet -- host example.com" \
+"kubectl exec -n connectivity-tests test-allow-internet -- curl -s --connect-timeout 5 -o /dev/null -w '%{http_code}' https://example.com" \
 "ALLOW"
 
 ###############################################################################

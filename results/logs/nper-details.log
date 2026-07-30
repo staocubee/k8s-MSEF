@@ -1,12 +1,12 @@
-Test: four.yaml
+Test: allow-dns-and-internet.yaml
 Result: ALLOWED (Unexpected)
 ----------------------------------------
-Test: one.yaml
+Test: deny-cross-namespace-ingress.yaml
 Result: ALLOWED (Unexpected)
 ----------------------------------------
-Test: three.yaml
+Test: deny-internet-egress.yaml
 Result: ALLOWED (Unexpected)
 ----------------------------------------
-Test: two.yaml
+Test: isolated-app-service.yaml
 Result: ALLOWED (Unexpected)
 ----------------------------------------
