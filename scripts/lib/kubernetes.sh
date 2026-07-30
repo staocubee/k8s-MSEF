@@ -4,6 +4,17 @@
 # Kubernetes Library
 ###############################################################################
 
+require_namespace() {
+
+    local ns="$1"
+
+    kubectl get namespace "$ns" >/dev/null 2>&1 || {
+        echo "Namespace '$ns' not found."
+        exit 1
+    }
+
+}
+
 namespace_exists() {
 
     kubectl get ns "$1" >/dev/null 2>&1

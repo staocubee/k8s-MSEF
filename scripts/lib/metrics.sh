@@ -11,6 +11,10 @@ admission_blocked() {
 
 }
 
+calculate_ratio() {
+    score "$1" "$2"
+}
+
 score() {
 
     awk -v a="$1" -v b="$2" \
