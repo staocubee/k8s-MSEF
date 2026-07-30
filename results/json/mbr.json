@@ -1,7 +1,9 @@
 {
-    "metric":"MBR",
-    "total_manifests":20,
-    "blocked":20,
-    "allowed":0,
-    "score":1.00
+  "framework":"Kubernetes MSEF",
+  "metric":"MBR",
+  "timestamp":"2026-07-30T13:18:52Z",
+  "total":21,
+  "blocked":20,
+  "allowed":1,
+  "score":0.95
 }

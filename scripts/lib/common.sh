@@ -10,18 +10,17 @@ set -euo pipefail
 # Project paths
 ###############################################################################
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Set SCRIPT_DIR to the parent 'scripts/' directory, not 'scripts/lib/'
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+# Project root is one level above 'scripts/'
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 RESULTS_DIR="${RESULTS_DIR:-$PROJECT_ROOT/results}"
 
 JSON_DIR="$RESULTS_DIR/json"
-
 TXT_DIR="$RESULTS_DIR/txt"
-
 LOG_DIR="$RESULTS_DIR/logs"
-
 TMP_DIR="$RESULTS_DIR/tmp"
 
 mkdir -p \
@@ -30,85 +29,3 @@ mkdir -p \
     "$TXT_DIR" \
     "$LOG_DIR" \
     "$TMP_DIR"
-
-###############################################################################
-# Colours
-###############################################################################
-
-RED="\033[0;31m"
-GREEN="\033[0;32m"
-YELLOW="\033[1;33m"
-BLUE="\033[0;34m"
-NC="\033[0m"
-
-###############################################################################
-# Logging
-###############################################################################
-
-log_info() {
-    echo -e "${BLUE}[INFO]${NC} $*"
-}
-
-log_warn() {
-    echo -e "${YELLOW}[WARN]${NC} $*"
-}
-
-log_error() {
-    echo -e "${RED}[ERROR]${NC} $*" >&2
-}
-
-log_success() {
-    echo -e "${GREEN}[PASS]${NC} $*"
-}
-
-###############################################################################
-# Timestamp
-###############################################################################
-
-timestamp() {
-    date -u +"%Y-%m-%dT%H:%M:%SZ"
-}
-
-###############################################################################
-# Banner
-###############################################################################
-
-print_banner() {
-
-cat <<EOF
-
-==========================================
-$1
-==========================================
-
-EOF
-
-}
-
-###############################################################################
-# Require command
-###############################################################################
-
-require_command() {
-
-    command -v "$1" >/dev/null 2>&1 || {
-
-        log_error "$1 is not installed."
-
-        exit 1
-
-    }
-
-}
-
-###############################################################################
-# Initialise Framework
-###############################################################################
-
-init_framework() {
-
-    require_command kubectl
-    require_command jq
-    require_command awk
-
-}

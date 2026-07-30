@@ -1,3 +1,20 @@
-Test: network-environment.yaml
-Result: ALLOWED (Unexpected)
+Test: DNS Resolution
+Expected: ALLOW
+Actual: BLOCK
+Result: FAIL
+----------------------------------------
+Test: Internet Allowed
+Expected: ALLOW
+Actual: BLOCK
+Result: FAIL
+----------------------------------------
+Test: Internet Blocked
+Expected: BLOCK
+Actual: BLOCK
+Result: PASS
+----------------------------------------
+Test: Cross Namespace Blocked
+Expected: BLOCK
+Actual: BLOCK
+Result: PASS
 ----------------------------------------
