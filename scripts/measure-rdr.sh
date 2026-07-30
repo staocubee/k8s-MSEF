@@ -18,6 +18,8 @@ source "$SCRIPT_DIR/lib/common.sh"
 source "$SCRIPT_DIR/lib/kubernetes.sh"
 source "$SCRIPT_DIR/lib/falco.sh"
 
+RUNTIME_NS="${RUNTIME_NS:-hardened}"
+require_namespace "$RUNTIME_NS"
 ###############################################################################
 # Configuration
 ###############################################################################
@@ -61,11 +63,8 @@ for FILE in "$TEST_DIR"/*.yaml
 do
 
     [[ -f "$FILE" ]] || continue
-
     TOTAL=$((TOTAL+1))
-
     NAME=$(basename "$FILE" .yaml)
-
     POD=$(kubectl create \
         --dry-run=client \
         -f "$FILE" \
@@ -85,7 +84,7 @@ do
     kubectl wait \
         --for=condition=Ready \
         pod/"$POD" \
-        -n baseline \
+        -n "$RUNTIME_NS" \
         --timeout=60s >/dev/null 2>&1 || true
 
     sleep 20
@@ -127,6 +126,7 @@ EOF
 
     kubectl delete \
         -f "$FILE" \
+        -n "$RUNTIME_NS" \
         --ignore-not-found >/dev/null 2>&1 || true
 
 done

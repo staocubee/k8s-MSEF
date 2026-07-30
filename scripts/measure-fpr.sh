@@ -14,6 +14,8 @@ source "$SCRIPT_DIR/lib/common.sh"
 source "$SCRIPT_DIR/lib/kubernetes.sh"
 source "$SCRIPT_DIR/lib/falco.sh"
 
+RUNTIME_NS="${RUNTIME_NS:-hardened}"
+require_namespace "$RUNTIME_NS"
 ###############################################################################
 
 TEST_DIR="${TEST_DIR:-$PROJECT_ROOT/k8s/benign}"
@@ -68,6 +70,7 @@ do
 
     kubectl delete \
         -f "$FILE" \
+        -n "$RUNTIME_NS" \
         --ignore-not-found >/dev/null 2>&1 || true
 
     kubectl apply -f "$FILE" >/dev/null
@@ -75,7 +78,7 @@ do
     kubectl wait \
         --for=condition=Ready \
         pod/"$POD" \
-        -n baseline \
+        -n "$RUNTIME_NS" \
         --timeout=60s >/dev/null 2>&1 || true
 
     sleep 20
