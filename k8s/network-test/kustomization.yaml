@@ -5,8 +5,6 @@ resources:
   - allow-dns-and-internet.yaml
   - deny-cross-namespace-ingress.yaml
   - deny-internet-egress.yaml
-  - isolated-app.yaml
-  - isolated-service.yaml
-  - test-allow-internet.yaml
-  - test-deny-internet.yaml
+  - isolated-app-service.yaml
+
   

@@ -1,3 +1,12 @@
-Test: network-policy-test.yaml
+Test: four.yaml
+Result: ALLOWED (Unexpected)
+----------------------------------------
+Test: one.yaml
+Result: ALLOWED (Unexpected)
+----------------------------------------
+Test: three.yaml
+Result: ALLOWED (Unexpected)
+----------------------------------------
+Test: two.yaml
 Result: ALLOWED (Unexpected)
 ----------------------------------------
