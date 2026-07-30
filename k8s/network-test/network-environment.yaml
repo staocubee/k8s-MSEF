@@ -1,11 +1,20 @@
+###############################################################################
+# Network Policy Evaluation Environment
+# Multi-Layer Security Evaluation Framework (MSEF)
+###############################################################################
+
+###############################################################################
+# NAMESPACES
+###############################################################################
+
 ---
-# 1. NAMESPACES
 apiVersion: v1
 kind: Namespace
 metadata:
   name: connectivity-tests
   labels:
     ns-type: test-source
+
 ---
 apiVersion: v1
 kind: Namespace
@@ -13,212 +22,457 @@ metadata:
   name: isolated-target
   labels:
     ns-type: restricted-target
----
-# 2. NETWORK POLICIES
 
-# --- Test 1 & 2: Internet Allow + DNS Policy ---
+###############################################################################
+# SERVICE ACCOUNTS
+###############################################################################
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: network-test-sa
+  namespace: connectivity-tests
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: network-test-sa
+  namespace: isolated-target
+
+###############################################################################
+# DEFAULT DENY (CONNECTIVITY TESTS)
+###############################################################################
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+  namespace: connectivity-tests
+
+spec:
+  podSelector: {}
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+###############################################################################
+# DEFAULT DENY (TARGET)
+###############################################################################
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+  namespace: isolated-target
+
+spec:
+  podSelector: {}
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+###############################################################################
+# ALLOW DNS + INTERNET
+###############################################################################
+
+---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-dns-and-internet
   namespace: connectivity-tests
+
 spec:
+
   podSelector:
     matchLabels:
       role: internet-allow
+
   policyTypes:
     - Egress
+
   egress:
-    # Allow DNS lookup (CoreDNS/Kube-DNS)
-    - ports:
+
+    # DNS
+
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+
+      ports:
+
         - protocol: UDP
           port: 53
+
         - protocol: TCP
           port: 53
-    # Allow outbound internet traffic (excluding private RFC1918 IPs)
+
+    # Internet
+
     - to:
+
         - ipBlock:
             cidr: 0.0.0.0/0
             except:
+
               - 10.0.0.0/8
               - 172.16.0.0/12
               - 192.168.0.0/16
----
 
-# --- Test 3: Internet Deny Policy ---
+###############################################################################
+# INTERNET DENY
+###############################################################################
+
+---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: deny-internet-egress
+  name: deny-internet
   namespace: connectivity-tests
+
 spec:
+
   podSelector:
     matchLabels:
       role: internet-deny
+
   policyTypes:
     - Egress
-  egress: [] # Empty egress blocks all outbound traffic
----
 
-# --- Test 4: Cross-Namespace Deny Policy ---
+  egress: []
+
+###############################################################################
+# ALLOW CONNECTIVITY TO TARGET SERVICE
+###############################################################################
+
+---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: deny-cross-namespace-ingress
+  name: allow-from-test-namespace
   namespace: isolated-target
+
 spec:
-  podSelector: {} # Applies to all pods in target namespace
+
+  podSelector:
+    matchLabels:
+      app: target-service
+
   policyTypes:
     - Ingress
-  ingress:
-    # Only allow ingress from pods within its own namespace
-    - from:
-        - podSelector: {}
----
-# 3. WORKLOAD PODS
 
-# --- DNS & Allow-Internet Test Pod ---
+  ingress:
+
+    - from:
+
+        - namespaceSelector:
+            matchLabels:
+              ns-type: test-source
+
+      ports:
+
+        - protocol: TCP
+          port: 80
+
+###############################################################################
+# TEST POD (ALLOW INTERNET)
+###############################################################################
+
+---
 apiVersion: v1
 kind: Pod
+
 metadata:
+
   name: test-allow-internet
+
   namespace: connectivity-tests
+
   labels:
     role: internet-allow
-spec:
-  restartPolicy: Never
-  securityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
-    seccompProfile:
-      type: RuntimeDefault
-  containers:
-    - name: network-runner
-      image: curlimages/curl:8.5.0
-      command:
-        - sleep
-        - "3600"
-      securityContext:
-        allowPrivilegeEscalation: false
-        readOnlyRootFilesystem: true
-        capabilities:
-          drop:
-            - ALL
-      resources:
-        requests:
-          cpu: 50m
-          memory: 64Mi
-        limits:
-          cpu: 100m
-          memory: 128Mi
-      volumeMounts:
-        - name: tmp
-          mountPath: /tmp
-  volumes:
-    - name: tmp
-      emptyDir: {}
----
 
-# --- Internet Deny Test Pod ---
+spec:
+
+  serviceAccountName: network-test-sa
+
+  restartPolicy: Never
+
+  terminationGracePeriodSeconds: 0
+
+  securityContext:
+
+    runAsNonRoot: true
+
+    runAsUser: 1000
+
+    seccompProfile:
+
+      type: RuntimeDefault
+
+  containers:
+
+    - name: runner
+
+      image: curlimages/curl:8.5.0
+
+      command:
+
+        - sleep
+
+        - "3600"
+
+      securityContext:
+
+        allowPrivilegeEscalation: false
+
+        readOnlyRootFilesystem: true
+
+        capabilities:
+
+          drop:
+
+            - ALL
+
+      resources:
+
+        requests:
+
+          cpu: 50m
+
+          memory: 64Mi
+
+        limits:
+
+          cpu: 100m
+
+          memory: 128Mi
+
+      volumeMounts:
+
+        - name: tmp
+
+          mountPath: /tmp
+
+  volumes:
+
+    - name: tmp
+
+      emptyDir: {}
+
+###############################################################################
+# TEST POD (DENY INTERNET)
+###############################################################################
+
+---
 apiVersion: v1
 kind: Pod
+
 metadata:
+
   name: test-deny-internet
-  namespace: connectivity-tests
-  labels:
-    role: internet-deny
-spec:
-  restartPolicy: Never
-  securityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
-    seccompProfile:
-      type: RuntimeDefault
-  containers:
-    - name: network-runner
-      image: curlimages/curl:8.5.0
-      command:
-        - sleep
-        - "3600"
-      securityContext:
-        allowPrivilegeEscalation: false
-        readOnlyRootFilesystem: true
-        capabilities:
-          drop:
-            - ALL
-      resources:
-        requests:
-          cpu: 50m
-          memory: 64Mi
-        limits:
-          cpu: 100m
-          memory: 128Mi
-      volumeMounts:
-        - name: tmp
-          mountPath: /tmp
-  volumes:
-    - name: tmp
-      emptyDir: {}
----
 
-# --- Isolated Target Pod (Used for Cross-Namespace Deny Test) ---
+  namespace: connectivity-tests
+
+  labels:
+
+    role: internet-deny
+
+spec:
+
+  serviceAccountName: network-test-sa
+
+  restartPolicy: Never
+
+  terminationGracePeriodSeconds: 0
+
+  securityContext:
+
+    runAsNonRoot: true
+
+    runAsUser: 1000
+
+    seccompProfile:
+
+      type: RuntimeDefault
+
+  containers:
+
+    - name: runner
+
+      image: curlimages/curl:8.5.0
+
+      command:
+
+        - sleep
+
+        - "3600"
+
+      securityContext:
+
+        allowPrivilegeEscalation: false
+
+        readOnlyRootFilesystem: true
+
+        capabilities:
+
+          drop:
+
+            - ALL
+
+      resources:
+
+        requests:
+
+          cpu: 50m
+
+          memory: 64Mi
+
+        limits:
+
+          cpu: 100m
+
+          memory: 128Mi
+
+      volumeMounts:
+
+        - name: tmp
+
+          mountPath: /tmp
+
+  volumes:
+
+    - name: tmp
+
+      emptyDir: {}
+
+###############################################################################
+# TARGET POD
+###############################################################################
+
+---
 apiVersion: v1
 kind: Pod
+
 metadata:
+
   name: isolated-app
+
   namespace: isolated-target
+
   labels:
+
     app: target-service
+
 spec:
+
+  serviceAccountName: network-test-sa
+
   restartPolicy: Never
+
+  terminationGracePeriodSeconds: 0
+
   securityContext:
+
     runAsNonRoot: true
-    runAsUser: 101 # Unprivileged nginx user
+
+    runAsUser: 101
+
     seccompProfile:
+
       type: RuntimeDefault
+
   containers:
-    - name: web
+
+    - name: nginx
+
       image: nginxinc/nginx-unprivileged:alpine
+
       ports:
+
         - containerPort: 8080
+
       securityContext:
+
         allowPrivilegeEscalation: false
+
         readOnlyRootFilesystem: true
+
         capabilities:
+
           drop:
+
             - ALL
+
       resources:
+
         requests:
+
           cpu: 50m
+
           memory: 64Mi
+
         limits:
+
           cpu: 100m
+
           memory: 128Mi
+
       volumeMounts:
+
         - name: tmp
+
           mountPath: /tmp
+
         - name: cache
+
           mountPath: /var/cache/nginx
+
         - name: run
+
           mountPath: /var/run
+
   volumes:
+
     - name: tmp
       emptyDir: {}
+
     - name: cache
       emptyDir: {}
+
     - name: run
       emptyDir: {}
+
+###############################################################################
+# TARGET SERVICE
+###############################################################################
+
 ---
-# Service for the isolated target pod
 apiVersion: v1
 kind: Service
+
 metadata:
+
   name: isolated-service
+
   namespace: isolated-target
+
 spec:
+
   selector:
+
     app: target-service
+
   ports:
-    - protocol: TCP
-      port: 80
+
+    - port: 80
+
       targetPort: 8080
+
+      protocol: TCP

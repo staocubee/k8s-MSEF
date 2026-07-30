@@ -1,12 +1,3 @@
-Test: allow-dns-and-internet.yaml
-Result: ALLOWED (Unexpected)
-----------------------------------------
-Test: deny-cross-namespace-ingress.yaml
-Result: ALLOWED (Unexpected)
-----------------------------------------
-Test: deny-internet-egress.yaml
-Result: ALLOWED (Unexpected)
-----------------------------------------
-Test: isolated-app-service.yaml
+Test: network-environment.yaml
 Result: ALLOWED (Unexpected)
 ----------------------------------------
