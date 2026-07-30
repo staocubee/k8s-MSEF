@@ -1,20 +1,30 @@
-Window : 1
-Pod    : benign-workload-1
-Result : NO ALERT
+Workload : benign-busybox
+Result   : NO ALERT
 ----------------------------------------
-Window : 2
-Pod    : benign-workload-2
-Result : NO ALERT
+Workload : benign-configmap-reader
+Result   : NO ALERT
 ----------------------------------------
-Window : 3
-Pod    : benign-workload-3
-Result : NO ALERT
+Workload : benign-curl-internal
+Result   : NO ALERT
 ----------------------------------------
-Window : 4
-Pod    : benign-workload-4
-Result : NO ALERT
+Workload : benign-dns-lookup
+Result   : NO ALERT
 ----------------------------------------
-Window : 5
-Pod    : benign-workload-5
-Result : NO ALERT
+Workload : benign-emptydir
+Result   : NO ALERT
+----------------------------------------
+Workload : benign-http-server
+Result   : NO ALERT
+----------------------------------------
+Workload : benign-nginx
+Result   : NO ALERT
+----------------------------------------
+Workload : benign-serviceaccount
+Result   : NO ALERT
+----------------------------------------
+Workload : benign-sleep
+Result   : NO ALERT
+----------------------------------------
+Workload : benign-volume-reader
+Result   : NO ALERT
 ----------------------------------------
