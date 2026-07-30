@@ -2,11 +2,11 @@
 Network Policy Enforcement Rate
 ==========================================
 
-Total Tests         : 8
+Total Tests         : 1
 Correct Decisions   : 0
-Incorrect Decisions : 8
+Incorrect Decisions : 1
 
 NPER                : 0.00
 
-Generated : Thu Jul 30 11:58:58 WAT 2026
+Generated : Thu Jul 30 12:08:23 WAT 2026
 

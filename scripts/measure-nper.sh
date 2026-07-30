@@ -90,7 +90,7 @@ EOF
 ###############################################################################
 run_test \
 "DNS Resolution" \
-"kubectl exec -n connectivity-tests test-allow-internet -- curl -s --connect-timeout 5 https://kubernetes.default.svc.cluster.local -k" \
+"kubectl exec -n connectivity-tests test-allow-internet -- host example.com" \
 "ALLOW"
 
 ###############################################################################
