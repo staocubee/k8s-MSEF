@@ -10,21 +10,13 @@ spec:
       role: internet-allow
   policyTypes:
     - Egress
-
-  securityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
-    seccompProfile:
-      type: RuntimeDefault
-
   egress:
-    # Allow DNS lookup (CoreDNS/Kube-DNS) to any destination on port 53
+    # Allow DNS lookup (CoreDNS/Kube-DNS)
     - ports:
         - protocol: UDP
           port: 53
         - protocol: TCP
           port: 53
-
     # Allow outbound internet traffic (excluding private RFC1918 IPs)
     - to:
         - ipBlock:
