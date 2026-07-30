@@ -1,41 +1,29 @@
 #!/usr/bin/env bash
 
-###############################################################################
-# Multi-Layer Security Evaluation Framework (MSEF)
-#
-# Network Policy Enforcement Rate (NPER)
-#
-###############################################################################
-
 set -euo pipefail
 
 source scripts/lib/common.sh
-source scripts/lib/kubernetes.sh
-source scripts/lib/metrics.sh
 source scripts/lib/output.sh
+source scripts/lib/metrics.sh
 
 init_framework
 print_banner "Network Policy Enforcement Rate (NPER)"
 
-TEST_FILE="${TEST_FILE:-k8s/network-test/network-policy-tests.yaml}"
+ENV_FILE="${PROJECT_ROOT}/k8s/network-test/network-environment.yaml"
 
-TOTAL=4
-PASSED=0
-FAILED=0
-
+JSON_FILE="$JSON_DIR/nper.json"
+TXT_FILE="$TXT_DIR/nper.txt"
 DETAILS="$LOG_DIR/nper-details.log"
+
 : > "$DETAILS"
 
-###############################################################################
-# Deploy test environment
-###############################################################################
+PASS=0
+FAIL=0
 
-if [ -d "$TEST_FILE" ]; then
-    kubectl apply -f "$TEST_FILE/"
-else
-    kubectl apply -f "$TEST_FILE"
-fi
+echo "Deploying network test environment..."
+kubectl apply -f "$ENV_FILE"
 
+echo "Waiting for test pods..."
 kubectl wait \
     --for=condition=Ready \
     pod/test-allow-internet \
@@ -54,20 +42,15 @@ kubectl wait \
     -n isolated-target \
     --timeout=120s
 
-# Give CNI 3 seconds to ensure eBPF/iptables rules are synchronized
-sleep 3
-
-###############################################################################
-# Helper
 ###############################################################################
 
-run_test() {
+run_test () {
 
-    local description="$1"
-    local command="$2"
-    local expected="$3"
+    local name="$1"
+    local expected="$2"
+    shift 2
 
-    if eval "$command" >/dev/null 2>&1
+    if "$@" >/dev/null 2>&1
     then
         actual="ALLOW"
     else
@@ -76,71 +59,81 @@ run_test() {
 
     if [[ "$actual" == "$expected" ]]
     then
-        PASSED=$((PASSED+1))
         result="PASS"
+        PASS=$((PASS+1))
     else
-        FAILED=$((FAILED+1))
         result="FAIL"
+        FAIL=$((FAIL+1))
     fi
 
     cat >> "$DETAILS" <<EOF
-Test: $description
+Test: $name
 Expected: $expected
 Actual: $actual
 Result: $result
 ----------------------------------------
 EOF
-
 }
+
 ###############################################################################
-# Test 1: DNS resolution should work
+# DNS
 ###############################################################################
+
 run_test \
 "DNS Resolution" \
-"kubectl exec -n connectivity-tests test-allow-internet -- curl -s --connect-timeout 5 -o /dev/null -w '%{http_code}' https://example.com" \
-"ALLOW"
+"ALLOW" \
+kubectl exec -n connectivity-tests test-allow-internet -- \
+nslookup kubernetes.default.svc.cluster.local
 
 ###############################################################################
-# Test 2: Internet should work
+# Internet allowed
 ###############################################################################
+
 run_test \
-"Internet Access" \
-"kubectl exec -n connectivity-tests test-allow-internet -- curl -s -I --connect-timeout 5 --max-time 10 https://example.com" \
-"ALLOW"
+"Internet Allowed" \
+"ALLOW" \
+kubectl exec -n connectivity-tests test-allow-internet -- \
+curl -s --connect-timeout 5 https://example.com
 
 ###############################################################################
-# Test 3: Internet should be blocked
+# Internet blocked
 ###############################################################################
+
 run_test \
-"Internet Deny" \
-"kubectl exec -n connectivity-tests test-deny-internet -- curl -s -I --connect-timeout 5 --max-time 10 https://example.com" \
-"BLOCK"
+"Internet Blocked" \
+"BLOCK" \
+kubectl exec -n connectivity-tests test-deny-internet -- \
+curl -s --connect-timeout 5 https://example.com
 
 ###############################################################################
-# Test 4: Cross namespace should be blocked
+# Cross namespace blocked
 ###############################################################################
+
 run_test \
-"Cross Namespace Access" \
-"kubectl exec -n connectivity-tests test-allow-internet -- curl -s -I --connect-timeout 5 --max-time 10 http://isolated-service.isolated-target.svc.cluster.local" \
-"BLOCK"
-###############################################################################
-# Cleanup
-###############################################################################
-
-kubectl delete -f "$TEST_FILE" --ignore-not-found
+"Cross Namespace Blocked" \
+"BLOCK" \
+kubectl exec -n connectivity-tests test-allow-internet -- \
+curl -s --connect-timeout 5 \
+http://isolated-service.isolated-target.svc.cluster.local
 
 ###############################################################################
 
-NPER=$(score "$PASSED" "$TOTAL")
+TOTAL=$((PASS+FAIL))
 
-cat > "$JSON_DIR/nper.json" <<EOF
+NPER=$(score "$PASS" "$TOTAL")
+
+cat > "$JSON_FILE" <<EOF
 {
   "metric":"NPER",
   "total_tests":$TOTAL,
-  "correct_decisions":$PASSED,
-  "incorrect_decisions":$FAILED,
+  "correct_decisions":$PASS,
+  "incorrect_decisions":$FAIL,
   "score":$NPER
 }
 EOF
 
-cat "$JSON_DIR/nper.json"
+cat "$JSON_FILE"
+
+echo
+echo "Cleaning up..."
+kubectl delete -f "$ENV_FILE" --ignore-not-found=true
