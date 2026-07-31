@@ -55,8 +55,7 @@ spec:
 
         extraVolumeMounts:
           - name: runtime-rules
-            mountPath: /etc/falco/rules.d/msef-runtime-rules.yaml
-            subPath: msef-runtime-rules.yaml
+            mountPath: /etc/falco/rules.d
 
         resources:
           requests:

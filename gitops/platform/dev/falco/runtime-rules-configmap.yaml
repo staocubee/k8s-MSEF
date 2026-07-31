@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: msef-runtime-rules
+  name: runtime-rules-configmap
   namespace: falco
 
 data:
