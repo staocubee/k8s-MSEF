@@ -5,34 +5,23 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "6"
+
 spec:
   project: default
+
   source:
     repoURL: https://falcosecurity.github.io/charts
     chart: falco
     targetRevision: 8.0.5
+
     helm:
       values: |
         crds:
           enabled: true
+
         driver:
           enabled: true
           kind: modern_ebpf
-
-        falco:
-          jsonOutput: true
-          logLevel: info
-          priority: debug
-
-        falcosidekick:
-          enabled: false
-
-        falco:
-          jsonOutput: true
-
-          httpOutput:
-            enabled: true
-            url: http://falcosidekick.falco.svc.cluster.local:2801
 
         collectors:
           kubernetes:
@@ -41,6 +30,34 @@ spec:
         serviceAccount:
           create: true
 
+        falco:
+          jsonOutput: true
+          json_include_output_property: true
+          json_include_output_fields_property: true
+          json_include_tags_property: true
+
+          logLevel: info
+          priority: debug
+
+          httpOutput:
+            enabled: true
+            url: http://dev-falcosidekick.falco.svc.cluster.local:2801
+
+        falcosidekick:
+          enabled: true
+          config:
+            debug: false
+
+        extraVolumes:
+          - name: runtime-rules
+            configMap:
+              name: runtime-rules-configmap
+
+        extraVolumeMounts:
+          - name: runtime-rules
+            mountPath: /etc/falco/rules.d/msef-runtime-rules.yaml
+            subPath: msef-runtime-rules.yaml
+
         resources:
           requests:
             cpu: 100m
@@ -48,9 +65,11 @@ spec:
           limits:
             cpu: 500m
             memory: 512Mi
+
   destination:
     server: https://kubernetes.default.svc
     namespace: falco
+
   syncPolicy:
     automated:
       prune: true

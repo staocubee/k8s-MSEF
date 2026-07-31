@@ -26,7 +26,8 @@ spec:
         sleep 3600
     securityContext:
       allowPrivilegeEscalation: false
-      runAsNonRoot: false
+      runAsUser: 1000
+      runAsNonRoot: true
       capabilities:
         drop:
         - ALL

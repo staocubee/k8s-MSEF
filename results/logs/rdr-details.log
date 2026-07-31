@@ -1,0 +1,10 @@
+Attack : network-connect
+Pod    : network-connect-test
+Detected : false
+Time     : 23s
+----------------------------------------
+Attack : outbound-curl
+Pod    : outbound-curl-test
+Detected : false
+Time     : 22s
+----------------------------------------

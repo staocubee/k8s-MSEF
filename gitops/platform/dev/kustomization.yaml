@@ -7,6 +7,8 @@ resources:
   - gatekeeper/application.yaml
   - kyverno/application.yaml
   - falco/application.yaml
+  - falco/runtime-rules-configmap.yaml
+  - falco/rules/msef-runtime-rules.yaml
   - falco-side-kick/application.yaml
   - policy/application.yaml
   - external-secrets/application.yaml
@@ -21,3 +23,4 @@ resources:
   - monitoring/application.yaml
   - gateway/application.yaml
   - kre/application.yaml
+
