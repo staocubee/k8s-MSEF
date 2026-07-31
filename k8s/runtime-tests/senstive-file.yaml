@@ -12,6 +12,10 @@ metadata:
 spec:
   serviceAccountName: hardened-app-sa
   automountServiceAccountToken: true
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
   containers:
   - name: sensitive-file-trigger
     image: busybox:1.36
