@@ -17,6 +17,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/lib/common.sh"
 source "$SCRIPT_DIR/lib/kubernetes.sh"
 source "$SCRIPT_DIR/lib/falco.sh"
+source "$SCRIPT_DIR/lib/metrics.sh"
 
 RUNTIME_NS="${RUNTIME_NS:-hardened}"
 require_namespace "$RUNTIME_NS"

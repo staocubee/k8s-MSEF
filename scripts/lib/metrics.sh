@@ -12,7 +12,7 @@ admission_blocked() {
 }
 
 calculate_ratio() {
-    score "$1" "$2"
+    awk "BEGIN {printf \"%.2f\", $1/$2}"
 }
 
 score() {
