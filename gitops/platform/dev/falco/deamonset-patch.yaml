@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: dev-falco
+  namespace: falco
+
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: falco
+
+  template:
+    spec:
+      volumes:
+        - name: runtime-rules
+          configMap:
+            name: runtime-rules-configmap
+
+      containers:
+        - name: falco
+          volumeMounts:
+            - name: runtime-rules
+              mountPath: /etc/falco/rules.d
+              readOnly: true

@@ -15,26 +15,24 @@ data:
         MSEF_OUTBOUND_CURL
         pod=%k8s.pod.name
         ns=%k8s.ns.name
-        user=%user.name
         cmd=%proc.cmdline
       priority: WARNING
-      tags: [msef, runtime, outbound]
+      tags: [msef, runtime]
 
     - rule: MSEF Network Connect
-      desc: Detect network socket creation
+      desc: Detect outbound network connections
       condition: >
-        outbound and
-        container
+        outbound and container
       output: >
         MSEF_NETWORK_CONNECT
         pod=%k8s.pod.name
         ns=%k8s.ns.name
         fd=%fd.name
       priority: WARNING
-      tags: [msef, runtime, network]
+      tags: [msef, runtime]
 
     - rule: MSEF Sensitive File Read
-      desc: Detect reads of sensitive files
+      desc: Detect sensitive file reads
       condition: >
         open_read and
         (
@@ -46,7 +44,7 @@ data:
         pod=%k8s.pod.name
         file=%fd.name
       priority: CRITICAL
-      tags: [msef, runtime, secrets]
+      tags: [msef, runtime]
 
     - rule: MSEF Root Filesystem Write
       desc: Detect writes to protected filesystem
@@ -62,27 +60,17 @@ data:
         pod=%k8s.pod.name
         file=%fd.name
       priority: CRITICAL
-      tags: [msef, runtime, filesystem]
+      tags: [msef, runtime]
 
     - rule: MSEF Unexpected Shell Execution
-
-      desc: Detect interactive shell execution inside a workload
-
+      desc: Detect interactive shell execution
       condition: >
         spawned_process and
         container and
         proc.name in (bash, sh, ash, dash, zsh)
-
       output: >
-        MSEF Runtime Test - Unexpected shell executed
-        (user=%user.name
-        command=%proc.cmdline
+        MSEF_UNEXPECTED_SHELL
         pod=%k8s.pod.name
-        namespace=%k8s.ns.name)
-
+        cmd=%proc.cmdline
       priority: WARNING
-
-      tags:
-        - msef
-        - runtime
-        - shell
+      tags: [msef, runtime]

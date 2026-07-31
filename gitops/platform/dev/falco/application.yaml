@@ -48,15 +48,6 @@ spec:
           config:
             debug: false
 
-        extraVolumes:
-          - name: runtime-rules
-            configMap:
-              name: runtime-rules-configmap
-
-        extraVolumeMounts:
-          - name: runtime-rules
-            mountPath: /etc/falco/rules.d
-
         resources:
           requests:
             cpu: 100m
