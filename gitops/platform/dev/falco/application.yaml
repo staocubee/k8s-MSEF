@@ -44,7 +44,7 @@ spec:
             url: http://dev-falcosidekick.falco.svc.cluster.local:2801
 
         falcosidekick:
-          enabled: true
+          enabled: false
           config:
             debug: false
 
