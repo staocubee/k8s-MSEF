@@ -1,19 +1,28 @@
-falco:
-  # Driver configuration adjusted for GKE COS nodes
-  driver:
-    kind: modern_ebpf
-    modernEbpf:
-      leastPrivileged: false # Set to false so eBPF can initialize on GKE nodes
+# 1. Driver placement for Helm Chart v4.x
+driver:
+  enabled: true
+  kind: ebpf # Switching to standard eBPF probe for GKE COS compatibility
+  ebpf:
+    hostNetwork: true
 
-  # Ensure JSON output is enabled so Falcosidekick can parse events
+# 2. Main Falco Engine Settings
+falco:
   json_output: true
   json_include_output_property: true
   json_include_tags_property: true
-
-  # Optional: Log level settings
   log_level: info
 
-# ✅ Placed at root level (out of falco block)
+# 3. Mount kernel debug filesystem required by GKE
+mounts:
+  volumeMounts:
+    - mountPath: /sys/kernel/debug
+      name: sys-kernel-debug
+  volumes:
+    - name: sys-kernel-debug
+      hostPath:
+        path: /sys/kernel/debug
+
+# 4. Custom Rules Block (Root Level)
 customRules:
   msef-runtime-rules.yaml: |-
     - rule: MSEF Outbound Curl
@@ -88,7 +97,7 @@ customRules:
         - runtime
         - shell
 
-# Enable Falcosidekick sub-chart
+# 5. Falcosidekick Sub-chart
 falcosidekick:
   enabled: true
   replicaCount: 2
