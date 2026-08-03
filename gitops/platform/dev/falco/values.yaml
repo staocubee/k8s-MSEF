@@ -145,4 +145,4 @@ falcosidekick:
       channel: "#security-alerts"
       minimumpriority: "warning"
 
-    customfields: "environment:production,cluster:main"
+    customfields: "environment:dev,cluster:main"
