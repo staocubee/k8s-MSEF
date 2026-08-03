@@ -9,6 +9,7 @@ resources:
   - policy/application.yaml
   - external-secrets/application.yaml
   - eck/application.yaml
+  - falco/application.yaml
   - elasticsearch/application.yaml
   - kafka/kafka-resources/application.yaml
   - kafka/strimzi-kafka/application.yaml
