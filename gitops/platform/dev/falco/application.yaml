@@ -1,10 +1,11 @@
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: falco
   namespace: argocd
   finalizers:
-    - resources-finalizer.argocd.argoproj.io
+    - argocd.argoproj.io/resources-finalizer
 spec:
   project: default
   source:
@@ -15,7 +16,7 @@ spec:
     helm:
       releaseName: falco
       valueFiles:
-        - '$values/apps/falco/values.yaml'
+        - '$values/gitops/platform/dev/falco/values.yaml'
 
     # Option B: Alternatively, point to your Git repo path if keeping values alongside
     # repoURL: https://github.com/your-org/gitops-repo.git
@@ -29,7 +30,7 @@ spec:
       targetRevision: 4.16.0
       helm:
         valueFiles:
-          - '$values/apps/falco/values.yaml'
+          - '$values/gitops/platform/dev/falco/values.yaml'
     - repoURL: https://github.com/staocubee/k8s-MSEF.git
       targetRevision: HEAD
       ref: values
