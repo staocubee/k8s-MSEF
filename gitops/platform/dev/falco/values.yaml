@@ -1,39 +1,53 @@
-# 1. Driver Configuration for Helm Chart (v4.x / Falco 0.38+)
+# 1. Driver Configuration
 driver:
   enabled: true
   kind: modern_ebpf
+  modernEbpf:
+    bufSizePreset: 4
 
-# Disable the init-container loader entirely
 driverLoader:
   enabled: false
 
-# 2. Main Falco Engine Configuration
+# 2. Falco Engine Configuration
+# (ONLY Falco engine properties belong inside this block)
 falco:
   json_output: true
   json_include_output_property: true
   json_include_tags_property: true
   log_level: info
 
-  # Reduced resource requests to fix the "FailedScheduling" node memory/cpu pressure
-  resources:
-    requests:
-      cpu: 100m
-      memory: 256Mi
-    limits:
-      cpu: 1000m
-      memory: 1024Mi
+# 3. Pod Resource Allocation (Root level in Helm values)
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
 
-# 3. Mount debugfs required by modern eBPF on COS
+# 4. GKE Security Context & Mounts for modern_ebpf
+# GKE COS requires elevated capabilities and tracing mounts to pass scap_init
+podSecurityContext:
+  runAsUser: 0
+
+containerSecurityContext:
+  privileged: true
+
 mounts:
   volumeMounts:
     - mountPath: /sys/kernel/debug
       name: sys-kernel-debug
+    - mountPath: /sys/kernel/tracing
+      name: sys-kernel-tracing
   volumes:
     - name: sys-kernel-debug
       hostPath:
         path: /sys/kernel/debug
+    - name: sys-kernel-tracing
+      hostPath:
+        path: /sys/kernel/tracing
 
-# 4. Custom Rules
+# 5. Custom Security Rules
 customRules:
   msef-runtime-rules.yaml: |-
     - rule: MSEF Outbound Curl
@@ -108,10 +122,10 @@ customRules:
         - runtime
         - shell
 
-# 5. Falcosidekick Sub-chart
+# 6. Falcosidekick Sub-chart
 falcosidekick:
   enabled: true
-  replicaCount: 1 # Scale to 1 to free up CPU/memory on your node pool
+  replicaCount: 1
 
   resources:
     requests:
