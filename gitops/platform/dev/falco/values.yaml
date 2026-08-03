@@ -1,16 +1,20 @@
-# 1. Main Falco Settings
-falco:
-  driver:
-    kind: modern_ebpf
-    modernEbpf:
-      leastPrivileged: false
+# 1. Driver Configuration for Helm Chart (v4.x / Falco 0.38+)
+driver:
+  enabled: true
+  kind: modern_ebpf
 
+# Disable the init-container loader entirely
+driverLoader:
+  enabled: false
+
+# 2. Main Falco Engine Configuration
+falco:
   json_output: true
   json_include_output_property: true
   json_include_tags_property: true
   log_level: info
 
-  # Lower resource requests so nodes don't get choked
+  # Reduced resource requests to fix the "FailedScheduling" node memory/cpu pressure
   resources:
     requests:
       cpu: 100m
@@ -19,7 +23,17 @@ falco:
       cpu: 1000m
       memory: 1024Mi
 
-# 2. Custom Rules (Root Level)
+# 3. Mount debugfs required by modern eBPF on COS
+mounts:
+  volumeMounts:
+    - mountPath: /sys/kernel/debug
+      name: sys-kernel-debug
+  volumes:
+    - name: sys-kernel-debug
+      hostPath:
+        path: /sys/kernel/debug
+
+# 4. Custom Rules
 customRules:
   msef-runtime-rules.yaml: |-
     - rule: MSEF Outbound Curl
@@ -94,10 +108,10 @@ customRules:
         - runtime
         - shell
 
-# 3. Falcosidekick Sub-chart
+# 5. Falcosidekick Sub-chart
 falcosidekick:
   enabled: true
-  replicaCount: 1 # Reduced from 2 to save node resources during dev/testing
+  replicaCount: 1 # Scale to 1 to free up CPU/memory on your node pool
 
   resources:
     requests:
