@@ -1,4 +1,9 @@
-# 1. Driver Configuration
+# 1. Force Host Namespace Access (CRITICAL FOR GKE COS)
+hostPID: true
+hostNetwork: true
+hostIPC: true
+
+# 2. Driver Configuration
 driver:
   enabled: true
   kind: modern_ebpf
@@ -8,15 +13,24 @@ driver:
 driverLoader:
   enabled: false
 
-# 2. Falco Engine Configuration
-# (ONLY Falco engine properties belong inside this block)
+# 3. Security Privileges
+scc:
+  create: true
+
+podSecurityContext:
+  runAsUser: 0
+
+containerSecurityContext:
+  privileged: true
+
+# 4. Falco Engine Configuration
 falco:
   json_output: true
   json_include_output_property: true
   json_include_tags_property: true
   log_level: info
 
-# 3. Pod Resource Allocation (Root level in Helm values)
+# 5. Pod Resource Allocation
 resources:
   requests:
     cpu: 100m
@@ -25,20 +39,15 @@ resources:
     cpu: 500m
     memory: 512Mi
 
-# 4. GKE Security Context & Mounts for modern_ebpf
-# GKE COS requires elevated capabilities and tracing mounts to pass scap_init
-podSecurityContext:
-  runAsUser: 0
-
-containerSecurityContext:
-  privileged: true
-
+# 6. Mount Host Filesystems
 mounts:
   volumeMounts:
     - mountPath: /sys/kernel/debug
       name: sys-kernel-debug
     - mountPath: /sys/kernel/tracing
       name: sys-kernel-tracing
+    - mountPath: /etc/falco
+      name: falco-config
   volumes:
     - name: sys-kernel-debug
       hostPath:
@@ -46,8 +55,10 @@ mounts:
     - name: sys-kernel-tracing
       hostPath:
         path: /sys/kernel/tracing
+    - name: falco-config
+      emptyDir: {}
 
-# 5. Custom Security Rules
+# 7. Custom Rules
 customRules:
   msef-runtime-rules.yaml: |-
     - rule: MSEF Outbound Curl
@@ -122,7 +133,7 @@ customRules:
         - runtime
         - shell
 
-# 6. Falcosidekick Sub-chart
+# 8. Falcosidekick Sub-chart
 falcosidekick:
   enabled: true
   replicaCount: 1
@@ -145,4 +156,4 @@ falcosidekick:
       channel: "#security-alerts"
       minimumpriority: "warning"
 
-    customfields: "environment:dev,cluster:main"
+    customfields: "environment:production,cluster:main"
