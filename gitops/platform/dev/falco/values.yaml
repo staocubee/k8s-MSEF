@@ -53,21 +53,12 @@ resources:
 # 7. GKE COS Required Mounts
 mounts:
   volumeMounts:
-    - mountPath: /sys/kernel/debug
-      name: sys-kernel-debug
     - mountPath: /sys/kernel/tracing
       name: sys-kernel-tracing
-    - mountPath: /etc/falco
-      name: falco-config
   volumes:
-    - name: sys-kernel-debug
-      hostPath:
-        path: /sys/kernel/debug
     - name: sys-kernel-tracing
       hostPath:
         path: /sys/kernel/tracing
-    - name: falco-config
-      emptyDir: {}
 
 # 8. Custom Security Rules
 customRules:
