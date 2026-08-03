@@ -15,6 +15,5 @@ resources:
   - kafka/strimzi-kafka/application.yaml
   - sealedsecret/application.yaml
   - monitoring/application.yaml
-  - gateway/application.yaml
   - kre/application.yaml
 

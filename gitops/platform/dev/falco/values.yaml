@@ -1,23 +1,33 @@
-# 1. Host Namespaces (Required for eBPF probe initialization on GKE COS)
+# 1. Host Namespaces
 hostPID: true
 hostNetwork: true
 hostIPC: true
 
-# 2. Driver Configuration
+# 2. Driver Configuration (Classic eBPF for GKE COS stability)
 driver:
   enabled: true
-  kind: modern_ebpf
-  modernEbpf:
-    bufSizePreset: 4
+  kind: ebpf
+  ebpf:
+    probe:
+      httpProxy: ""
+      httpsProxy: ""
 
 driverLoader:
-  enabled: false
+  enabled: true
+  initContainer:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
 
-# 3. Enable Default Rules Set (Provides base macros like spawned_process, container, etc.)
+# 3. Base Rules Configuration
 falcoRules:
   enabled: true
 
-# 4. Security Context
+# 4. Pod Security Context & Privileges
 podSecurityContext:
   runAsUser: 0
 
@@ -30,28 +40,25 @@ falco:
   json_include_output_property: true
   json_include_tags_property: true
   log_level: info
-  
-  # Base rules configuration explicitly defined
-  rules_files:
-    - /etc/falco/falco_rules.yaml
-    - /etc/falco/rules.d/msef-runtime-rules.yaml
 
-# 6. Optimized Resource Requests (Lowered to fit tight node constraints)
+# 6. Pod Resource Allocation
 resources:
   requests:
-    cpu: 50m
-    memory: 128Mi
-  limits:
-    cpu: 300m
+    cpu: 100m
     memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
 
-# 7. Mounts for eBPF
+# 7. GKE COS Required Mounts
 mounts:
   volumeMounts:
     - mountPath: /sys/kernel/debug
       name: sys-kernel-debug
     - mountPath: /sys/kernel/tracing
       name: sys-kernel-tracing
+    - mountPath: /etc/falco
+      name: falco-config
   volumes:
     - name: sys-kernel-debug
       hostPath:
@@ -59,8 +66,10 @@ mounts:
     - name: sys-kernel-tracing
       hostPath:
         path: /sys/kernel/tracing
+    - name: falco-config
+      emptyDir: {}
 
-# 8. Custom MSEF Rules (Using explicit syscall conditions)
+# 8. Custom Security Rules
 customRules:
   msef-runtime-rules.yaml: |-
     - rule: MSEF Outbound Curl
@@ -170,4 +179,4 @@ falcosidekick:
       channel: "#security-alerts"
       minimumpriority: "warning"
 
-    customfields: "environment:production,cluster:main"
+    customfields: "environment:dev,cluster:main"
