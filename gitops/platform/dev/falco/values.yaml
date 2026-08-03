@@ -1,9 +1,9 @@
 falco:
-  # Driver configuration (modern eBPF recommended for modern Kubernetes kernels)
+  # Driver configuration adjusted for GKE COS nodes
   driver:
     kind: modern_ebpf
     modernEbpf:
-      leastPrivileged: true
+      leastPrivileged: false # Set to false so eBPF can initialize on GKE nodes
 
   # Ensure JSON output is enabled so Falcosidekick can parse events
   json_output: true
@@ -13,101 +13,93 @@ falco:
   # Optional: Log level settings
   log_level: info
 
-  customRules:
-    msef-runtime-rules: |-
-      - rule: MSEF Outbound Curl
-        desc: Detect outbound curl execution
-        condition: >
-          spawned_process and
-          proc.name in (curl,wget)
-        output: >
-          Outbound network tool executed
-          (pod=%k8s.pod.name ns=%k8s.ns.name user=%user.name command=%proc.cmdline)
-        priority: WARNING
-        tags:
-          - msef
-          - runtime
-          - network
+# ✅ Placed at root level (out of falco block)
+customRules:
+  msef-runtime-rules.yaml: |-
+    - rule: MSEF Outbound Curl
+      desc: Detect outbound curl execution
+      condition: >
+        spawned_process and
+        proc.name in (curl,wget)
+      output: >
+        Outbound network tool executed
+        (pod=%k8s.pod.name ns=%k8s.ns.name user=%user.name command=%proc.cmdline)
+      priority: WARNING
+      tags:
+        - msef
+        - runtime
+        - network
 
-      - rule: MSEF Network Connection
-        desc: Detect outbound TCP connection
-        condition: >
-          outbound and
-          fd.typechar = 4 and
-          container
-        output: >
-          Outbound network connection
-          (pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name connection=%fd.name)
-        priority: NOTICE
-        tags:
-          - msef
-          - runtime
-          - network
+    - rule: MSEF Network Connection
+      desc: Detect outbound TCP connection
+      condition: >
+        outbound and
+        fd.typechar = 4 and
+        container
+      output: >
+        Outbound network connection
+        (pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name connection=%fd.name)
+      priority: NOTICE
+      tags:
+        - msef
+        - runtime
+        - network
 
-      - rule: MSEF Sensitive File Read
-        desc: Detect access to sensitive system files
-        condition: >
-          open_read and
-          fd.name in (/etc/shadow,/etc/passwd,/etc/gshadow,/etc/sudoers)
-        output: >
-          Sensitive file accessed
-          (pod=%k8s.pod.name proc=%proc.name file=%fd.name)
-        priority: ERROR
-        tags:
-          - msef
-          - runtime
-          - filesystem
+    - rule: MSEF Sensitive File Read
+      desc: Detect access to sensitive system files
+      condition: >
+        open_read and
+        fd.name in (/etc/shadow,/etc/passwd,/etc/gshadow,/etc/sudoers)
+      output: >
+        Sensitive file accessed
+        (pod=%k8s.pod.name proc=%proc.name file=%fd.name)
+      priority: ERROR
+      tags:
+        - msef
+        - runtime
+        - filesystem
 
-      - rule: MSEF Root Filesystem Write
-        desc: Detect writes to protected filesystem locations
-        condition: >
-          open_write and
-          fd.name startswith /etc
-        output: >
-          Root filesystem write
-          (pod=%k8s.pod.name proc=%proc.name file=%fd.name)
-        priority: ERROR
-        tags:
-          - msef
-          - runtime
-          - filesystem
+    - rule: MSEF Root Filesystem Write
+      desc: Detect writes to protected filesystem locations
+      condition: >
+        open_write and
+        fd.name startswith /etc
+      output: >
+        Root filesystem write
+        (pod=%k8s.pod.name proc=%proc.name file=%fd.name)
+      priority: ERROR
+      tags:
+        - msef
+        - runtime
+        - filesystem
 
-      - rule: MSEF Unexpected Shell Execution
-        desc: Detect interactive shell execution inside a workload
-        condition: >
-          spawned_process and
-          container and
-          proc.name in (bash, sh, ash, dash, zsh)
-        output: >
-          MSEF Runtime Test - Unexpected shell executed
-          (user=%user.name command=%proc.cmdline pod=%k8s.pod.name)
-        priority: WARNING
-        tags:
-          - msef
-          - runtime
-          - shell
-      
+    - rule: MSEF Unexpected Shell Execution
+      desc: Detect interactive shell execution inside a workload
+      condition: >
+        spawned_process and
+        container and
+        proc.name in (bash, sh, ash, dash, zsh)
+      output: >
+        MSEF Runtime Test - Unexpected shell executed
+        (user=%user.name command=%proc.cmdline pod=%k8s.pod.name)
+      priority: WARNING
+      tags:
+        - msef
+        - runtime
+        - shell
 
 # Enable Falcosidekick sub-chart
 falcosidekick:
   enabled: true
   replicaCount: 2
 
-  # Enable the optional web UI for viewing security events visually
   webui:
     enabled: true
 
-  # Configure your output integrations
   config:
-    # Example: Slack notification routing
     slack:
       webhookurl: "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"
       channel: "#security-alerts"
       minimumpriority: "warning"
 
-    # Example: Forwarding events to Loki
-    # loki:
-    #   hostport: "http://loki.monitoring.svc.cluster.local:3100"
-
-    # Optional: Attach custom tags to all alerts
     customfields: "environment:production,cluster:main"
