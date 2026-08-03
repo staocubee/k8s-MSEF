@@ -1,58 +1,38 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
-
 metadata:
-  name: dev-falco
+  name: falco
   namespace: argocd
-
-  annotations:
-    argocd.argoproj.io/sync-wave: "6"
-
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
-
   source:
-    repoURL: https://falcosecurity.github.io/charts
+    # Option A: Direct Helm Repository
     chart: falco
-    targetRevision: 8.0.5
-
+    repoURL: https://falcosecurity.github.io/charts
+    targetRevision: 4.16.0 # Adjust to the desired chart version
     helm:
-      values: |
-        crds:
-          enabled: true
+      releaseName: falco
+      valueFiles:
+        - '$values/apps/falco/values.yaml'
 
-        driver:
-          enabled: true
-          kind: modern_ebpf
-
-        collectors:
-          kubernetes:
-            enabled: true
-
-        serviceAccount:
-          create: true
-
-        falco:
-          jsonOutput: true
-          json_include_output_property: true
-          json_include_output_fields_property: true
-          json_include_tags_property: true
-
-          logLevel: info
-          priority: debug
-
-          httpOutput:
-            enabled: true
-            url: http://dev-falcosidekick.falco.svc.cluster.local:2801
-
-        resources:
-          requests:
-            cpu: 100m
-            memory: 256Mi
-
-          limits:
-            cpu: 500m
-            memory: 512Mi
+    # Option B: Alternatively, point to your Git repo path if keeping values alongside
+    # repoURL: https://github.com/your-org/gitops-repo.git
+    # targetRevision: HEAD
+    # path: apps/falco
+    
+  # Enable value file mapping when referencing external chart repositories
+  sources:
+    - repoURL: https://falcosecurity.github.io/charts
+      chart: falco
+      targetRevision: 4.16.0
+      helm:
+        valueFiles:
+          - '$values/apps/falco/values.yaml'
+    - repoURL: https://github.com/staocubee/k8s-MSEF.git
+      targetRevision: HEAD
+      ref: values
 
   destination:
     server: https://kubernetes.default.svc
@@ -62,6 +42,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
-
     syncOptions:
       - CreateNamespace=true
