@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: shell-test
+  namespace: hardened
+spec:
+  containers:
+  - name: shell
+    image: busybox
+    command:
+      - sh
+      - -c
+      - |
+        sh
+        sleep 3600

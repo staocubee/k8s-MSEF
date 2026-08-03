@@ -9,13 +9,13 @@
   "name":"network-connect",
   "pod":"network-connect-test",
   "detected":false,
-  "time_seconds":24
+  "time_seconds":25
 },
 {
   "name":"outbound-curl",
   "pod":"outbound-curl-test",
   "detected":false,
-  "time_seconds":24
+  "time_seconds":25
 },
 {
   "name":"senstive-file",

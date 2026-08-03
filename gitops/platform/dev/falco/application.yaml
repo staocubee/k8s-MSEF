@@ -1,8 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
+
 metadata:
   name: dev-falco
   namespace: argocd
+
   annotations:
     argocd.argoproj.io/sync-wave: "6"
 
@@ -15,46 +17,8 @@ spec:
     targetRevision: 8.0.5
 
     helm:
-      values: |
-        crds:
-          enabled: true
-
-        driver:
-          enabled: true
-          kind: modern_ebpf
-
-        collectors:
-          kubernetes:
-            enabled: true
-
-        serviceAccount:
-          create: true
-
-        falco:
-          jsonOutput: true
-          json_include_output_property: true
-          json_include_output_fields_property: true
-          json_include_tags_property: true
-
-          logLevel: info
-          priority: debug
-
-          httpOutput:
-            enabled: true
-            url: http://dev-falcosidekick.falco.svc.cluster.local:2801
-
-        falcosidekick:
-          enabled: false
-          config:
-            debug: false
-
-        resources:
-          requests:
-            cpu: 100m
-            memory: 256Mi
-          limits:
-            cpu: 500m
-            memory: 512Mi
+      valueFiles:
+        - values.yaml
 
   destination:
     server: https://kubernetes.default.svc
@@ -64,5 +28,6 @@ spec:
     automated:
       prune: true
       selfHeal: true
+
     syncOptions:
       - CreateNamespace=true
