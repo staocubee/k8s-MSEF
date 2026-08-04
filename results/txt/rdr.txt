@@ -3,8 +3,8 @@ Runtime Detection Rate
 ==========================================
 
 Total Runtime Attacks : 5
-Detected              : 0
+Detected              : 5
 
-RDR                   : 0.00
+RDR                   : 1.00
 
-Generated : Mon Aug  3 14:00:52 WAT 2026
+Generated : Tue Aug  4 19:41:32 WAT 2026

@@ -1,25 +1,25 @@
 Attack : network-connect
 Pod    : network-connect-test
-Detected : false
+Detected : true
 Time     : 25s
 ----------------------------------------
 Attack : outbound-curl
 Pod    : outbound-curl-test
-Detected : false
-Time     : 25s
+Detected : true
+Time     : 26s
 ----------------------------------------
 Attack : senstive-file
 Pod    : sensitive-file-test
-Detected : false
+Detected : true
 Time     : 23s
 ----------------------------------------
 Attack : unexpected-shell
 Pod    : unexpected-shell-test
-Detected : false
-Time     : 23s
+Detected : true
+Time     : 24s
 ----------------------------------------
 Attack : write-root
 Pod    : write-root-test
-Detected : false
-Time     : 23s
+Detected : true
+Time     : 24s
 ----------------------------------------

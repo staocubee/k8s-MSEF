@@ -1,39 +1,39 @@
 {
   "metric":"RDR",
   "total_attacks":5,
-  "detected":0,
-  "score":0.00,
+  "detected":5,
+  "score":1.00,
   "attacks":[
 
 {
   "name":"network-connect",
   "pod":"network-connect-test",
-  "detected":false,
+  "detected":true,
   "time_seconds":25
 },
 {
   "name":"outbound-curl",
   "pod":"outbound-curl-test",
-  "detected":false,
-  "time_seconds":25
+  "detected":true,
+  "time_seconds":26
 },
 {
   "name":"senstive-file",
   "pod":"sensitive-file-test",
-  "detected":false,
+  "detected":true,
   "time_seconds":23
 },
 {
   "name":"unexpected-shell",
   "pod":"unexpected-shell-test",
-  "detected":false,
-  "time_seconds":23
+  "detected":true,
+  "time_seconds":24
 },
 {
   "name":"write-root",
   "pod":"write-root-test",
-  "detected":false,
-  "time_seconds":23
+  "detected":true,
+  "time_seconds":24
 }
   ]
 }

@@ -1,0 +1,11 @@
+==========================================
+Mean Time To Detect
+==========================================
+
+Detection Events : 5
+Total Time       : 122 seconds
+
+MTTD             : 24.40 seconds
+
+Generated : Tue Aug  4 19:44:18 WAT 2026
+
