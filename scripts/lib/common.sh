@@ -56,7 +56,18 @@ NC="\033[0m"
 # Logging
 
 ###############################################################################
+calculate_ratio() {
+    local numerator="$1"
+    local denominator="$2"
 
+    if [[ "$denominator" -eq 0 ]]; then
+        echo "0.00"
+        return
+    fi
+
+    awk -v n="$numerator" -v d="$denominator" \
+        'BEGIN { printf "%.2f", n/d }'
+}
 
 
 log_info() {
