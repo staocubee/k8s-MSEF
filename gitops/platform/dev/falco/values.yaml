@@ -1,38 +1,64 @@
-# 1. Host Namespaces (Required for modern_ebpf process lookup)
-hostPID: true
-hostNetwork: true
-hostIPC: true
-
-# 2. Driver Configuration
+# 1. Driver Selection (Modern eBPF with 2MB Ring Buffer for GKE COS)
 driver:
   enabled: true
   kind: modern_ebpf
   modernEbpf:
-    bufSizePreset: 2  # Crucial for GKE COS: prevents scap_init RLIMIT_MEMLOCK failures
+    bufSizePreset: 2
 
-# 3. Disable the Driver Loader Init Container (Not needed for modern_ebpf)
+# 2. Disable Init Driver Loader (Not required for modern_ebpf)
 driverLoader:
   enabled: false
 
-# 4. Base Rules
-falcoRules:
-  enabled: true
+# 3. Disable falcoctl Artifact Follower Sidecar
+falcoctl:
+  artifact:
+    follow:
+      enabled: false
 
-# 5. Security Context
+# 4. Host Namespaces
+hostPID: true
+hostNetwork: true
+hostIPC: true
+
+# 5. Pod & Container Security Context for GKE COS
 podSecurityContext:
   runAsUser: 0
 
 containerSecurityContext:
   privileged: true
+  allowPrivilegeEscalation: true
+  capabilities:
+    add:
+      - SYS_ADMIN
+      - SYS_RESOURCE
+      - SYS_PTRACE
+      - BPF
+      - PERFMON
+      - SYS_MODULE
 
-# 6. Falco Engine Config
+# 6. Custom Mounts (Only add paths not managed automatically by the Helm chart)
+mounts:
+  volumeMounts:
+    - mountPath: /etc/asl
+      name: asl-dir
+      readOnly: true
+  volumes:
+    - name: asl-dir
+      hostPath:
+        path: /etc/asl
+
+# 7. Engine Configuration
 falco:
+  log_level: debug  # Fixed duplicate key; kept debug to trace scap_init if needed
   json_output: true
   json_include_output_property: true
   json_include_tags_property: true
-  log_level: info
 
-# 7. Resource Allocations
+# 8. Base Rules
+falcoRules:
+  enabled: true
+
+# 9. Resource Allocations
 resources:
   requests:
     cpu: 100m
@@ -41,7 +67,7 @@ resources:
     cpu: 500m
     memory: 512Mi
 
-# 8. Custom Security Rules
+# 10. Custom Security Rules
 customRules:
   msef-runtime-rules.yaml: |-
     - rule: MSEF Outbound Curl
@@ -122,7 +148,7 @@ customRules:
         - runtime
         - shell
 
-# 9. Falcosidekick Integration
+# 11. Falcosidekick Integration
 falcosidekick:
   enabled: true
   replicaCount: 1
