@@ -1,6 +1,8 @@
 {
+  "framework":"Kubernetes MSEF",
   "metric":"FPR",
-  "benign_windows":5,
-  "false_alerts":0,
-  "score":0.00
+  "timestamp":"2026-08-04T20:36:56Z",
+  "benign_workloads":10,
+  "false_alerts":5,
+  "score":0.50
 }

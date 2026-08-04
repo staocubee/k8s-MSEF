@@ -83,84 +83,99 @@ resources:
 # 9. Custom Security Rules
 customRules:
   msef-runtime-rules.yaml: |-
-    - rule: MSEF Outbound Curl
-      desc: Detect outbound curl execution
+    # 1. Maps 1-to-1 with outbound-c2.yaml
+    - rule: MSEF Outbound C2 Traffic
+      desc: Detect outbound network communication attempt via netcat or wget
       condition: >
         evt.type in (execve, execveat) and
         evt.dir = < and
-        proc.name in (curl, wget)
+        container and
+        proc.name in (nc, wget)
       output: >
-        Outbound network tool executed
+        Outbound C2 tool executed
         (pod=%k8s.pod.name ns=%k8s.ns.name user=%user.name command=%proc.cmdline)
       priority: WARNING
       tags:
         - msef
         - runtime
         - network
+        - c2
 
-    - rule: MSEF Network Connection
-      desc: Detect outbound TCP connection
+    # 2. Maps 1-to-1 with metadata-theft.yaml
+    - rule: MSEF Cloud Metadata Server Access
+      desc: Detect access attempts to cloud instance metadata endpoint (IMDS)
       condition: >
         evt.type = connect and
         evt.dir = < and
-        fd.l4proto = tcp and
-        container
+        container and
+        fd.sip = 169.254.169.254
       output: >
-        Outbound network connection
-        (pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name connection=%fd.name)
-      priority: NOTICE
+        Cloud metadata access attempt detected
+        (pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name dest=%fd.rip:%fd.rport)
+      priority: CRITICAL
       tags:
         - msef
         - runtime
-        - network
+        - metadata
+        - credentials
 
-    - rule: MSEF Sensitive File Read
-      desc: Detect access to sensitive system files
+    # 3. Maps 1-to-1 with token-theft.yaml
+    - rule: MSEF Token and Sensitive File Access
+      desc: Detect reading service account tokens or sensitive system credential files
       condition: >
         evt.type in (open, openat, openat2) and
         evt.dir = < and
-        fd.name in (/etc/shadow, /etc/passwd, /etc/gshadow, /etc/sudoers)
+        container and
+        (
+          fd.name startswith /var/run/secrets/kubernetes.io/serviceaccount or
+          fd.name in (/etc/shadow, /etc/passwd, /etc/gshadow, /etc/sudoers)
+        )
       output: >
-        Sensitive file accessed
-        (pod=%k8s.pod.name proc=%proc.name file=%fd.name)
+        Sensitive token or system file accessed
+        (pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name file=%fd.name user=%user.name)
       priority: ERROR
       tags:
         - msef
         - runtime
+        - token
         - filesystem
 
-    - rule: MSEF Root Filesystem Write
-      desc: Detect writes to protected filesystem locations
-      condition: >
-        evt.type in (open, openat, openat2) and
-        evt.dir = < and
-        evt.arg.flags contains O_WRONLY and
-        fd.name startswith /etc
-      output: >
-        Root filesystem write
-        (pod=%k8s.pod.name proc=%proc.name file=%fd.name)
-      priority: ERROR
-      tags:
-        - msef
-        - runtime
-        - filesystem
-
-    - rule: MSEF Unexpected Shell Execution
-      desc: Detect interactive shell execution inside a workload
+    # 4. Maps 1-to-1 with interactive-shell.yaml
+    - rule: MSEF Interactive Shell Execution
+      desc: Detect execution of interactive shell sessions within workload container
       condition: >
         evt.type in (execve, execveat) and
         evt.dir = < and
         container and
-        proc.name in (bash, sh, ash, dash, zsh)
+        proc.name in (sh, bash, ash, dash, zsh) and
+        proc.args contains "-i"
       output: >
-        MSEF Runtime Test - Unexpected shell executed
-        (user=%user.name command=%proc.cmdline pod=%k8s.pod.name)
+        Interactive shell spawned in container
+        (pod=%k8s.pod.name ns=%k8s.ns.name user=%user.name command=%proc.cmdline)
       priority: WARNING
       tags:
         - msef
         - runtime
         - shell
 
+    # 5. Maps 1-to-1 with host-write-attempt.yaml
+    - rule: MSEF Host Filesystem Write Attempt
+      desc: Detect open/openat write attempts to protected locations like /etc
+      condition: >
+        evt.type in (open, openat, openat2) and
+        evt.dir = < and
+        container and
+        (evt.arg.flags contains O_WRONLY or evt.arg.flags contains O_RDWR or evt.arg.flags contains O_CREAT) and
+        fd.name startswith /etc
+      output: >
+        Unauthorized write attempt to protected directory
+        (pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name file=%fd.name)
+      priority: ERROR
+      tags:
+        - msef
+        - runtime
+        - filesystem
+        
 # 10. Falcosidekick Integration
 falcosidekick:
   enabled: true

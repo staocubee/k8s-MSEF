@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: outbound-c2
+  namespace: hardened
+  labels:
+    app: outbound-c2
+    security: runtime-test
+spec:
+  restartPolicy: Never
+  serviceAccountName: hardened-app-sa
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: attack
+    image: busybox:1.36
+    command:
+      - sh
+      - -c
+      - |
+        echo "[+] Simulating Outbound C2 Connection..."
+        nc -z -w 3 1.1.1.1 443 || true
+        wget -q -O- --timeout=2 http://example.com || true
+        sleep 5
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000
+      capabilities:
+        drop:
+          - ALL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi

@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: benign-startup-script
+  namespace: hardened
+  labels:
+    app: benign-startup-script
+    security: runtime-test
+spec:
+  restartPolicy: Never
+
+  serviceAccountName: hardened-app-sa
+
+  automountServiceAccountToken: false
+
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+  containers:
+  - name: attack
+
+    image: busybox:1.36
+
+    command:
+      - sh
+      - -c
+      - |
+        echo "[+] Executing standard non-interactive container entrypoint..."
+        uname -a
+        uptime
+        sleep 5
+
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000
+
+      capabilities:
+        drop:
+          - ALL
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+
+      limits:
+        cpu: 100m
+        memory: 128Mi
