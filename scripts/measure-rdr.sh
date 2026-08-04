@@ -4,8 +4,6 @@
 # Multi-Layer Security Evaluation Framework (MSEF)
 #
 # Runtime Detection Rate (RDR)
-#
-# RDR = Detected Runtime Attacks / Total Runtime Attacks
 ###############################################################################
 
 set -euo pipefail
@@ -20,18 +18,11 @@ source "$SCRIPT_DIR/lib/falco.sh"
 source "$SCRIPT_DIR/lib/metrics.sh"
 
 RUNTIME_NS="${RUNTIME_NS:-hardened}"
+
 require_namespace "$RUNTIME_NS"
-###############################################################################
-# Configuration
-###############################################################################
+require_namespace falco
 
 TEST_DIR="${TEST_DIR:-$PROJECT_ROOT/k8s/runtime-tests}"
-
-RESULTS_DIR="${RESULTS_DIR:-$PROJECT_ROOT/results}"
-
-JSON_DIR="$RESULTS_DIR/json"
-TXT_DIR="$RESULTS_DIR/txt"
-LOG_DIR="$RESULTS_DIR/logs"
 
 mkdir -p \
     "$JSON_DIR" \
@@ -39,33 +30,27 @@ mkdir -p \
     "$LOG_DIR"
 
 DETAILS="$LOG_DIR/rdr-details.log"
+EVENTS_FILE="$JSON_DIR/runtime-events.jsonl"
 
 > "$DETAILS"
+> "$EVENTS_FILE"
 
-###############################################################################
-
-echo "=========================================="
-echo "Runtime Detection Rate (RDR)"
-echo "=========================================="
-
-require_namespace baseline
-require_namespace falco
-
-###############################################################################
+banner "Runtime Detection Rate (RDR)"
 
 TOTAL=0
 DETECTED=0
-
 ATTACK_RESULTS=""
 
 ###############################################################################
 
 for FILE in "$TEST_DIR"/*.yaml
 do
-
     [[ -f "$FILE" ]] || continue
+
     TOTAL=$((TOTAL+1))
+
     NAME=$(basename "$FILE" .yaml)
+
     POD=$(kubectl create \
         --dry-run=client \
         -f "$FILE" \
@@ -92,12 +77,28 @@ do
 
     TIME=$(measure_detection_time "$START")
 
-    if falco_detected "$POD|$NAME"
+    EVENT=$(
+        collect_falco_logs 60s \
+        | jq -c \
+            --arg pod "$POD" \
+            '
+            select(
+                (.output_fields["k8s.pod.name"]==$pod)
+                or
+                (.output|contains($pod))
+            )
+            ' \
+        | tail -1
+    )
+
+    if [[ -n "$EVENT" ]]
     then
 
         FOUND=true
 
         DETECTED=$((DETECTED+1))
+
+        echo "$EVENT" >> "$EVENTS_FILE"
 
         echo "Detected"
 
@@ -117,38 +118,25 @@ do
   \"time_seconds\":${TIME}
 },"
 
-cat >> "$DETAILS" <<EOF
-Attack : $NAME
-Pod    : $POD
-Detected : $FOUND
-Time     : ${TIME}s
+    cat >> "$DETAILS" <<EOF
+Attack     : $NAME
+Pod        : $POD
+Detected   : $FOUND
+Time       : ${TIME}s
 ----------------------------------------
 EOF
 
     kubectl delete \
         -f "$FILE" \
-        -n "$RUNTIME_NS" \
         --ignore-not-found >/dev/null 2>&1 || true
 
 done
 
-###############################################################################
-
 [[ "$TOTAL" -gt 0 ]] || fail "No runtime tests found."
-
-###############################################################################
 
 RDR=$(calculate_ratio "$DETECTED" "$TOTAL")
 
-###############################################################################
-# Remove trailing comma
-###############################################################################
-
 ATTACK_RESULTS=$(echo "$ATTACK_RESULTS" | sed '$ s/,$//')
-
-###############################################################################
-# JSON
-###############################################################################
 
 cat > "$JSON_DIR/rdr.json" <<EOF
 {
@@ -156,15 +144,12 @@ cat > "$JSON_DIR/rdr.json" <<EOF
   "total_attacks":$TOTAL,
   "detected":$DETECTED,
   "score":$RDR,
+  "events_file":"runtime-events.jsonl",
   "attacks":[
 $ATTACK_RESULTS
   ]
 }
 EOF
-
-###############################################################################
-# TXT
-###############################################################################
 
 cat > "$TXT_DIR/rdr.txt" <<EOF
 ==========================================
@@ -175,6 +160,8 @@ Total Runtime Attacks : $TOTAL
 Detected              : $DETECTED
 
 RDR                   : $RDR
+
+Falco Events          : $EVENTS_FILE
 
 Generated : $(date)
 EOF
