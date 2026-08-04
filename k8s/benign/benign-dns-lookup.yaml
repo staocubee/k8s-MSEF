@@ -4,6 +4,7 @@ metadata:
   name: benign-dns-lookup
   namespace: hardened
   labels:
+    msef.test: benign
     app: benign-dns-lookup
 spec:
   serviceAccountName: benign-sa

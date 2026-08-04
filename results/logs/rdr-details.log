@@ -1,25 +1,25 @@
-Attack : network-connect
-Pod    : network-connect-test
-Detected : true
-Time     : 25s
-----------------------------------------
-Attack : outbound-curl
-Pod    : outbound-curl-test
-Detected : true
-Time     : 26s
-----------------------------------------
-Attack : senstive-file
-Pod    : sensitive-file-test
+Attack : host-write-attempt
+Pod    : host-write-attempt
 Detected : true
 Time     : 23s
 ----------------------------------------
-Attack : unexpected-shell
-Pod    : unexpected-shell-test
+Attack : interactive-shell
+Pod    : interactive-shell
 Detected : true
-Time     : 24s
+Time     : 23s
 ----------------------------------------
-Attack : write-root
-Pod    : write-root-test
+Attack : metadata-theft
+Pod    : metadata-theft
 Detected : true
-Time     : 24s
+Time     : 23s
+----------------------------------------
+Attack : outbound-c2
+Pod    : outbound-c2
+Detected : true
+Time     : 23s
+----------------------------------------
+Attack : token-test
+Pod    : token-theft
+Detected : true
+Time     : 23s
 ----------------------------------------

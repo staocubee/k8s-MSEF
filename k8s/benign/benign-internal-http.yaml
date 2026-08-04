@@ -6,6 +6,7 @@ metadata:
   labels:
     app: benign-internal-http
     security: runtime-test
+    msef.test: benign
 spec:
   restartPolicy: Never
 

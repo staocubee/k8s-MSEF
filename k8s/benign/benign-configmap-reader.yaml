@@ -14,6 +14,7 @@ metadata:
   name: benign-configmap-reader
   namespace: hardened
   labels:
+    msef.test: benign
     app: benign-configmap-reader
 spec:
   serviceAccountName: benign-sa

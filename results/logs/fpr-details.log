@@ -1,30 +1,24 @@
-Workload : benign-busybox
-Result   : FALSE ALERT
-----------------------------------------
 Workload : benign-configmap-reader
 Result   : FALSE ALERT
 ----------------------------------------
-Workload : benign-curl-internal
+Workload : benign-dns-lookup
 Result   : FALSE ALERT
 ----------------------------------------
-Workload : benign-dns-lookup
-Result   : NO ALERT
-----------------------------------------
-Workload : benign-emptydir
-Result   : NO ALERT
+Workload : benign-emptydir-write
+Result   : FALSE ALERT
 ----------------------------------------
 Workload : benign-http-server
-Result   : NO ALERT
-----------------------------------------
-Workload : benign-nginx
-Result   : NO ALERT
-----------------------------------------
-Workload : benign-serviceaccount
 Result   : FALSE ALERT
 ----------------------------------------
-Workload : benign-sleep
+Workload : benign-internal-http
+Result   : FALSE ALERT
+----------------------------------------
+Workload : benign-nginx
+Result   : FALSE ALERT
+----------------------------------------
+Workload : benign-startup-script
 Result   : FALSE ALERT
 ----------------------------------------
 Workload : benign-volume-reader
-Result   : NO ALERT
+Result   : FALSE ALERT
 ----------------------------------------

@@ -6,6 +6,7 @@ metadata:
   labels:
     app: benign-startup-script
     security: runtime-test
+    msef.test: benign
 spec:
   restartPolicy: Never
 

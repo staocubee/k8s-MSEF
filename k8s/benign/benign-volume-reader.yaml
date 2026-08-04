@@ -5,6 +5,7 @@ metadata:
   namespace: hardened
   labels:
     app: benign-volume-reader
+    msef.test: benign
 spec:
   serviceAccount: benign-sa
   restartPolicy: Never

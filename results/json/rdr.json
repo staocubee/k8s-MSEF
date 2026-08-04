@@ -6,34 +6,34 @@
   "attacks":[
 
 {
-  "name":"network-connect",
-  "pod":"network-connect-test",
-  "detected":true,
-  "time_seconds":25
-},
-{
-  "name":"outbound-curl",
-  "pod":"outbound-curl-test",
-  "detected":true,
-  "time_seconds":26
-},
-{
-  "name":"senstive-file",
-  "pod":"sensitive-file-test",
+  "name":"host-write-attempt",
+  "pod":"host-write-attempt",
   "detected":true,
   "time_seconds":23
 },
 {
-  "name":"unexpected-shell",
-  "pod":"unexpected-shell-test",
+  "name":"interactive-shell",
+  "pod":"interactive-shell",
   "detected":true,
-  "time_seconds":24
+  "time_seconds":23
 },
 {
-  "name":"write-root",
-  "pod":"write-root-test",
+  "name":"metadata-theft",
+  "pod":"metadata-theft",
   "detected":true,
-  "time_seconds":24
+  "time_seconds":23
+},
+{
+  "name":"outbound-c2",
+  "pod":"outbound-c2",
+  "detected":true,
+  "time_seconds":23
+},
+{
+  "name":"token-test",
+  "pod":"token-theft",
+  "detected":true,
+  "time_seconds":23
 }
   ]
 }
