@@ -56,19 +56,6 @@ NC="\033[0m"
 # Logging
 
 ###############################################################################
-calculate_ratio() {
-    local numerator="$1"
-    local denominator="$2"
-
-    if [[ "$denominator" -eq 0 ]]; then
-        echo "0.00"
-        return
-    fi
-
-    awk -v n="$numerator" -v d="$denominator" \
-        'BEGIN { printf "%.2f", n/d }'
-}
-
 
 log_info() {
 echo -e "${BLUE}[INFO]${NC} $*"
@@ -158,3 +145,29 @@ require_command awk
 
 } 
 
+###############################################################################
+# Calculate ratio (returns value between 0.00 and 1.00)
+###############################################################################
+
+calculate_ratio() {
+
+    local numerator="$1"
+    local denominator="$2"
+
+    if [[ "$denominator" -eq 0 ]]; then
+        echo "0.00"
+        return
+    fi
+
+    awk -v n="$numerator" -v d="$denominator" \
+        'BEGIN { printf "%.2f", n/d }'
+}
+
+###############################################################################
+# Exit with error
+###############################################################################
+
+fail() {
+    log_error "$1"
+    exit 1
+}
