@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: benign-volume-reader
-  namespace: baseline
+  namespace: hardened
   labels:
     app: benign-volume-reader
 spec:

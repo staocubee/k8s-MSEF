@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: app-config
-  namespace: baseline
+  namespace: hardened
 data:
   app.conf: |
     LOG_LEVEL=info
@@ -12,7 +12,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: benign-configmap-reader
-  namespace: baseline
+  namespace: hardened
   labels:
     app: benign-configmap-reader
 spec:

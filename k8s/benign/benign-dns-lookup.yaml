@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: benign-dns-lookup
-  namespace: baseline
+  namespace: hardened
   labels:
     app: benign-dns-lookup
 spec:

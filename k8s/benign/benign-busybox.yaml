@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: benign-busybox
-  namespace: baseline
+  namespace: hardened
 spec:
   restartPolicy: Never
   securityContext:
