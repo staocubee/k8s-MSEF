@@ -1,26 +1,26 @@
-# 1. Driver Selection (Modern eBPF with 2MB Ring Buffer for GKE COS)
+# 1. Driver Selection
 driver:
   enabled: true
   kind: modern_ebpf
   modernEbpf:
     bufSizePreset: 2
+    cpusWithRingBuf: 1  # Standardizes ring buffer allocation across node CPUs
 
-# 2. Disable Init Driver Loader (Not required for modern_ebpf)
+# 2. Disable Unnecessary Loaders
 driverLoader:
   enabled: false
 
-# 3. Disable falcoctl Artifact Follower Sidecar
 falcoctl:
   artifact:
     follow:
       enabled: false
 
-# 4. Host Namespaces
+# 3. Host Namespaces
 hostPID: true
 hostNetwork: true
 hostIPC: true
 
-# 5. Pod & Container Security Context for GKE COS
+# 4. Pod & Container Security Context
 podSecurityContext:
   runAsUser: 0
 
@@ -35,30 +35,42 @@ containerSecurityContext:
       - BPF
       - PERFMON
       - SYS_MODULE
+      - SYS_RAWIO
 
-# 6. Custom Mounts (Only add paths not managed automatically by the Helm chart)
+# 5. Correct Host Mounts for GKE COS Kernel 6.x
 mounts:
   volumeMounts:
+    - mountPath: /sys/kernel/debug
+      name: sys-kernel-debug
+    - mountPath: /sys/kernel/tracing
+      name: sys-kernel-tracing
+      readOnly: true
     - mountPath: /etc/asl
       name: asl-dir
       readOnly: true
   volumes:
+    - name: sys-kernel-debug
+      hostPath:
+        path: /sys/kernel/debug
+    - name: sys-kernel-tracing
+      hostPath:
+        path: /sys/kernel/tracing
     - name: asl-dir
       hostPath:
         path: /etc/asl
 
-# 7. Engine Configuration
+# 6. Logging
 falco:
-  log_level: debug  # Fixed duplicate key; kept debug to trace scap_init if needed
+  log_level: debug
   json_output: true
   json_include_output_property: true
   json_include_tags_property: true
 
-# 8. Base Rules
+# 7. Rules Configuration
 falcoRules:
   enabled: true
 
-# 9. Resource Allocations
+# 8. Resource Allocations
 resources:
   requests:
     cpu: 100m
@@ -67,7 +79,7 @@ resources:
     cpu: 500m
     memory: 512Mi
 
-# 10. Custom Security Rules
+# 9. Custom Security Rules
 customRules:
   msef-runtime-rules.yaml: |-
     - rule: MSEF Outbound Curl
@@ -148,7 +160,7 @@ customRules:
         - runtime
         - shell
 
-# 11. Falcosidekick Integration
+# 10. Falcosidekick Integration
 falcosidekick:
   enabled: true
   replicaCount: 1
