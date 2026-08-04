@@ -1,47 +1,38 @@
-# 1. Host Namespaces
+# 1. Host Namespaces (Required for modern_ebpf process lookup)
 hostPID: true
 hostNetwork: true
 hostIPC: true
 
-# 2. Driver Configuration (Classic eBPF for GKE COS stability)
+# 2. Driver Configuration
 driver:
   enabled: true
-  kind: ebpf
-  ebpf:
-    probe:
-      httpProxy: ""
-      httpsProxy: ""
+  kind: modern_ebpf
+  modernEbpf:
+    bufSizePreset: 2  # Crucial for GKE COS: prevents scap_init RLIMIT_MEMLOCK failures
 
+# 3. Disable the Driver Loader Init Container (Not needed for modern_ebpf)
 driverLoader:
-  enabled: true
-  initContainer:
-    resources:
-      requests:
-        cpu: 50m
-        memory: 64Mi
-      limits:
-        cpu: 200m
-        memory: 128Mi
+  enabled: false
 
-# 3. Base Rules Configuration
+# 4. Base Rules
 falcoRules:
   enabled: true
 
-# 4. Pod Security Context & Privileges
+# 5. Security Context
 podSecurityContext:
   runAsUser: 0
 
 containerSecurityContext:
   privileged: true
 
-# 5. Falco Engine Config
+# 6. Falco Engine Config
 falco:
   json_output: true
   json_include_output_property: true
   json_include_tags_property: true
   log_level: info
 
-# 6. Pod Resource Allocation
+# 7. Resource Allocations
 resources:
   requests:
     cpu: 100m
@@ -49,16 +40,6 @@ resources:
   limits:
     cpu: 500m
     memory: 512Mi
-
-# 7. GKE COS Required Mounts
-mounts:
-  volumeMounts:
-    - mountPath: /sys/kernel/tracing
-      name: sys-kernel-tracing
-  volumes:
-    - name: sys-kernel-tracing
-      hostPath:
-        path: /sys/kernel/tracing
 
 # 8. Custom Security Rules
 customRules:
@@ -170,4 +151,4 @@ falcosidekick:
       channel: "#security-alerts"
       minimumpriority: "warning"
 
-    customfields: "environment:dev,cluster:main"
+    customfields: "environment:production,cluster:main"
