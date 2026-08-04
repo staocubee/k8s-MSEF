@@ -4,7 +4,7 @@ driver:
   kind: modern_ebpf
   modernEbpf:
     bufSizePreset: 2
-    cpusWithRingBuf: 1  # Standardizes ring buffer allocation across node CPUs
+    cpusWithRingBuf: 1  # Forces 1 single ring buffer shared across all CPUs
 
 # 2. Disable Unnecessary Loaders
 driverLoader:
@@ -38,26 +38,27 @@ containerSecurityContext:
       - SYS_RAWIO
 
 # 5. Correct Host Mounts for GKE COS Kernel 6.x
-mounts:
-  volumeMounts:
-    - mountPath: /sys/kernel/debug
-      name: sys-kernel-debug
-    - mountPath: /sys/kernel/tracing
-      name: sys-kernel-tracing
-      readOnly: true
-    - mountPath: /etc/asl
-      name: asl-dir
-      readOnly: true
-  volumes:
-    - name: sys-kernel-debug
-      hostPath:
-        path: /sys/kernel/debug
-    - name: sys-kernel-tracing
-      hostPath:
-        path: /sys/kernel/tracing
-    - name: asl-dir
-      hostPath:
-        path: /etc/asl
+# (Using chart-native extraVolumes and extraVolumeMounts)
+extraVolumeMounts:
+  - mountPath: /sys/kernel/debug
+    name: sys-kernel-debug
+  - mountPath: /sys/kernel/tracing
+    name: sys-kernel-tracing
+    readOnly: true
+  - mountPath: /etc/asl
+    name: asl-dir
+    readOnly: true
+
+extraVolumes:
+  - name: sys-kernel-debug
+    hostPath:
+      path: /sys/kernel/debug
+  - name: sys-kernel-tracing
+    hostPath:
+      path: /sys/kernel/tracing
+  - name: asl-dir
+    hostPath:
+      path: /etc/asl
 
 # 6. Logging
 falco:

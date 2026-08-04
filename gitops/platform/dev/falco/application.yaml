@@ -12,7 +12,7 @@ spec:
     # Option A: Direct Helm Repository
     chart: falco
     repoURL: https://falcosecurity.github.io/charts
-    targetRevision: 4.16.0 # Adjust to the desired chart version
+    targetRevision: 8.0.5 # Adjust to the desired chart version
     helm:
       releaseName: falco
       valueFiles:
@@ -27,7 +27,7 @@ spec:
   sources:
     - repoURL: https://falcosecurity.github.io/charts
       chart: falco
-      targetRevision: 4.16.0
+      targetRevision: 8.0.5
       helm:
         valueFiles:
           - '$values/gitops/platform/dev/falco/values.yaml'
