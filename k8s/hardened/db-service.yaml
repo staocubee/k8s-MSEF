@@ -8,6 +8,12 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  name: benign-sa
+  namespace: hardened
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
   name: network-test-sa
   namespace: baseline
 ---
