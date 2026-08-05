@@ -19,7 +19,12 @@ spec:
   containers:
   - name: volume-reader
     image: busybox:1.36
-    command: ["sh", "-c", "ls -la /mnt/data && sleep 5"]
+    command:
+      - ls
+
+    args:
+      - -la
+      - /mnt/data
     securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true

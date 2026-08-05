@@ -19,7 +19,11 @@ spec:
   containers:
   - name: dns-lookup
     image: busybox:1.36
-    command: ["sh", "-c", "nslookup kubernetes.default.svc.cluster.local && sleep 5"]
+    command:
+      - nslookup
+
+    args:
+      - kubernetes.default.svc.cluster.local
     securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true

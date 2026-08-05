@@ -21,16 +21,11 @@ spec:
 
   containers:
   - name: attack
-
-    image: busybox:1.36
-
+    image: curlimages/curl
     command:
-      - sh
-      - -c
-      - |
-        echo "[+] Performing standard internal health check..."
-        nc -z -w 2 10.96.0.10 53 || true
-        sleep 5
+      - curl
+    args:
+      - http://kubernetes.default.svc
 
     securityContext:
       allowPrivilegeEscalation: false

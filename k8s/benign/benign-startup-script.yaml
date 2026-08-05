@@ -25,13 +25,10 @@ spec:
     image: busybox:1.36
 
     command:
-      - sh
-      - -c
-      - |
-        echo "[+] Executing standard non-interactive container entrypoint..."
-        uname -a
-        uptime
-        sleep 5
+      - sleep
+
+    args:
+      - "5"
 
     securityContext:
       allowPrivilegeEscalation: false
