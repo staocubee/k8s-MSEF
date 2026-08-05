@@ -5,7 +5,7 @@ namespace: hardened
 
 resources:
   - serviceaccount.yaml
-  - role.yaml
+  - clusterrole.yaml
   - rolebinding.yaml
   - configmap.yaml
   - deployment.yaml
