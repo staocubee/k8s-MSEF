@@ -24,6 +24,10 @@ require_namespace falco
 
 TEST_DIR="${TEST_DIR:-$PROJECT_ROOT/k8s/runtime-tests}"
 
+JSON_DIR="$RESULTS_DIR/json"
+TXT_DIR="$RESULTS_DIR/txt"
+LOG_DIR="$RESULTS_DIR/logs"
+
 mkdir -p \
     "$JSON_DIR" \
     "$TXT_DIR" \
