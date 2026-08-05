@@ -33,7 +33,7 @@ spec:
       - "index.docker.io/staocube/*"
       mutateDigest: true
       required: true
-      verifyDigest: false
+      verifyDigest: true
       attestors:
       - entries:
         - keys:
