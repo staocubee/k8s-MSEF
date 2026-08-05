@@ -200,9 +200,9 @@ falcosidekick:
         memory: 64Mi
 
   config:
-    slack:
-      webhookurl: "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"
-      channel: "#security-alerts"
+     webhook:
+      address: http://msef-kre-handler.hardened.svc.cluster.local:8080/webhook
       minimumpriority: "warning"
 
-    customfields: "environment:production,cluster:main"
+      customheaders:
+        Content-Type: application/json
