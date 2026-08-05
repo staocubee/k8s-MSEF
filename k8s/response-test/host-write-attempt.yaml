@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: host-write-attempt
+  namespace: hardened
+  labels:
+    app: host-write-attempt
+    security: runtime-test
+spec:
+  restartPolicy: Never
+  serviceAccountName: hardened-app-sa
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: attack
+    image: busybox:1.36
+    command:
+      - sh
+      - -c
+      - |
+        echo "[+] Attempting unauthorized write to /etc/testfile..."
+        echo "malicious data" > /etc/testfile 2>/dev/null || true
+        touch /etc/unauthorized_config 2>/dev/null || true
+        sleep 300
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000
+      capabilities:
+        drop:
+          - ALL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi

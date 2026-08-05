@@ -1,19 +1,29 @@
-Test: DNS Resolution
+Test: NPER DNS Resolution
 Expected: ALLOW
-Actual: BLOCK
-Result: FAIL
+Actual: ALLOW
+Result: PASS
 ----------------------------------------
-Test: Internet Allowed
-Expected: ALLOW
-Actual: BLOCK
-Result: FAIL
-----------------------------------------
-Test: Internet Blocked
+Test: IER DNS Resolution
 Expected: BLOCK
 Actual: BLOCK
 Result: PASS
 ----------------------------------------
-Test: Cross Namespace Blocked
+Test: NPER Internet Allowed
+Expected: ALLOW
+Actual: ALLOW
+Result: PASS
+----------------------------------------
+Test: IER Internet Blocked
+Expected: BLOCK
+Actual: BLOCK
+Result: PASS
+----------------------------------------
+Test: NPER Cross Namespace
+Expected: ALLOW
+Actual: ALLOW
+Result: PASS
+----------------------------------------
+Test: IER Cross Namespace
 Expected: BLOCK
 Actual: BLOCK
 Result: PASS

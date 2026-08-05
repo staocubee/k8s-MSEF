@@ -74,9 +74,41 @@ spec:
     - Egress
 
 ###############################################################################
-# ALLOW DNS + INTERNET
+# CROSSNS ALLOW (CONNECTIVITY TESTS)
 ###############################################################################
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-cross-namespace
+  namespace: connectivity-tests
+spec:
+  podSelector:
+    matchLabels:
+      role: crossns-allow
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              ns-type: restricted-target
+          podSelector:
+            matchLabels:
+              app: target-service
+      ports:
+        - protocol: TCP
+          port: 8080
 
+    # Also allow DNS
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+###############################################################################
+# ALLOW DNS + INTERNET
+###############################################################################          
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -85,29 +117,28 @@ metadata:
   namespace: connectivity-tests
 spec:
   podSelector:
-    matchLabels:
-      role: internet-allow
+    matchExpressions:
+    - key: role
+      operator: In
+      values:
+        - internet-allow
+        - crossns-allow
   policyTypes:
     - Egress
   egress:
-    # DNS
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: kube-system
-      ports:
-        - protocol: UDP
-          port: 53
-        - protocol: TCP
-          port: 53
-    # Internet
-    - to:
-        - ipBlock:
-            cidr: 0.0.0.0/0
-            except:
-              - 10.0.0.0/8
-              - 172.16.0.0/12
-              - 192.168.0.0/16
+  - ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+
+  - to:
+    - ipBlock:
+        cidr: 0.0.0.0/0
+        except:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
 
 ###############################################################################
 # ALLOW CONNECTIVITY TO TARGET SERVICE
@@ -126,16 +157,16 @@ spec:
   policyTypes:
     - Ingress
   ingress:
-    - from:
-      - namespaceSelector:
-          matchLabels:
-            ns-type: test-source
-        podSelector:
-          matchLabels:
-            role: crossns-allow
-      ports:
-        - protocol: TCP
-          port: 80
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          ns-type: test-source
+      podSelector:
+        matchLabels:
+          role: crossns-allow
+    ports:
+    - protocol: TCP
+      port: 8080
 
 ###############################################################################
 # TEST POD (ALLOW INTERNET)

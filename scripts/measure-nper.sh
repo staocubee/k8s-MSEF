@@ -32,7 +32,7 @@ kubectl wait \
 
 kubectl wait \
     --for=condition=Ready \
-    pod/test-deny-internet \
+    pod/test-default-deny \
     -n connectivity-tests \
     --timeout=120s
 
@@ -76,45 +76,65 @@ EOF
 }
 
 ###############################################################################
-# DNS
+# NPER DNS ALLOW
 ###############################################################################
 
 run_test \
-"DNS Resolution" \
+"NPER DNS Resolution" \
 "ALLOW" \
 kubectl exec -n connectivity-tests test-allow-internet -- \
 nslookup kubernetes.default.svc.cluster.local
 
 ###############################################################################
-# Internet allowed
+# IER DNS BLOCK
 ###############################################################################
 
 run_test \
-"Internet Allowed" \
+"IER DNS Resolution" \
+"BLOCK" \
+kubectl exec -n connectivity-tests test-default-deny -- \
+nslookup kubernetes.default.svc.cluster.local
+
+###############################################################################
+# NPER Internet allowed
+###############################################################################
+
+run_test \
+"NPER Internet Allowed" \
 "ALLOW" \
 kubectl exec -n connectivity-tests test-allow-internet -- \
 curl -s --connect-timeout 5 https://example.com
 
 ###############################################################################
-# Internet blocked
+# IER Internet blocked
 ###############################################################################
 
 run_test \
-"Internet Blocked" \
+"IER Internet Blocked" \
 "BLOCK" \
-kubectl exec -n connectivity-tests test-deny-internet -- \
-curl -s --connect-timeout 5 https://example.com
+kubectl exec -n connectivity-tests test-default-deny -- \
+curl -s --connect-timeout 5 https://216.58.214.14
 
 ###############################################################################
-# Cross namespace blocked
+# NPERCross namespace Allowed
 ###############################################################################
-
 run_test \
-"Cross Namespace Blocked" \
-"BLOCK" \
-kubectl exec -n connectivity-tests test-allow-internet -- \
+"NPER Cross Namespace" \
+"ALLOW" \
+kubectl exec -n connectivity-tests test-crossns -- \
 curl -s --connect-timeout 5 \
 http://isolated-service.isolated-target.svc.cluster.local
+
+###############################################################################
+# IER Cross namespace blocked
+###############################################################################
+run_test \
+"IER Cross Namespace" \
+"BLOCK" \
+kubectl exec -n connectivity-tests test-default-deny -- \
+curl -s --connect-timeout 5 \
+http://isolated-service.isolated-target.svc.cluster.local
+
 
 ###############################################################################
 

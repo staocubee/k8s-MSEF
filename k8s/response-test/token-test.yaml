@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: token-theft
+  namespace: hardened
+  labels:
+    app: token-theft
+    security: runtime-test
+spec:
+  restartPolicy: Never
+  serviceAccountName: hardened-app-sa
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: attack
+    image: busybox:1.36
+    command:
+      - sh
+      - -c
+      - |
+        echo "[+] Attempting Token & Sensitive File Theft..."
+        cat /var/run/secrets/kubernetes.io/serviceaccount/token 2>/dev/null || true
+        cat /etc/shadow 2>/dev/null || true
+        cat /etc/passwd 2>/dev/null || true
+        sleep 300
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000
+      capabilities:
+        drop:
+          - ALL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi

@@ -7,8 +7,8 @@ metadata:
 data:
 
   TARGET_RULES: |
-    Sensitive File Access
-    Write below root
-    Terminal shell
-    Outbound connection
-    Outbound Curl
+    MSEF Host Filesystem Write Attempt
+    MSEF Token and Sensitive File Access
+    MSEF Cloud Metadata Server Access
+    MSEF Outbound C2 Traffic
+    MSEF Interactive Shell Execution

@@ -1,0 +1,30 @@
+==========================================
+Runtime Response Success Rate
+==========================================
+
+Runtime Attacks
+
+       5
+
+Successful Responses
+
+0
+
+Failed Responses
+
+5
+
+Average Remediation Latency
+
+0.00 seconds
+
+------------------------------------------
+
+RRSR
+
+0.00
+
+Generated
+
+Wed Aug  5 13:41:54 WAT 2026
+

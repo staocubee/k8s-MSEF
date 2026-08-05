@@ -1,0 +1,30 @@
+Rule      : MSEF Host Filesystem Write Attempt
+Namespace : null
+Pod       : null
+Latency   : nulls
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : null
+Pod       : null
+Latency   : nulls
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : null
+Pod       : null
+Latency   : nulls
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Outbound C2 Traffic
+Namespace : null
+Pod       : null
+Latency   : nulls
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : null
+Pod       : null
+Latency   : nulls
+Result    : FAILED
+----------------------------------------

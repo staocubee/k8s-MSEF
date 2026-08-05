@@ -1,0 +1,8 @@
+{
+  "metric":"RRSR",
+  "runtime_attacks":       5,
+  "successful_responses":0,
+  "failed_responses":5,
+  "average_latency_seconds":0.00,
+  "score":0.00
+}

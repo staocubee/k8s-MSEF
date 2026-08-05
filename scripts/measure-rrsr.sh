@@ -41,7 +41,7 @@ DETAILS="$LOG_DIR/rrsr-details.log"
 # KRE metrics file
 ###############################################################################
 
-METRICS_FILE="${METRICS_FILE:-/tmp/rrsr-events.jsonl}"
+METRICS_FILE="${METRICS_FILE:-$RESULTS_DIR/json/runtime-events.jsonl}"
 
 ###############################################################################
 
