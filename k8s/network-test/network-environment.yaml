@@ -51,10 +51,8 @@ kind: NetworkPolicy
 metadata:
   name: default-deny
   namespace: connectivity-tests
-
 spec:
   podSelector: {}
-
   policyTypes:
     - Ingress
     - Egress
@@ -69,10 +67,8 @@ kind: NetworkPolicy
 metadata:
   name: default-deny
   namespace: isolated-target
-
 spec:
   podSelector: {}
-
   policyTypes:
     - Ingress
     - Egress
@@ -87,66 +83,31 @@ kind: NetworkPolicy
 metadata:
   name: allow-dns-and-internet
   namespace: connectivity-tests
-
 spec:
-
   podSelector:
     matchLabels:
       role: internet-allow
-
   policyTypes:
     - Egress
-
   egress:
-
     # DNS
-
     - to:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: kube-system
-
       ports:
-
         - protocol: UDP
           port: 53
-
         - protocol: TCP
           port: 53
-
     # Internet
-
     - to:
-
         - ipBlock:
             cidr: 0.0.0.0/0
             except:
-
               - 10.0.0.0/8
               - 172.16.0.0/12
               - 192.168.0.0/16
-
-###############################################################################
-# INTERNET DENY
-###############################################################################
-
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: deny-internet
-  namespace: connectivity-tests
-
-spec:
-
-  podSelector:
-    matchLabels:
-      role: internet-deny
-
-  policyTypes:
-    - Egress
-
-  egress: []
 
 ###############################################################################
 # ALLOW CONNECTIVITY TO TARGET SERVICE
@@ -158,26 +119,21 @@ kind: NetworkPolicy
 metadata:
   name: allow-from-test-namespace
   namespace: isolated-target
-
 spec:
-
   podSelector:
     matchLabels:
       app: target-service
-
   policyTypes:
     - Ingress
-
   ingress:
-
     - from:
-
-        - namespaceSelector:
-            matchLabels:
-              ns-type: test-source
-
+      - namespaceSelector:
+          matchLabels:
+            ns-type: test-source
+        podSelector:
+          matchLabels:
+            role: crossns-allow
       ports:
-
         - protocol: TCP
           port: 80
 
@@ -188,82 +144,44 @@ spec:
 ---
 apiVersion: v1
 kind: Pod
-
 metadata:
-
   name: test-allow-internet
-
   namespace: connectivity-tests
-
   labels:
     role: internet-allow
-
 spec:
-
   serviceAccountName: network-test-sa
-
   restartPolicy: Never
-
   terminationGracePeriodSeconds: 0
-
   securityContext:
-
     runAsNonRoot: true
-
     runAsUser: 1000
-
     seccompProfile:
-
       type: RuntimeDefault
-
   containers:
-
     - name: runner
-
       image: curlimages/curl:8.5.0
-
       command:
-
         - sleep
-
         - "3600"
-
       securityContext:
-
         allowPrivilegeEscalation: false
-
         readOnlyRootFilesystem: true
-
         capabilities:
-
           drop:
-
             - ALL
-
       resources:
-
         requests:
-
           cpu: 50m
-
           memory: 64Mi
-
         limits:
-
           cpu: 100m
-
           memory: 128Mi
-
       volumeMounts:
-
         - name: tmp
-
           mountPath: /tmp
-
   volumes:
-
     - name: tmp
-
       emptyDir: {}
 
 ###############################################################################
@@ -273,83 +191,44 @@ spec:
 ---
 apiVersion: v1
 kind: Pod
-
 metadata:
-
-  name: test-deny-internet
-
+  name: test-default-deny
   namespace: connectivity-tests
-
   labels:
-
-    role: internet-deny
-
+    role: isolated
 spec:
-
   serviceAccountName: network-test-sa
-
   restartPolicy: Never
-
   terminationGracePeriodSeconds: 0
-
   securityContext:
-
     runAsNonRoot: true
-
     runAsUser: 1000
-
     seccompProfile:
-
       type: RuntimeDefault
-
   containers:
-
     - name: runner
-
       image: curlimages/curl:8.5.0
-
       command:
-
         - sleep
-
         - "3600"
-
       securityContext:
-
         allowPrivilegeEscalation: false
-
         readOnlyRootFilesystem: true
-
         capabilities:
-
           drop:
-
             - ALL
-
       resources:
-
         requests:
-
           cpu: 50m
-
           memory: 64Mi
-
         limits:
-
           cpu: 100m
-
           memory: 128Mi
-
       volumeMounts:
-
         - name: tmp
-
           mountPath: /tmp
-
   volumes:
-
     - name: tmp
-
       emptyDir: {}
 
 ###############################################################################
@@ -359,95 +238,97 @@ spec:
 ---
 apiVersion: v1
 kind: Pod
-
 metadata:
-
   name: isolated-app
-
   namespace: isolated-target
-
   labels:
-
     app: target-service
-
 spec:
-
   serviceAccountName: network-test-sa
-
   restartPolicy: Never
-
   terminationGracePeriodSeconds: 0
-
   securityContext:
-
     runAsNonRoot: true
-
     runAsUser: 101
-
     seccompProfile:
-
       type: RuntimeDefault
-
   containers:
-
     - name: nginx
-
       image: nginxinc/nginx-unprivileged:alpine
-
       ports:
-
         - containerPort: 8080
-
       securityContext:
-
         allowPrivilegeEscalation: false
-
         readOnlyRootFilesystem: true
-
         capabilities:
-
           drop:
-
             - ALL
-
       resources:
-
         requests:
-
           cpu: 50m
-
           memory: 64Mi
-
         limits:
-
           cpu: 100m
-
           memory: 128Mi
-
       volumeMounts:
-
         - name: tmp
-
           mountPath: /tmp
-
         - name: cache
-
           mountPath: /var/cache/nginx
-
         - name: run
-
           mountPath: /var/run
-
   volumes:
-
     - name: tmp
       emptyDir: {}
-
     - name: cache
       emptyDir: {}
-
     - name: run
       emptyDir: {}
+###############################################################################
+# Dedicated Cross namespace Connectivity Test Pod
+###############################################################################
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-crossns
+  namespace: connectivity-tests
+  labels:
+    role: crossns-allow
+spec:
+  serviceAccountName: network-test-sa
+  restartPolicy: Never
+  terminationGracePeriodSeconds: 0
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: runner
+    image: curlimages/curl:8.5.0
+    command:
+      - sleep
+      - "3600"
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+        - ALL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
+    volumeMounts:
+    - name: tmp
+      mountPath: /tmp
+  volumes:
+  - name: tmp
+    emptyDir: {}
 
 ###############################################################################
 # TARGET SERVICE
@@ -456,23 +337,13 @@ spec:
 ---
 apiVersion: v1
 kind: Service
-
 metadata:
-
   name: isolated-service
-
   namespace: isolated-target
-
 spec:
-
   selector:
-
     app: target-service
-
   ports:
-
     - port: 80
-
       targetPort: 8080
-
       protocol: TCP

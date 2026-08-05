@@ -1,24 +1,21 @@
 Workload : benign-configmap-reader
-Result   : FALSE ALERT
+Result   : NO ALERT
 ----------------------------------------
 Workload : benign-dns-lookup
-Result   : FALSE ALERT
-----------------------------------------
-Workload : benign-emptydir-write
-Result   : FALSE ALERT
+Result   : NO ALERT
 ----------------------------------------
 Workload : benign-http-server
-Result   : FALSE ALERT
+Result   : NO ALERT
 ----------------------------------------
 Workload : benign-internal-http
-Result   : FALSE ALERT
+Result   : NO ALERT
 ----------------------------------------
 Workload : benign-nginx
-Result   : FALSE ALERT
+Result   : NO ALERT
 ----------------------------------------
 Workload : benign-startup-script
-Result   : FALSE ALERT
+Result   : NO ALERT
 ----------------------------------------
 Workload : benign-volume-reader
-Result   : FALSE ALERT
+Result   : NO ALERT
 ----------------------------------------

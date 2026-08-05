@@ -12,8 +12,8 @@ insecure-allnoresourcelimit.yaml : BLOCKED
 insecure-allnosecuritycontextatall-pod.yaml : BLOCKED
 insecure-allprivesca-pods.yaml : BLOCKED
 insecure-allpublicuntrustedimage-pod.yaml : BLOCKED
-insecure-allrolewithsecretaccess-pod.yaml : ALLOWED
-insecure-allrolewithsecretroletodefaultsa-pod.yaml : ALLOWED
+insecure-allrolewithsecretaccess-pod.yaml : BLOCKED
+insecure-allrolewithsecretroletodefaultsa-pod.yaml : BLOCKED
 insecure-allsys_adm-pods.yaml : BLOCKED
 insecure-allwritablerootfilesystem-pod.yaml : BLOCKED
 insecure-prirunasroot-pods.yaml : BLOCKED

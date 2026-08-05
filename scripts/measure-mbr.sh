@@ -35,21 +35,19 @@ do
 
     log_info "Testing $NAME"
 
-    OUTPUT=$(apply_dry_run "$FILE" "$TARGET_NS" || true)
-
-    if admission_blocked "$OUTPUT"
+    if OUTPUT=$(apply_dry_run "$FILE" "$TARGET_NS")
     then
-
-        RESULT="BLOCKED"
-
-        BLOCKED=$((BLOCKED+1))
-
-    else
-
         RESULT="ALLOWED"
-
         ALLOWED=$((ALLOWED+1))
-
+    else
+        if admission_blocked "$OUTPUT"
+        then
+            RESULT="BLOCKED"
+            BLOCKED=$((BLOCKED+1))
+        else
+            RESULT="ERROR"
+            echo "$OUTPUT"
+        fi
     fi
 
     printf "%s : %s\n" "$NAME" "$RESULT" >> "$DETAILS"
