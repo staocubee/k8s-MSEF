@@ -1,40 +1,40 @@
 {
   "metric":"RDR",
   "total_attacks":5,
-  "detected":4,
-  "score":0.80,
+  "detected":5,
+  "score":1.00,
   "events_file":"runtime-events.jsonl",
   "attacks":[
 
 {
   "name":"host-write-attempt",
   "pod":"host-write-attempt",
-  "detected":false,
-  "time_seconds":23
+  "detected":true,
+  "time_seconds":22
 },
 {
   "name":"interactive-shell",
   "pod":"interactive-shell",
   "detected":true,
-  "time_seconds":22
+  "time_seconds":23
 },
 {
   "name":"metadata-theft",
   "pod":"metadata-theft",
   "detected":true,
-  "time_seconds":24
+  "time_seconds":23
 },
 {
   "name":"outbound-c2",
   "pod":"outbound-c2",
   "detected":true,
-  "time_seconds":23
+  "time_seconds":22
 },
 {
   "name":"token-test",
   "pod":"token-theft",
   "detected":true,
-  "time_seconds":23
+  "time_seconds":24
 }
   ]
 }

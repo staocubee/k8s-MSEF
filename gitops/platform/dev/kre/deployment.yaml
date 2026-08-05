@@ -13,17 +13,14 @@ spec:
         app: msef-kre-handler
     spec:
       serviceAccountName: msef-kre-handler
-
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
         seccompProfile:
           type: RuntimeDefault
-
       containers:
       - name: kre
-        image: staocube/msef-kre-handler:v2.0.0
-
+        image: staocube/msef-kre-handler:v2.0.1
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
@@ -40,9 +37,9 @@ spec:
             memory: 256Mi
 
         volumeMounts:
-        - name: tmp
-          mountPath: /tmp
+        - name: results-vol
+          mountPath: /data/results
 
       volumes:
-      - name: tmp
+      - name: results-vol
         emptyDir: {}

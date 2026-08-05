@@ -3,10 +3,10 @@ Runtime Detection Rate
 ==========================================
 
 Total Runtime Attacks : 5
-Detected              : 4
+Detected              : 5
 
-RDR                   : 0.80
+RDR                   : 1.00
 
 Falco Events          : /Users/mac/devops-lab/k8s-MSEF/results/json/runtime-events.jsonl
 
-Generated : Wed Aug  5 20:27:12 WAT 2026
+Generated : Wed Aug  5 21:29:09 WAT 2026
