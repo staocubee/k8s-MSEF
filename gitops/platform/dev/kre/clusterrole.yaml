@@ -1,0 +1,58 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: msef-kre-handler
+rules:
+
+# Runtime remediation
+- apiGroups: [""]
+  resources:
+    - pods
+  verbs:
+    - get
+    - list
+    - watch
+    - delete
+
+# Read events
+- apiGroups: [""]
+  resources:
+    - events
+  verbs:
+    - get
+    - list
+    - watch
+
+# Scale or patch workloads if needed
+- apiGroups: ["apps"]
+  resources:
+    - deployments
+    - replicasets
+    - statefulsets
+    - daemonsets
+  verbs:
+    - get
+    - list
+    - watch
+    - patch
+    - update
+
+# Optional: quarantine using NetworkPolicies
+- apiGroups: ["networking.k8s.io"]
+  resources:
+    - networkpolicies
+  verbs:
+    - get
+    - list
+    - create
+    - patch
+    - update
+    - delete
+
+# Optional: label/annotate namespaces
+- apiGroups: [""]
+  resources:
+    - namespaces
+  verbs:
+    - get
+    - patch

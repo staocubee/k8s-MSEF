@@ -4,7 +4,7 @@ Runtime Response Success Rate
 
 Runtime Attacks
 
-       5
+       0
 
 Successful Responses
 
@@ -12,7 +12,7 @@ Successful Responses
 
 Failed Responses
 
-5
+0
 
 Average Remediation Latency
 
@@ -26,5 +26,5 @@ RRSR
 
 Generated
 
-Wed Aug  5 13:41:54 WAT 2026
+Wed Aug  5 19:24:53 WAT 2026
 
