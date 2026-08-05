@@ -83,124 +83,99 @@ resources:
 # 9. Custom Security Rules
 customRules:
   msef-runtime-rules.yaml: |-
-
-    ###########################################################################
-    # 1. Outbound Command-and-Control (C2)
-    # Maps to: outbound-c2.yaml
-    ###########################################################################
-    - rule: MSEF Outbound C2 Communication
-      desc: Detect execution of outbound C2 utilities inside hardened workloads
+    # 1. Maps 1-to-1 with outbound-c2.yaml
+    - rule: MSEF Outbound C2 Traffic
+      desc: Detect outbound network communication attempt via netcat or wget
       condition: >
         evt.type in (execve, execveat) and
-        evt.dir=< and
+        evt.dir = < and
         container and
-        k8s.ns.name="hardened" and
-        proc.name in (curl, wget, nc)
+        proc.name in (nc, wget)
       output: >
-        MSEF Runtime Attack - Outbound C2 communication
-        (pod=%k8s.pod.name proc=%proc.name command=%proc.cmdline user=%user.name)
+        Outbound C2 tool executed
+        (pod=%k8s.pod.name ns=%k8s.ns.name user=%user.name command=%proc.cmdline)
       priority: WARNING
       tags:
         - msef
         - runtime
-        - c2
         - network
+        - c2
 
-    ###########################################################################
-    # 2. Cloud Metadata Access
-    # Maps to: metadata-theft.yaml
-    ###########################################################################
-    - rule: MSEF Cloud Metadata Access
-      desc: Detect connections to cloud metadata endpoints
+    # 2. Maps 1-to-1 with metadata-theft.yaml
+    - rule: MSEF Cloud Metadata Server Access
+      desc: Detect access attempts to cloud instance metadata endpoint (IMDS)
       condition: >
-        evt.type=connect and
-        evt.dir=< and
+        evt.type = connect and
+        evt.dir = < and
         container and
-        k8s.ns.name="hardened" and
-        (
-          fd.rip=169.254.169.254 or
-          fd.name contains "169.254.169.254"
-        )
+        fd.sip = 169.254.169.254
       output: >
-        MSEF Runtime Attack - Cloud metadata access
-        (pod=%k8s.pod.name proc=%proc.name destination=%fd.name)
+        Cloud metadata access attempt detected
+        (pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name dest=%fd.rip:%fd.rport)
       priority: CRITICAL
       tags:
         - msef
         - runtime
         - metadata
+        - credentials
 
-    ###########################################################################
-    # 3. Service Account Token Theft
-    # Maps to: token-theft.yaml
-    ###########################################################################
-    - rule: MSEF Service Account Token Access
-      desc: Detect access to Kubernetes service account tokens
+    # 3. Maps 1-to-1 with token-theft.yaml
+    - rule: MSEF Token and Sensitive File Access
+      desc: Detect reading service account tokens or sensitive system credential files
       condition: >
-        evt.type in (open,openat,openat2) and
-        evt.dir=< and
+        evt.type in (open, openat, openat2) and
+        evt.dir = < and
         container and
-        k8s.ns.name="hardened" and
-        fd.name startswith "/var/run/secrets/kubernetes.io/serviceaccount"
+        (
+          fd.name startswith /var/run/secrets/kubernetes.io/serviceaccount or
+          fd.name in (/etc/shadow, /etc/passwd, /etc/gshadow, /etc/sudoers)
+        )
       output: >
-        MSEF Runtime Attack - Service account token access
-        (pod=%k8s.pod.name proc=%proc.name file=%fd.name)
+        Sensitive token or system file accessed
+        (pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name file=%fd.name user=%user.name)
       priority: ERROR
       tags:
         - msef
         - runtime
-        - credentials
+        - token
+        - filesystem
 
-    ###########################################################################
-    # 4. Interactive Shell
-    # Maps to: interactive-shell.yaml
-    ###########################################################################
-    - rule: MSEF Interactive Shell
-      desc: Detect interactive shell sessions inside hardened workloads
+    # 4. Maps 1-to-1 with interactive-shell.yaml
+    - rule: MSEF Interactive Shell Execution
+      desc: Detect execution of interactive shell sessions within workload container
       condition: >
-        evt.type in (execve,execveat) and
-        evt.dir=< and
+        evt.type in (execve, execveat) and
+        evt.dir = < and
         container and
-        k8s.ns.name="hardened" and
-        proc.name in (bash,sh,ash,dash,zsh) and
+        proc.name in (sh, bash, ash, dash, zsh) and
         proc.args contains "-i"
       output: >
-        MSEF Runtime Attack - Interactive shell
-        (pod=%k8s.pod.name user=%user.name command=%proc.cmdline)
+        Interactive shell spawned in container
+        (pod=%k8s.pod.name ns=%k8s.ns.name user=%user.name command=%proc.cmdline)
       priority: WARNING
       tags:
         - msef
         - runtime
         - shell
 
-    ###########################################################################
-    # 5. Protected Filesystem Write
-    # Maps to: host-write-attempt.yaml
-    ###########################################################################
-    - rule: MSEF Protected Filesystem Write
-      desc: Detect write attempts to protected filesystem locations
+    # 5. Maps 1-to-1 with host-write-attempt.yaml
+    - rule: MSEF Host Filesystem Write Attempt
+      desc: Detect open/openat write attempts to protected locations like /etc
       condition: >
-        evt.type in (open,openat,openat2) and
-        evt.dir=< and
+        evt.type in (open, openat, openat2) and
+        evt.dir = < and
         container and
-        k8s.ns.name="hardened" and
-        evt.is_open_write=true and
-        (
-          fd.name startswith "/etc/" or
-          fd.name startswith "/bin/" or
-          fd.name startswith "/usr/" or
-          fd.name startswith "/sbin/" or
-          fd.name startswith "/root/"
-        )
+        (evt.arg.flags contains O_WRONLY or evt.arg.flags contains O_RDWR or evt.arg.flags contains O_CREAT) and
+        fd.name startswith /etc
       output: >
-        MSEF Runtime Attack - Protected filesystem write
-        (pod=%k8s.pod.name proc=%proc.name file=%fd.name)
+        Unauthorized write attempt to protected directory
+        (pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name file=%fd.name)
       priority: ERROR
       tags:
         - msef
         - runtime
         - filesystem
-
+        
 # 10. Falcosidekick Integration
 falcosidekick:
   enabled: true
