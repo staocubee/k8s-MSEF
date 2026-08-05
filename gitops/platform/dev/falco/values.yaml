@@ -201,7 +201,7 @@ falcosidekick:
 
   config:
      webhook:
-      address: http://msef-kre-handler.hardened.svc.cluster.local:8080/webhook
+      address: http://msef-kre-handler.hardened.svc.cluster.local:8080/remediate
       minimumpriority: "warning"
 
       customheaders:

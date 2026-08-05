@@ -1,17 +1,17 @@
 Attack     : host-write-attempt
 Pod        : host-write-attempt
-Detected   : true
-Time       : 26s
+Detected   : false
+Time       : 23s
 ----------------------------------------
 Attack     : interactive-shell
 Pod        : interactive-shell
 Detected   : true
-Time       : 23s
+Time       : 22s
 ----------------------------------------
 Attack     : metadata-theft
 Pod        : metadata-theft
 Detected   : true
-Time       : 22s
+Time       : 24s
 ----------------------------------------
 Attack     : outbound-c2
 Pod        : outbound-c2
