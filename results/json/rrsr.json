@@ -1,8 +1,8 @@
 {
   "metric":"RRSR",
-  "runtime_attacks":       0,
-  "successful_responses":0,
-  "failed_responses":0,
-  "average_latency_seconds":0.00,
-  "score":0.00
+  "runtime_attacks":     221,
+  "successful_responses":172,
+  "failed_responses":49,
+  "average_latency_seconds":1.29,
+  "score":0.78
 }

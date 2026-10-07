@@ -1,0 +1,1326 @@
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-cleanup-controller-64957c8d6-wn54g
+Latency   : 0.751s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : monitoring-grafana-dfbb85cc9-dxkbs
+Latency   : 0.714s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : monitoring-grafana-dfbb85cc9-dxkbs
+Latency   : 0.016s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.763s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.02s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.015s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.016s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.868s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.641s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-g7jm8
+Latency   : 0.892s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-g7jm8
+Latency   : 0.013s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-g7jm8
+Latency   : 0.016s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-g7jm8
+Latency   : 0.011s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-g7jm8
+Latency   : 0.015s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-g7jm8
+Latency   : 0.017s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-g7jm8
+Latency   : 0.033s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : monitoring-grafana-dfbb85cc9-dxkbs
+Latency   : 0.028s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-g7jm8
+Latency   : 0.035s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.024s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.031s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.044s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : monitoring-grafana-dfbb85cc9-dxkbs
+Latency   : 0.078s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.025s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.028s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.043s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.051s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.016s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.014s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.009s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.013s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.018s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.009s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.011s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.013s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-admission-controller-9b5df76cb-m7pnd
+Latency   : 0.85s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.029s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.033s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.016s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.031s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.02s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.017s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.052s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.029s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.021s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.04s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.024s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.043s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.021s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.012s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.026s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.033s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.05s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.057s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : monitoring-grafana-dfbb85cc9-dxkbs
+Latency   : 0.031s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.019s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : monitoring-grafana-dfbb85cc9-dxkbs
+Latency   : 0.152s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.063s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.015s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.027s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.025s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.017s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.028s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.021s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.015s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.021s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.024s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.035s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.059s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.04s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.057s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.036s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : monitoring-kube-prometheus-operator-5d44686f58-4mvnr
+Latency   : 0.698s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : monitoring-grafana-dfbb85cc9-dxkbs
+Latency   : 0.036s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : monitoring-kube-prometheus-operator-5d44686f58-4mvnr
+Latency   : 0.069s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-admission-controller-9b5df76cb-zrsdk
+Latency   : 0.716s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-admission-controller-9b5df76cb-zrsdk
+Latency   : 0.02s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-admission-controller-9b5df76cb-zrsdk
+Latency   : 0.013s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-admission-controller-9b5df76cb-zrsdk
+Latency   : 0.014s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : elastic-system
+Pod       : elastic-operator-0
+Latency   : 5.371s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : monitoring-grafana-dfbb85cc9-dxkbs
+Latency   : 0.012s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : kube-dns-5f5f467445-zlw9b
+Latency   : 0.608s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-g7jm8
+Latency   : 0.011s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-g7jm8
+Latency   : 0.016s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-admission-controller-9b5df76cb-zrsdk
+Latency   : 0.011s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-reports-controller-5ff9979dd4-25lh7
+Latency   : 0.597s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.68s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.011s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.009s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-admission-controller-9b5df76cb-m7pnd
+Latency   : 0.013s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : monitoring-kube-prometheus-operator-5d44686f58-4mvnr
+Latency   : 0.011s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.013s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : external-secrets
+Pod       : dev-external-secrets-75884b997d-2zbfj
+Latency   : 0.652s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : external-secrets
+Pod       : dev-external-secrets-cert-controller-69c6cc5775-tppdb
+Latency   : 0.59s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : external-secrets
+Pod       : dev-external-secrets-cert-controller-69c6cc5775-tppdb
+Latency   : 0.103s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : external-secrets
+Pod       : dev-external-secrets-cert-controller-69c6cc5775-tppdb
+Latency   : 0.067s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : external-secrets
+Pod       : dev-external-secrets-cert-controller-69c6cc5775-tppdb
+Latency   : 0.035s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-admission-controller-9b5df76cb-zrsdk
+Latency   : 0.02s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-admission-controller-9b5df76cb-zrsdk
+Latency   : 0.014s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-admission-controller-9b5df76cb-zrsdk
+Latency   : 0.012s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-admission-controller-9b5df76cb-zrsdk
+Latency   : 0.017s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.601s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.597s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.396s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.542s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-admission-controller-9b5df76cb-zrsdk
+Latency   : 0.013s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-admission-controller-9b5df76cb-zrsdk
+Latency   : 0.013s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-admission-controller-9b5df76cb-zrsdk
+Latency   : 0.014s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-admission-controller-9b5df76cb-zrsdk
+Latency   : 0.012s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-admission-controller-9b5df76cb-zrsdk
+Latency   : 0.013s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-admission-controller-9b5df76cb-zrsdk
+Latency   : 0.015s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.011s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.014s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.01s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.019s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.019s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.017s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Host Filesystem Write Attempt
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.344s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.017s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.013s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.014s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.011s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.013s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.012s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.013s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : external-secrets
+Pod       : dev-external-secrets-cert-controller-69c6cc5775-tppdb
+Latency   : 0.011s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kyverno
+Pod       : kyverno-cleanup-controller-64957c8d6-wn54g
+Latency   : 0.139s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.049s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.069s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.059s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.074s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.053s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.047s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.067s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.088s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.017s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.018s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.011s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.01s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.015s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.012s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.013s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.012s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.021s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.014s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.014s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.011s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.025s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.012s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.011s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.013s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.012s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.01s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.013s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.014s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.014s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.014s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.454s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.36s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.505s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.363s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-zwhz9
+Latency   : 0.013s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.012s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : external-secrets
+Pod       : dev-external-secrets-cert-controller-69c6cc5775-tppdb
+Latency   : 0.014s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : external-secrets
+Pod       : dev-external-secrets-cert-controller-69c6cc5775-tppdb
+Latency   : 0.011s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : external-secrets
+Pod       : dev-external-secrets-cert-controller-69c6cc5775-tppdb
+Latency   : 0.015s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : external-secrets
+Pod       : dev-external-secrets-cert-controller-69c6cc5775-tppdb
+Latency   : 0.021s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.014s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.012s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.011s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.012s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.013s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.013s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.011s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-nlb7v
+Latency   : 0.01s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.473s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.498s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.433s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.433s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.359s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.405s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.494s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.43s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.42s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.639s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.498s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.507s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.415s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.38s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : monitoring
+Pod       : prometheus-monitoring-kube-prometheus-prometheus-0
+Latency   : 5.425s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.6s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-f8n49
+Latency   : 0.615s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-f8n49
+Latency   : 0.012s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-f8n49
+Latency   : 0.015s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-f8n49
+Latency   : 0.017s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-f8n49
+Latency   : 0.015s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-f8n49
+Latency   : 0.016s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-f8n49
+Latency   : 0.012s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : kube-system
+Pod       : gke-metrics-agent-f8n49
+Latency   : 0.012s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : cert-manager
+Pod       : dev-cert-manager-585bc76594-4jdp6
+Latency   : 0.599s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 6.045s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.666s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.673s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.709s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.797s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.729s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.586s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.523s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Cloud Metadata Server Access
+Namespace : kube-system
+Pod       : node-local-dns-vw7k8
+Latency   : 0.587s
+Result    : SUCCESS
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.592s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.523s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.905s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.561s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.578s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.425s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.415s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.548s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.638s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.585s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.551s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.483s
+Result    : FAILED
+----------------------------------------
+Rule      : MSEF Token and Sensitive File Access
+Namespace : argocd
+Pod       : argocd-application-controller-0
+Latency   : 5.645s
+Result    : FAILED
+----------------------------------------

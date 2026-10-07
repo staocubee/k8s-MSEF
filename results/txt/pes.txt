@@ -1,0 +1,14 @@
+==========================================
+Prevention Effectiveness Score (PES)
+==========================================
+
+Manifest Blocking Rate        : 1.00
+Network Policy Enforcement    : 1.00
+Secrets Management            : 1.0
+
+------------------------------------------
+
+PES                           : 1.00
+
+Generated: Wed Aug 12 17:24:06 WAT 2026
+

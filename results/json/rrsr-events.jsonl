@@ -1,0 +1,221 @@
+{"timestamp": 1786024626.2382581, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-cleanup-controller-64957c8d6-wn54g", "success": true, "latency": 0.751}
+{"timestamp": 1786024626.992101, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "monitoring-grafana-dfbb85cc9-dxkbs", "success": true, "latency": 0.714}
+{"timestamp": 1786024627.0447311, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "monitoring-grafana-dfbb85cc9-dxkbs", "success": true, "latency": 0.016}
+{"timestamp": 1786024627.8239007, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.763}
+{"timestamp": 1786024627.8771055, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.02}
+{"timestamp": 1786024627.9102247, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.015}
+{"timestamp": 1786024627.9407773, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.016}
+{"timestamp": 1786024633.864595, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.868}
+{"timestamp": 1786024639.5699933, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.641}
+{"timestamp": 1786024640.5058932, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-g7jm8", "success": true, "latency": 0.892}
+{"timestamp": 1786024640.545034, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-g7jm8", "success": true, "latency": 0.013}
+{"timestamp": 1786024640.6123421, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-g7jm8", "success": true, "latency": 0.016}
+{"timestamp": 1786024640.6508105, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-g7jm8", "success": true, "latency": 0.011}
+{"timestamp": 1786024640.719365, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-g7jm8", "success": true, "latency": 0.015}
+{"timestamp": 1786024640.7484105, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-g7jm8", "success": true, "latency": 0.017}
+{"timestamp": 1786024640.845255, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-g7jm8", "success": true, "latency": 0.033}
+{"timestamp": 1786024640.9210691, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "monitoring-grafana-dfbb85cc9-dxkbs", "success": true, "latency": 0.028}
+{"timestamp": 1786024641.0423715, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-g7jm8", "success": true, "latency": 0.035}
+{"timestamp": 1786024641.0906575, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.024}
+{"timestamp": 1786024641.1611793, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.031}
+{"timestamp": 1786024641.2532723, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.044}
+{"timestamp": 1786024641.3789043, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "monitoring-grafana-dfbb85cc9-dxkbs", "success": true, "latency": 0.078}
+{"timestamp": 1786024641.439427, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.025}
+{"timestamp": 1786024641.496279, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.028}
+{"timestamp": 1786024641.5973606, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.043}
+{"timestamp": 1786024641.7092912, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.051}
+{"timestamp": 1786024641.7574027, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.016}
+{"timestamp": 1786024641.7923293, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.014}
+{"timestamp": 1786024641.812498, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.009}
+{"timestamp": 1786024641.911105, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.013}
+{"timestamp": 1786024641.9469383, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.018}
+{"timestamp": 1786024642.0026982, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.009}
+{"timestamp": 1786024642.0222762, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.011}
+{"timestamp": 1786024642.1052833, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.013}
+{"timestamp": 1786024643.0431492, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-admission-controller-9b5df76cb-m7pnd", "success": true, "latency": 0.85}
+{"timestamp": 1786024643.1154828, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.029}
+{"timestamp": 1786024643.1730924, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.033}
+{"timestamp": 1786024643.2231698, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.016}
+{"timestamp": 1786024643.2910042, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.031}
+{"timestamp": 1786024643.343999, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.02}
+{"timestamp": 1786024643.3811119, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.017}
+{"timestamp": 1786024643.4783475, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.052}
+{"timestamp": 1786024643.535452, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.029}
+{"timestamp": 1786024643.5939229, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.021}
+{"timestamp": 1786024643.6805313, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.04}
+{"timestamp": 1786024643.7362077, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.024}
+{"timestamp": 1786024643.8323615, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.043}
+{"timestamp": 1786024643.9221027, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.021}
+{"timestamp": 1786024643.9478862, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.012}
+{"timestamp": 1786024644.0371659, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.026}
+{"timestamp": 1786024644.1496053, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.033}
+{"timestamp": 1786024644.2601886, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.05}
+{"timestamp": 1786024644.4345033, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.057}
+{"timestamp": 1786024644.502105, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "monitoring-grafana-dfbb85cc9-dxkbs", "success": true, "latency": 0.031}
+{"timestamp": 1786024644.536836, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.019}
+{"timestamp": 1786024644.7692914, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "monitoring-grafana-dfbb85cc9-dxkbs", "success": true, "latency": 0.152}
+{"timestamp": 1786024644.9642603, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.063}
+{"timestamp": 1786024645.3162782, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.015}
+{"timestamp": 1786024645.4509265, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.027}
+{"timestamp": 1786024645.5388587, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.025}
+{"timestamp": 1786024645.648037, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.017}
+{"timestamp": 1786024645.7290623, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.028}
+{"timestamp": 1786024645.8281014, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.021}
+{"timestamp": 1786024645.9130125, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.015}
+{"timestamp": 1786024646.0255785, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.021}
+{"timestamp": 1786024646.1292028, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.024}
+{"timestamp": 1786024646.2479525, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.035}
+{"timestamp": 1786024646.3710263, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.059}
+{"timestamp": 1786024646.486469, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.04}
+{"timestamp": 1786024646.624003, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.057}
+{"timestamp": 1786024646.7000067, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.036}
+{"timestamp": 1786024647.439167, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "monitoring-kube-prometheus-operator-5d44686f58-4mvnr", "success": true, "latency": 0.698}
+{"timestamp": 1786024647.606516, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "monitoring-grafana-dfbb85cc9-dxkbs", "success": true, "latency": 0.036}
+{"timestamp": 1786024647.7504382, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "monitoring-kube-prometheus-operator-5d44686f58-4mvnr", "success": true, "latency": 0.069}
+{"timestamp": 1786024648.4986744, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-admission-controller-9b5df76cb-zrsdk", "success": true, "latency": 0.716}
+{"timestamp": 1786024648.5429292, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-admission-controller-9b5df76cb-zrsdk", "success": true, "latency": 0.02}
+{"timestamp": 1786024648.608475, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-admission-controller-9b5df76cb-zrsdk", "success": true, "latency": 0.013}
+{"timestamp": 1786024648.654959, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-admission-controller-9b5df76cb-zrsdk", "success": true, "latency": 0.014}
+{"timestamp": 1786024654.0841753, "rule": "MSEF Token and Sensitive File Access", "namespace": "elastic-system", "pod": "elastic-operator-0", "success": false, "latency": 5.371}
+{"timestamp": 1786024654.1473634, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "monitoring-grafana-dfbb85cc9-dxkbs", "success": true, "latency": 0.012}
+{"timestamp": 1786024654.8056192, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "kube-dns-5f5f467445-zlw9b", "success": true, "latency": 0.608}
+{"timestamp": 1786024654.9024942, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-g7jm8", "success": true, "latency": 0.011}
+{"timestamp": 1786024654.9349854, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-g7jm8", "success": true, "latency": 0.016}
+{"timestamp": 1786024654.9574044, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-admission-controller-9b5df76cb-zrsdk", "success": true, "latency": 0.011}
+{"timestamp": 1786024655.5982146, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-reports-controller-5ff9979dd4-25lh7", "success": true, "latency": 0.597}
+{"timestamp": 1786024657.3597617, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.68}
+{"timestamp": 1786024657.438329, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.011}
+{"timestamp": 1786024657.5729918, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.009}
+{"timestamp": 1786024657.633343, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-admission-controller-9b5df76cb-m7pnd", "success": true, "latency": 0.013}
+{"timestamp": 1786024657.703118, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "monitoring-kube-prometheus-operator-5d44686f58-4mvnr", "success": true, "latency": 0.011}
+{"timestamp": 1786024657.9297886, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.013}
+{"timestamp": 1786024658.6774828, "rule": "MSEF Token and Sensitive File Access", "namespace": "external-secrets", "pod": "dev-external-secrets-75884b997d-2zbfj", "success": true, "latency": 0.652}
+{"timestamp": 1786024659.332945, "rule": "MSEF Token and Sensitive File Access", "namespace": "external-secrets", "pod": "dev-external-secrets-cert-controller-69c6cc5775-tppdb", "success": true, "latency": 0.59}
+{"timestamp": 1786024659.6956356, "rule": "MSEF Token and Sensitive File Access", "namespace": "external-secrets", "pod": "dev-external-secrets-cert-controller-69c6cc5775-tppdb", "success": true, "latency": 0.103}
+{"timestamp": 1786024660.1248994, "rule": "MSEF Token and Sensitive File Access", "namespace": "external-secrets", "pod": "dev-external-secrets-cert-controller-69c6cc5775-tppdb", "success": true, "latency": 0.067}
+{"timestamp": 1786024660.247357, "rule": "MSEF Token and Sensitive File Access", "namespace": "external-secrets", "pod": "dev-external-secrets-cert-controller-69c6cc5775-tppdb", "success": true, "latency": 0.035}
+{"timestamp": 1786024660.4146976, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-admission-controller-9b5df76cb-zrsdk", "success": true, "latency": 0.02}
+{"timestamp": 1786024660.506752, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-admission-controller-9b5df76cb-zrsdk", "success": true, "latency": 0.014}
+{"timestamp": 1786024660.6149187, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-admission-controller-9b5df76cb-zrsdk", "success": true, "latency": 0.012}
+{"timestamp": 1786024660.6971385, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-admission-controller-9b5df76cb-zrsdk", "success": true, "latency": 0.017}
+{"timestamp": 1786024666.335119, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.601}
+{"timestamp": 1786024672.0029645, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.597}
+{"timestamp": 1786024677.4893706, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.396}
+{"timestamp": 1786024683.0868766, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.542}
+{"timestamp": 1786024683.116412, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-admission-controller-9b5df76cb-zrsdk", "success": true, "latency": 0.013}
+{"timestamp": 1786024683.1829312, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-admission-controller-9b5df76cb-zrsdk", "success": true, "latency": 0.013}
+{"timestamp": 1786024683.2103555, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-admission-controller-9b5df76cb-zrsdk", "success": true, "latency": 0.014}
+{"timestamp": 1786024683.2306437, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-admission-controller-9b5df76cb-zrsdk", "success": true, "latency": 0.012}
+{"timestamp": 1786024683.308835, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-admission-controller-9b5df76cb-zrsdk", "success": true, "latency": 0.013}
+{"timestamp": 1786024683.4214613, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-admission-controller-9b5df76cb-zrsdk", "success": true, "latency": 0.015}
+{"timestamp": 1786024683.5086396, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.011}
+{"timestamp": 1786024683.5323246, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.014}
+{"timestamp": 1786024683.6063275, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.01}
+{"timestamp": 1786024683.7105124, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.019}
+{"timestamp": 1786024683.7426214, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.019}
+{"timestamp": 1786024683.814112, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.017}
+{"timestamp": 1786024689.1728663, "rule": "MSEF Host Filesystem Write Attempt", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.344}
+{"timestamp": 1786024689.221754, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.017}
+{"timestamp": 1786024689.244715, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.013}
+{"timestamp": 1786024689.3062825, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.014}
+{"timestamp": 1786024689.3295085, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.011}
+{"timestamp": 1786024689.410245, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.013}
+{"timestamp": 1786024689.4311297, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.012}
+{"timestamp": 1786024689.5078385, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.013}
+{"timestamp": 1786024689.5298655, "rule": "MSEF Token and Sensitive File Access", "namespace": "external-secrets", "pod": "dev-external-secrets-cert-controller-69c6cc5775-tppdb", "success": true, "latency": 0.011}
+{"timestamp": 1786024689.7334654, "rule": "MSEF Token and Sensitive File Access", "namespace": "kyverno", "pod": "kyverno-cleanup-controller-64957c8d6-wn54g", "success": true, "latency": 0.139}
+{"timestamp": 1786024689.7930593, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.049}
+{"timestamp": 1786024689.8726215, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.069}
+{"timestamp": 1786024689.9404826, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.059}
+{"timestamp": 1786024690.024659, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.074}
+{"timestamp": 1786024690.0870423, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.053}
+{"timestamp": 1786024690.141969, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.047}
+{"timestamp": 1786024690.2190273, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.067}
+{"timestamp": 1786024690.3206902, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.088}
+{"timestamp": 1786024690.3470821, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.017}
+{"timestamp": 1786024690.3740332, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.018}
+{"timestamp": 1786024690.407187, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.011}
+{"timestamp": 1786024690.4272978, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.01}
+{"timestamp": 1786024690.5112634, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.015}
+{"timestamp": 1786024690.608083, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.012}
+{"timestamp": 1786024690.6299498, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.013}
+{"timestamp": 1786024690.7061696, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.012}
+{"timestamp": 1786024690.734961, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.021}
+{"timestamp": 1786024690.8063555, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.014}
+{"timestamp": 1786024690.8345654, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.014}
+{"timestamp": 1786024690.9053242, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.011}
+{"timestamp": 1786024690.942125, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.025}
+{"timestamp": 1786024691.0086143, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.012}
+{"timestamp": 1786024691.0411115, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.011}
+{"timestamp": 1786024691.1050034, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.013}
+{"timestamp": 1786024691.1387713, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.012}
+{"timestamp": 1786024691.200278, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.01}
+{"timestamp": 1786024691.22205, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.013}
+{"timestamp": 1786024691.3071344, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.014}
+{"timestamp": 1786024691.3313322, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.014}
+{"timestamp": 1786024691.407454, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.014}
+{"timestamp": 1786024696.8703988, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.454}
+{"timestamp": 1786024702.3073833, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.36}
+{"timestamp": 1786024707.8287668, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.505}
+{"timestamp": 1786024713.2089202, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.363}
+{"timestamp": 1786024713.2348354, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-zwhz9", "success": true, "latency": 0.013}
+{"timestamp": 1786024713.2579095, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.012}
+{"timestamp": 1786024713.3090427, "rule": "MSEF Token and Sensitive File Access", "namespace": "external-secrets", "pod": "dev-external-secrets-cert-controller-69c6cc5775-tppdb", "success": true, "latency": 0.014}
+{"timestamp": 1786024713.329678, "rule": "MSEF Token and Sensitive File Access", "namespace": "external-secrets", "pod": "dev-external-secrets-cert-controller-69c6cc5775-tppdb", "success": true, "latency": 0.011}
+{"timestamp": 1786024713.416411, "rule": "MSEF Token and Sensitive File Access", "namespace": "external-secrets", "pod": "dev-external-secrets-cert-controller-69c6cc5775-tppdb", "success": true, "latency": 0.015}
+{"timestamp": 1786024713.451391, "rule": "MSEF Token and Sensitive File Access", "namespace": "external-secrets", "pod": "dev-external-secrets-cert-controller-69c6cc5775-tppdb", "success": true, "latency": 0.021}
+{"timestamp": 1786024713.5099888, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.014}
+{"timestamp": 1786024713.5311744, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.012}
+{"timestamp": 1786024713.6062667, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.011}
+{"timestamp": 1786024713.6296632, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.012}
+{"timestamp": 1786024713.7124286, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.013}
+{"timestamp": 1786024713.8048527, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.013}
+{"timestamp": 1786024713.825301, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.011}
+{"timestamp": 1786024713.8462741, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-nlb7v", "success": true, "latency": 0.01}
+{"timestamp": 1786024719.373109, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.473}
+{"timestamp": 1786024724.909406, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.498}
+{"timestamp": 1786024730.368711, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.433}
+{"timestamp": 1786024735.8169477, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.433}
+{"timestamp": 1786024741.1906314, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.359}
+{"timestamp": 1786024746.613362, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.405}
+{"timestamp": 1786024752.1204462, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.494}
+{"timestamp": 1786024757.5823386, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.43}
+{"timestamp": 1786024763.0139618, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.42}
+{"timestamp": 1786024768.677867, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.639}
+{"timestamp": 1786024774.1914568, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.498}
+{"timestamp": 1786024779.7088816, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.507}
+{"timestamp": 1786024854.1087759, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.415}
+{"timestamp": 1786024859.5131574, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.38}
+{"timestamp": 1786024864.9546173, "rule": "MSEF Token and Sensitive File Access", "namespace": "monitoring", "pod": "prometheus-monitoring-kube-prometheus-prometheus-0", "success": false, "latency": 5.425}
+{"timestamp": 1786024870.5680964, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.6}
+{"timestamp": 1786024871.215307, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-f8n49", "success": true, "latency": 0.615}
+{"timestamp": 1786024871.415037, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-f8n49", "success": true, "latency": 0.012}
+{"timestamp": 1786024871.456533, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-f8n49", "success": true, "latency": 0.015}
+{"timestamp": 1786024871.5225196, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-f8n49", "success": true, "latency": 0.017}
+{"timestamp": 1786024871.6094131, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-f8n49", "success": true, "latency": 0.015}
+{"timestamp": 1786024871.637263, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-f8n49", "success": true, "latency": 0.016}
+{"timestamp": 1786024871.92173, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-f8n49", "success": true, "latency": 0.012}
+{"timestamp": 1786024872.007665, "rule": "MSEF Token and Sensitive File Access", "namespace": "kube-system", "pod": "gke-metrics-agent-f8n49", "success": true, "latency": 0.012}
+{"timestamp": 1786024872.693953, "rule": "MSEF Token and Sensitive File Access", "namespace": "cert-manager", "pod": "dev-cert-manager-585bc76594-4jdp6", "success": true, "latency": 0.599}
+{"timestamp": 1786024878.7796245, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 6.045}
+{"timestamp": 1786024884.4724388, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.666}
+{"timestamp": 1786024890.1633735, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.673}
+{"timestamp": 1786024895.898891, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.709}
+{"timestamp": 1786024901.71196, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.797}
+{"timestamp": 1786024907.5110338, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.729}
+{"timestamp": 1786024913.113092, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.586}
+{"timestamp": 1786024918.6726685, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.523}
+{"timestamp": 1786024919.2924209, "rule": "MSEF Cloud Metadata Server Access", "namespace": "kube-system", "pod": "node-local-dns-vw7k8", "success": true, "latency": 0.587}
+{"timestamp": 1786024924.9069328, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.592}
+{"timestamp": 1786024930.5358374, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.523}
+{"timestamp": 1786024936.4724934, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.905}
+{"timestamp": 1786024942.073338, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.561}
+{"timestamp": 1786024947.6844363, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.578}
+{"timestamp": 1786024953.1451836, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.425}
+{"timestamp": 1786024958.5953405, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.415}
+{"timestamp": 1786024964.1764398, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.548}
+{"timestamp": 1786024969.850122, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.638}
+{"timestamp": 1786024975.470038, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.585}
+{"timestamp": 1786024981.0642507, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.551}
+{"timestamp": 1786024986.6682172, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.483}
+{"timestamp": 1786024992.348275, "rule": "MSEF Token and Sensitive File Access", "namespace": "argocd", "pod": "argocd-application-controller-0", "success": false, "latency": 5.645}

@@ -1,7 +1,7 @@
 {
   "framework":"Kubernetes MSEF",
   "metric":"MBR",
-  "timestamp":"2026-08-05T10:31:54Z",
+  "timestamp":"2026-08-06T11:48:21Z",
   "total":21,
   "blocked":21,
   "allowed":0,

@@ -1,0 +1,10 @@
+{
+  "metric":"DES",
+  "runtime_detection_rate":1.00,
+  "false_positive_rate":0.00,
+  "normalized_false_positive":1.00,
+  "mean_time_to_detect":23.00,
+  "normalized_mttd":0.80,
+  "runtime_response_success_rate":0.78,
+  "score":0.90
+}

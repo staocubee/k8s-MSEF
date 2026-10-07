@@ -52,37 +52,40 @@ require_file "$JSON_DIR/rrsr.json"
 ###############################################################################
 
 RDR=$(jq '.score' "$JSON_DIR/rdr.json")
-
 FPR=$(jq '.score' "$JSON_DIR/fpr.json")
-
 MTTD=$(jq '.score' "$JSON_DIR/mttd.json")
-
+TOTAL_TIME=$(jq '.total_time_seconds' "$JSON_DIR/mttd.json")
 RRSR=$(jq '.score' "$JSON_DIR/rrsr.json")
 
 ###############################################################################
 # Normalize MTTD
 #
-# Smaller is better.
+# Formula:
 #
-# Any value greater than MAX_MTTD becomes zero.
+# Normalized MTTD = 1 - (MTTD / Total Observation Time)
+#
+# Lower detection time gives higher score.
 ###############################################################################
-
-MAX_MTTD="${MAX_MTTD:-30}"
 
 NORM_MTTD=$(awk \
     -v t="$MTTD" \
-    -v m="$MAX_MTTD" '
+    -v max="$TOTAL_TIME" '
 BEGIN{
 
-    v = 1 - (t/m)
+    if(max <= 0){
+        print "0.00"
+        exit
+    }
 
-    if(v < 0)
-        v = 0
+    value = 1 - (t / max)
 
-    if(v > 1)
-        v = 1
+    if(value < 0)
+        value = 0
 
-    printf "%.2f", v
+    if(value > 1)
+        value = 1
+
+    printf "%.2f", value
 
 }')
 
@@ -143,27 +146,21 @@ Detection Effectiveness Score
 ==========================================
 
 Runtime Detection Rate
-
 $RDR
 
-False Positive Rate
+Operational False Positive Rate
+$OFPR
 
-$FPR
-
-Normalized False Positive
-
+Normalized Operational False Positive Rate
 $NORM_FPR
 
 Mean Time To Detect
-
 ${MTTD} seconds
 
 Normalized MTTD
-
 $NORM_MTTD
 
 Runtime Response Success Rate
-
 $RRSR
 
 ------------------------------------------

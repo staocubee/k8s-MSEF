@@ -1,0 +1,32 @@
+==========================================
+Detection Effectiveness Score
+==========================================
+
+Runtime Detection Rate
+1.00
+
+False Positive Rate
+0.00
+
+Normalized False Positive
+1.00
+
+Mean Time To Detect
+23.00 seconds
+
+Normalized MTTD
+0.80
+
+Runtime Response Success Rate
+0.78
+
+------------------------------------------
+
+DES
+
+0.90
+
+Generated
+
+Fri Aug  7 15:16:26 WAT 2026
+

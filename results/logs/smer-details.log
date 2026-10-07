@@ -15,8 +15,8 @@ Result: PASS
 ----------------------------------------
 Test: sealed-secret.yaml
 Expected: ALLOW
-Actual: BLOCK
-Result: FAIL
+Actual: ALLOW
+Result: PASS
 ----------------------------------------
 Test: secret-env-variable.yaml
 Expected: BLOCK
