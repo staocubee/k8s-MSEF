@@ -1,3 +1,5 @@
+# MSEF runtime scenario: token-theft. Simulation of the technique's observable behaviour,
+# not an exploit. Expected rule: see scenarios.tsv
 apiVersion: v1
 kind: Pod
 metadata:
@@ -6,10 +8,11 @@ metadata:
   labels:
     app: token-theft
     security: runtime-test
+    msef.scenario: token-theft
 spec:
   restartPolicy: Never
-  serviceAccountName: hardened-app-sa
-  automountServiceAccountToken: false
+  serviceAccountName: msef-attack-sa
+  automountServiceAccountToken: true
   securityContext:
     runAsNonRoot: true
     seccompProfile:
@@ -18,14 +21,21 @@ spec:
   - name: attack
     image: busybox:1.36
     command:
-      - sh
-      - -c
-      - |
-        echo "[+] Attempting Token & Sensitive File Theft..."
-        cat /var/run/secrets/kubernetes.io/serviceaccount/token 2>/dev/null || true
-        cat /etc/shadow 2>/dev/null || true
-        cat /etc/passwd 2>/dev/null || true
-        sleep 5
+    - sh
+    - -c
+    - 'echo MSEF_READY
+
+      sleep 8
+
+      echo "MSEF_ATTACK_START scenario=token-theft"
+
+      cat /var/run/secrets/kubernetes.io/serviceaccount/token > /dev/null
+
+      echo MSEF_ATTACK_DONE
+
+      sleep 300
+
+      '
     securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
@@ -33,7 +43,7 @@ spec:
       runAsUser: 1000
       capabilities:
         drop:
-          - ALL
+        - ALL
     resources:
       requests:
         cpu: 50m

@@ -3,12 +3,19 @@ kind: ClusterRole
 metadata:
   name: msef-kre-controller
 rules:
+# Pod lookup, unique quarantine label, termination
 - apiGroups: [""]
-  resources: ["pods", "pods/status"]
-  verbs: ["get", "list", "watch", "delete"]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch", "patch", "delete"]
+# Per-pod quarantine NetworkPolicies
 - apiGroups: ["networking.k8s.io"]
   resources: ["networkpolicies"]
-  verbs: ["get", "list", "create", "update", "patch", "delete"]
+  verbs: ["get", "list", "create", "delete"]
+# Identity revocation: remove namespaced RoleBindings that name the SA.
+# No create/bind/escalate: KRE never grants permissions.
 - apiGroups: ["rbac.authorization.k8s.io"]
-  resources: ["rolebindings", "roles"]
-  verbs: ["get", "list", "create", "update", "patch", "delete"]
+  resources: ["rolebindings"]
+  verbs: ["get", "list", "delete"]
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources: ["clusterrolebindings"]
+  verbs: ["get", "list"]

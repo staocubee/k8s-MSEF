@@ -1,3 +1,5 @@
+# MSEF runtime scenario: tmp-binary-execution. Simulation of the technique's observable behaviour,
+# not an exploit. Expected rule: see scenarios.tsv
 apiVersion: v1
 kind: Pod
 metadata:
@@ -6,9 +8,10 @@ metadata:
   labels:
     app: tmp-binary-execution
     security: runtime-test
+    msef.scenario: tmp-binary-execution
 spec:
   restartPolicy: Never
-  serviceAccountName: hardened-app-sa
+  serviceAccountName: msef-attack-sa
   automountServiceAccountToken: false
   securityContext:
     runAsNonRoot: true
@@ -18,14 +21,21 @@ spec:
   - name: attack
     image: busybox:1.36
     command:
-      - sh
-      - -c
-      - |
-        echo "[+] Dropping masqueraded binary into /tmp..."
-        cp /bin/sh /tmp/.k8s-daemon 2>/dev/null || true
-        echo "[+] Attempting process spawn from /tmp..."
-        /tmp/.k8s-daemon -c "uname -a" 2>/dev/null || true
-        sleep 5
+    - sh
+    - -c
+    - 'echo MSEF_READY
+
+      sleep 8
+
+      echo "MSEF_ATTACK_START scenario=tmp-binary-execution"
+
+      cp /bin/busybox /tmp/.k8s-daemon && /tmp/.k8s-daemon true; true
+
+      echo MSEF_ATTACK_DONE
+
+      sleep 300
+
+      '
     securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
@@ -33,7 +43,7 @@ spec:
       runAsUser: 1000
       capabilities:
         drop:
-          - ALL
+        - ALL
     resources:
       requests:
         cpu: 50m
@@ -41,3 +51,10 @@ spec:
       limits:
         cpu: 100m
         memory: 128Mi
+    volumeMounts:
+    - name: w0
+      mountPath: /tmp
+  volumes:
+  - name: w0
+    emptyDir:
+      sizeLimit: 16Mi

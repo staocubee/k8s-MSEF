@@ -1,0 +1,60 @@
+# MSEF runtime scenario: cgroup-escape-attempt. Simulation of the technique's observable behaviour,
+# not an exploit. Expected rule: see scenarios.tsv
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cgroup-escape-attempt
+  namespace: hardened
+  labels:
+    app: cgroup-escape-attempt
+    security: runtime-test
+    msef.scenario: cgroup-escape-attempt
+spec:
+  restartPolicy: Never
+  serviceAccountName: msef-attack-sa
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: attack
+    image: busybox:1.36
+    command:
+    - sh
+    - -c
+    - 'echo MSEF_READY
+
+      sleep 8
+
+      echo "MSEF_ATTACK_START scenario=cgroup-escape-attempt"
+
+      touch /tmp/release_agent && echo "#!/bin/sh" > /tmp/release_agent
+
+      echo MSEF_ATTACK_DONE
+
+      sleep 300
+
+      '
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000
+      capabilities:
+        drop:
+        - ALL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
+    volumeMounts:
+    - name: w0
+      mountPath: /tmp
+  volumes:
+  - name: w0
+    emptyDir:
+      sizeLimit: 16Mi

@@ -1,0 +1,99 @@
+diff a/k8s/runtime-tests/resource-hijacking-attempt.yaml b/k8s/runtime-tests/resource-hijacking-attempt.yaml	(rejected hunks)
+@@ -1,43 +1,53 @@
+-apiVersion: v1
+-kind: Pod
+-metadata:
+-  name: resource-hijacking-attempt
+-  namespace: hardened
+-  labels:
+-    app: resource-hijacking-attempt
+-    security: runtime-test
+-spec:
+-  restartPolicy: Never
+-  serviceAccountName: hardened-app-sa
+-  automountServiceAccountToken: false
+-  securityContext:
+-    runAsNonRoot: true
+-    seccompProfile:
+-      type: RuntimeDefault
+-  containers:
+-  - name: attack
+-    image: busybox:1.36
+-    command:
+-      - sh
+-      - -c
+-      - |
+-        echo "[+] Emulating stratum mining protocol handshake..."
+-        nc -w 1 pool.supportxmr.com 3333 2>/dev/null || true
+-        echo "[+] Executing compute burn loop..."
+-        (i=0; while [ $i -lt 100000 ]; do i=$((i+1)); done) &
+-        sleep 5
+-    securityContext:
+-      allowPrivilegeEscalation: false
+-      readOnlyRootFilesystem: true
+-      runAsNonRoot: true
+-      runAsUser: 1000
+-      capabilities:
+-        drop:
+-          - ALL
+-    resources:
+-      requests:
+-        cpu: 50m
+-        memory: 64Mi
+-      limits:
+-        cpu: 100m
+-        memory: 128Mi
+\ No newline at end of file
++# MSEF runtime scenario: resource-hijacking-attempt. Simulation of the technique's observable behaviour,
++# not an exploit. Expected rule: see scenarios.tsv
++apiVersion: v1
++kind: Pod
++metadata:
++  name: resource-hijacking-attempt
++  namespace: hardened
++  labels:
++    app: resource-hijacking-attempt
++    security: runtime-test
++    msef.scenario: resource-hijacking-attempt
++spec:
++  restartPolicy: Never
++  serviceAccountName: msef-attack-sa
++  automountServiceAccountToken: false
++  securityContext:
++    runAsNonRoot: true
++    seccompProfile:
++      type: RuntimeDefault
++  containers:
++  - name: attack
++    image: busybox:1.36
++    command:
++    - sh
++    - -c
++    - 'echo MSEF_READY
++
++      sleep 8
++
++      echo "MSEF_ATTACK_START scenario=resource-hijacking-attempt"
++
++      nc -z -w 2 203.0.113.10 3333 || true
++
++      echo MSEF_ATTACK_DONE
++
++      sleep 300
++
++      '
++    securityContext:
++      allowPrivilegeEscalation: false
++      readOnlyRootFilesystem: true
++      runAsNonRoot: true
++      runAsUser: 1000
++      capabilities:
++        drop:
++        - ALL
++    resources:
++      requests:
++        cpu: 50m
++        memory: 64Mi
++      limits:
++        cpu: 100m
++        memory: 128Mi

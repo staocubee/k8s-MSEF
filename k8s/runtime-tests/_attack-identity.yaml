@@ -1,0 +1,33 @@
+# Dedicated identity for attack pods. KRE revocation deletes the RoleBinding
+# below, so revocation can be verified without touching real workload identities.
+# The harness re-applies this file before every scenario.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: msef-attack-sa
+  namespace: hardened
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: msef-attack-probe
+  namespace: hardened
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: msef-attack-sa-probe
+  namespace: hardened
+subjects:
+- kind: ServiceAccount
+  name: msef-attack-sa
+  namespace: hardened
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: msef-attack-probe

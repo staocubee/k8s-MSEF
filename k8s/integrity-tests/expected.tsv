@@ -1,0 +1,7 @@
+manifest	expected	note
+staocube-signed-test.yaml	admit	positive control: Cosign-signed image
+default-unsigned-image.yaml	deny	unsigned staocube image
+wrong-signature.yaml	deny	signed with a different key
+wrong-attestor.yaml	deny	attestor mismatch
+digest-mismatch.yaml	deny	digest does not exist
+nginx-unsigned-test.yaml	out_of_scope	not matched by imageReferences staocube/*; reported separately, not in SPR

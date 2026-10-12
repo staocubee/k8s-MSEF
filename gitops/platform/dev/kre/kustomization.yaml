@@ -8,5 +8,6 @@ resources:
   - clusterrole.yaml
   - rolebinding.yaml
   - configmap.yaml
+  - pvc.yaml
   - deployment.yaml
   - service.yaml

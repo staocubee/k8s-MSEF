@@ -1,0 +1,9 @@
+diff a/gitops/platform/dev/kre/kustomization.yaml b/gitops/platform/dev/kre/kustomization.yaml	(rejected hunks)
+@@ -8,5 +8,6 @@ resources:
+   - clusterrole.yaml
+   - rolebinding.yaml
+   - configmap.yaml
++  - pvc.yaml
+   - deployment.yaml
+   - service.yaml
+\ No newline at end of file

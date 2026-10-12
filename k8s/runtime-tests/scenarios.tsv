@@ -1,0 +1,11 @@
+scenario	manifest	pod	expected_rule	expected_kre_action	mitre_candidate_verify
+interactive-shell	interactive-shell.yaml	interactive-shell	MSEF Interactive Shell Execution	QUARANTINE_TERMINATE	T1059.004
+token-theft	token-theft.yaml	token-theft	MSEF Service Account Token Access	QUARANTINE_REVOKE_TERMINATE	T1528
+metadata-theft	metadata-theft.yaml	metadata-theft	MSEF Cloud Metadata Server Access	QUARANTINE_REVOKE_TERMINATE	T1552.005
+outbound-c2	outbound-c2.yaml	outbound-c2	MSEF Outbound C2 Connection	QUARANTINE_TERMINATE	T1071.001
+host-write-attempt	host-write-attempt.yaml	host-write-attempt	MSEF Host Filesystem Write Attempt	TERMINATE	TBD (not T1053)
+cgroup-escape-attempt	cgroup-escape-attempt.yaml	cgroup-escape-attempt	MSEF Cgroup Release Agent Write	TERMINATE	T1611 (simulation)
+tmp-binary-execution	tmp-binary-execution.yaml	tmp-binary-execution	MSEF Execution from tmp	TERMINATE	T1036.005
+pam-tampering-attempt	pam-tampering-attempt.yaml	pam-tampering-attempt	MSEF PAM Configuration Modification	TERMINATE	T1556.003
+internal-port-scan	internal-port-scan.yaml	internal-port-scan	MSEF Network Recon Scan	QUARANTINE_TERMINATE	T1046
+resource-hijacking-attempt	resource-hijacking-attempt.yaml	resource-hijacking-attempt	MSEF Crypto Mining Outbound Beacon	QUARANTINE_TERMINATE	T1496 (simulation)

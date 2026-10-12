@@ -7,6 +7,15 @@
 
 set -euo pipefail
 
+# Fail rather than impute: a missing or null input must never become a score.
+require_metric() {
+  local file="$1" key="$2" v
+  [[ -f "$file" ]] || { echo "[!] missing input $file - run its harness first" >&2; exit 1; }
+  v="$(jq -r "$key" "$file")"
+  [[ -n "$v" && "$v" != "null" ]] || { echo "[!] $file has no value at $key (run invalid or incomplete)" >&2; exit 1; }
+  echo "$v"
+}
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
@@ -30,10 +39,10 @@ W_MTTD=0.20
 LAMBDA_DECAY=0.03
 
 # Extract Component Scores from generated JSON artifacts
-RDR=$(jq -r '.score // 1.0' "${JSON_DIR}/rdr.json" 2>/dev/null || echo "1.00")
-RRSR=$(jq -r '.score // 0.78' "${JSON_DIR}/rrsr.json" 2>/dev/null || echo "0.78")
-OFPR=$(jq -r '.score // 0.0' "${JSON_DIR}/fpr.json" 2>/dev/null || echo "0.00")
-MTTD=$(jq -r '.mean_time_to_detect_s // .mttd // 23.00' "${JSON_DIR}/mttd.json" 2>/dev/null || echo "23.00")
+RDR=$(require_metric "${JSON_DIR}/rdr.json" '.score')
+RRSR=$(require_metric "${JSON_DIR}/rrsr.json" '.score')
+OFPR=$(require_metric "${JSON_DIR}/fpr.json" '.score')
+MTTD=$(require_metric "${JSON_DIR}/mttd.json" '.mean_time_to_detect_s')
 
 CALC_JSON=$(python3 -c "
 import math, json

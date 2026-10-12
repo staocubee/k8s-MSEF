@@ -1,0 +1,40 @@
+name: Build and Sign KRE Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag (must match gitops/platform/dev/kre/deployment.yaml)"
+        required: true
+        default: "v2.1.0"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build-sign-kre:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        id: build
+        run: |
+          IMAGE="${{ vars.DOCKERHUB_USERNAME }}/msef-kre-handler:${{ github.event.inputs.tag }}"
+          docker build -t "$IMAGE" gitops/platform/dev/kre
+          docker push "$IMAGE"
+          DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE")
+          echo "digest_ref=$DIGEST" >> "$GITHUB_OUTPUT"
+          echo "Pushed $DIGEST"
+      - uses: sigstore/cosign-installer@v3
+      - name: Sign by digest
+        env:
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+        run: |
+          printf "%s" "${{ secrets.COSIGN_PRIVATE_KEY }}" > cosign.key && chmod 600 cosign.key
+          cosign sign --yes --key cosign.key "${{ steps.build.outputs.digest_ref }}"
+          rm -f cosign.key

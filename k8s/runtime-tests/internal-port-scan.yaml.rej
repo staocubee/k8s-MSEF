@@ -1,0 +1,100 @@
+diff a/k8s/runtime-tests/internal-port-scan.yaml b/k8s/runtime-tests/internal-port-scan.yaml	(rejected hunks)
+@@ -1,43 +1,54 @@
+-apiVersion: v1
+-kind: Pod
+-metadata:
+-  name: internal-port-scan
+-  namespace: hardened
+-  labels:
+-    app: internal-port-scan
+-    security: runtime-test
+-spec:
+-  restartPolicy: Never
+-  serviceAccountName: hardened-app-sa
+-  automountServiceAccountToken: false
+-  securityContext:
+-    runAsNonRoot: true
+-    seccompProfile:
+-      type: RuntimeDefault
+-  containers:
+-  - name: attack
+-    image: busybox:1.36
+-    command:
+-      - sh
+-      - -c
+-      - |
+-        echo "[+] Performing internal network recon probing..."
+-        for p in 53 80 443 6443 2379 8080 9090; do
+-          nc -z -w 1 kubernetes.default.svc "$p" 2>/dev/null || true
+-        done
+-        sleep 5
+-    securityContext:
+-      allowPrivilegeEscalation: false
+-      readOnlyRootFilesystem: true
+-      runAsNonRoot: true
+-      runAsUser: 1000
+-      capabilities:
+-        drop:
+-          - ALL
+-    resources:
+-      requests:
+-        cpu: 50m
+-        memory: 64Mi
+-      limits:
+-        cpu: 100m
+-        memory: 128Mi
+\ No newline at end of file
++# MSEF runtime scenario: internal-port-scan. Simulation of the technique's observable behaviour,
++# not an exploit. Expected rule: see scenarios.tsv
++apiVersion: v1
++kind: Pod
++metadata:
++  name: internal-port-scan
++  namespace: hardened
++  labels:
++    app: internal-port-scan
++    security: runtime-test
++    msef.scenario: internal-port-scan
++spec:
++  restartPolicy: Never
++  serviceAccountName: msef-attack-sa
++  automountServiceAccountToken: false
++  securityContext:
++    runAsNonRoot: true
++    seccompProfile:
++      type: RuntimeDefault
++  containers:
++  - name: attack
++    image: busybox:1.36
++    command:
++    - sh
++    - -c
++    - 'echo MSEF_READY
++
++      sleep 8
++
++      echo "MSEF_ATTACK_START scenario=internal-port-scan"
++
++      for p in 2379 6443 10250 9090; do nc -z -w 1 "$KUBERNETES_SERVICE_HOST" "$p"
++      || true; done
++
++      echo MSEF_ATTACK_DONE
++
++      sleep 300
++
++      '
++    securityContext:
++      allowPrivilegeEscalation: false
++      readOnlyRootFilesystem: true
++      runAsNonRoot: true
++      runAsUser: 1000
++      capabilities:
++        drop:
++        - ALL
++    resources:
++      requests:
++        cpu: 50m
++        memory: 64Mi
++      limits:
++        cpu: 100m
++        memory: 128Mi

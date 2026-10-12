@@ -7,6 +7,15 @@
 
 set -euo pipefail
 
+# Fail rather than impute: a missing or null input must never become a score.
+require_metric() {
+  local file="$1" key="$2" v
+  [[ -f "$file" ]] || { echo "[!] missing input $file - run its harness first" >&2; exit 1; }
+  v="$(jq -r "$key" "$file")"
+  [[ -n "$v" && "$v" != "null" ]] || { echo "[!] $file has no value at $key (run invalid or incomplete)" >&2; exit 1; }
+  echo "$v"
+}
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
@@ -28,9 +37,9 @@ W_NPER=0.30
 W_SMER=0.30
 
 # Extract Component Scores from generated JSON artifacts
-MBR=$(jq -r '.score // 1.0' "${JSON_DIR}/mbr.json" 2>/dev/null || echo "1.00")
-NPER=$(jq -r '.score // 1.0' "${JSON_DIR}/nper.json" 2>/dev/null || echo "1.00")
-SMER=$(jq -r '.score // 1.0' "${JSON_DIR}/smer.json" 2>/dev/null || echo "1.00")
+MBR=$(require_metric "${JSON_DIR}/mbr.json" '.score')
+NPER=$(require_metric "${JSON_DIR}/nper.json" '.score')
+SMER=$(require_metric "${JSON_DIR}/smer.json" '.score')
 
 # Compute Weighted PES using Python
 CALC_JSON=$(python3 -c "

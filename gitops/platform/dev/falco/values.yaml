@@ -81,101 +81,120 @@ resources:
     memory: 512Mi
 
 # 9. Custom Security Rules
+# Single source of truth for MSEF runtime rules (the former .txt rule files
+# were never deployed and have been removed). Every rule is scoped to the
+# evaluation namespaces via msef_target_ns, so platform components that
+# legitimately read their own tokens or the metadata server do not alert.
+# Scenario <-> rule mapping: k8s/runtime-tests/scenarios.tsv
 customRules:
   msef-runtime-rules.yaml: |-
-    # 1. Maps 1-to-1 with outbound-c2.yaml
-    - rule: MSEF Outbound C2 Traffic
-      desc: Detect outbound network communication attempt via netcat or wget
-      condition: >
-        evt.type in (execve, execveat) and
-        evt.dir = < and
-        container and
-        proc.name in (nc, wget)
-      output: >
-        Outbound C2 tool executed
-        (pod=%k8s.pod.name ns=%k8s.ns.name user=%user.name command=%proc.cmdline)
-      priority: WARNING
-      tags:
-        - msef
-        - runtime
-        - network
-        - c2
+    - macro: msef_target_ns
+      condition: (k8s.ns.name in (hardened))
 
-    # 2. Maps 1-to-1 with metadata-theft.yaml
-    - rule: MSEF Cloud Metadata Server Access
-      desc: Detect access attempts to cloud instance metadata endpoint (IMDS)
-      condition: >
-        evt.type = connect and
-        evt.dir = < and
-        container and
-        fd.sip = 169.254.169.254
-      output: >
-        Cloud metadata access attempt detected
-        (pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name dest=%fd.rip:%fd.rport)
-      priority: CRITICAL
-      tags:
-        - msef
-        - runtime
-        - metadata
-        - credentials
+    - list: msef_file_read_tools
+      items: [cat, head, tail, more, less, base64, xxd, od, strings, cp, dd]
 
-    # 3. Maps 1-to-1 with token-theft.yaml
-    - rule: MSEF Token and Sensitive File Access
-      desc: Detect reading service account tokens or sensitive system credential files
-      condition: >
-        evt.type in (open, openat, openat2) and
-        evt.dir = < and
-        container and
-        (
-          fd.name startswith /var/run/secrets/kubernetes.io/serviceaccount or
-          fd.name in (/etc/shadow, /etc/passwd, /etc/gshadow, /etc/sudoers)
-        )
-      output: >
-        Sensitive token or system file accessed
-        (pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name file=%fd.name user=%user.name)
-      priority: ERROR
-      tags:
-        - msef
-        - runtime
-        - token
-        - filesystem
-
-    # 4. Maps 1-to-1 with interactive-shell.yaml
     - rule: MSEF Interactive Shell Execution
-      desc: Detect execution of interactive shell sessions within workload container
+      desc: Interactive shell spawned in an evaluation workload
       condition: >
-        evt.type in (execve, execveat) and
-        evt.dir = < and
-        container and
-        proc.name in (sh, bash, ash, dash, zsh) and
-        proc.args contains "-i"
+        spawned_process and container and msef_target_ns and
+        proc.name in (sh, bash, ash, dash, zsh) and proc.args contains "-i"
       output: >
-        Interactive shell spawned in container
-        (pod=%k8s.pod.name ns=%k8s.ns.name user=%user.name command=%proc.cmdline)
+        MSEF_SHELL pod=%k8s.pod.name ns=%k8s.ns.name cmd=%proc.cmdline
       priority: WARNING
-      tags:
-        - msef
-        - runtime
-        - shell
+      tags: [msef, runtime, shell]
 
-    # 5. Maps 1-to-1 with host-write-attempt.yaml
-    - rule: MSEF Host Filesystem Write Attempt
-      desc: Detect open/openat write attempts to protected locations like /etc
+    - rule: MSEF Service Account Token Access
+      desc: Token or credential file read by a file-reading tool (not by an API client library)
       condition: >
-        evt.type in (open, openat, openat2) and
-        evt.dir = < and
-        container and
-        (evt.arg.flags contains O_WRONLY or evt.arg.flags contains O_RDWR or evt.arg.flags contains O_CREAT) and
-        fd.name startswith /etc
+        open_read and container and msef_target_ns and
+        proc.name in (msef_file_read_tools) and
+        (fd.name startswith /var/run/secrets/kubernetes.io/serviceaccount or
+         fd.name in (/etc/shadow, /etc/gshadow, /etc/sudoers))
       output: >
-        Unauthorized write attempt to protected directory
-        (pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name file=%fd.name)
+        MSEF_TOKEN pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name file=%fd.name
       priority: ERROR
-      tags:
-        - msef
-        - runtime
-        - filesystem
-        
+      tags: [msef, runtime, credentials]
+
+    - rule: MSEF Cloud Metadata Server Access
+      desc: Connection to the cloud instance metadata endpoint
+      condition: >
+        evt.type = connect and evt.dir = < and container and msef_target_ns and
+        fd.sip = "169.254.169.254"
+      output: >
+        MSEF_IMDS pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name dest=%fd.sip:%fd.sport
+      priority: CRITICAL
+      tags: [msef, runtime, metadata]
+
+    - rule: MSEF Outbound C2 Connection
+      desc: Outbound TCP connection to a non-private address on a web port
+      condition: >
+        evt.type = connect and evt.dir = < and container and msef_target_ns and
+        fd.l4proto = tcp and fd.sport in (80, 443) and
+        not fd.snet in (rfc_1918_addresses) and not fd.sip = "169.254.169.254"
+      output: >
+        MSEF_C2 pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name dest=%fd.sip:%fd.sport
+      priority: WARNING
+      tags: [msef, runtime, network, c2]
+
+    - rule: MSEF Host Filesystem Write Attempt
+      desc: Successful write below /etc (excluding /etc/pam.d, covered separately)
+      condition: >
+        open_write and container and msef_target_ns and
+        fd.name startswith /etc/ and not fd.name startswith /etc/pam.d/
+      output: >
+        MSEF_ETC_WRITE pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name file=%fd.name
+      priority: ERROR
+      tags: [msef, runtime, filesystem]
+
+    - rule: MSEF Cgroup Release Agent Write
+      desc: Write to a file named release_agent (filename-pattern indicator of the cgroup v1 escape technique)
+      condition: >
+        open_write and container and msef_target_ns and fd.name endswith release_agent
+      output: >
+        MSEF_CGROUP pod=%k8s.pod.name ns=%k8s.ns.name file=%fd.name
+      priority: CRITICAL
+      tags: [msef, runtime, escape]
+
+    - rule: MSEF Execution from tmp
+      desc: Process executed from /tmp or /dev/shm
+      condition: >
+        spawned_process and container and msef_target_ns and
+        (proc.exepath startswith /tmp/ or proc.exepath startswith /dev/shm/)
+      output: >
+        MSEF_TMP_EXEC pod=%k8s.pod.name ns=%k8s.ns.name exepath=%proc.exepath cmd=%proc.cmdline
+      priority: ERROR
+      tags: [msef, runtime, execution]
+
+    - rule: MSEF PAM Configuration Modification
+      desc: Write to PAM configuration
+      condition: >
+        open_write and container and msef_target_ns and fd.name startswith /etc/pam.d/
+      output: >
+        MSEF_PAM pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name file=%fd.name
+      priority: ERROR
+      tags: [msef, runtime, persistence]
+
+    - rule: MSEF Network Recon Scan
+      desc: Connection to control-plane or node ports from an evaluation workload
+      condition: >
+        evt.type = connect and evt.dir = < and container and msef_target_ns and
+        fd.l4proto = tcp and fd.sport in (2379, 2380, 6443, 10250, 10255, 9090)
+      output: >
+        MSEF_RECON pod=%k8s.pod.name ns=%k8s.ns.name dest=%fd.sip:%fd.sport
+      priority: WARNING
+      tags: [msef, runtime, discovery]
+
+    - rule: MSEF Crypto Mining Outbound Beacon
+      desc: Outbound connection to a common mining-pool port
+      condition: >
+        evt.type = connect and evt.dir = < and container and msef_target_ns and
+        fd.l4proto = tcp and fd.sport in (3333, 4444, 5555, 7777, 9999, 14444)
+      output: >
+        MSEF_MINER pod=%k8s.pod.name ns=%k8s.ns.name dest=%fd.sip:%fd.sport
+      priority: CRITICAL
+      tags: [msef, runtime, impact]
+
 # 10. Falcosidekick Integration
 falcosidekick:
   enabled: true
