@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: tmp-binary-execution
+  namespace: hardened
+  labels:
+    app: tmp-binary-execution
+    security: runtime-test
+spec:
+  restartPolicy: Never
+  serviceAccountName: hardened-app-sa
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: attack
+    image: busybox:1.36
+    command:
+      - sh
+      - -c
+      - |
+        echo "[+] Dropping masqueraded binary into /tmp..."
+        cp /bin/sh /tmp/.k8s-daemon 2>/dev/null || true
+        echo "[+] Attempting process spawn from /tmp..."
+        /tmp/.k8s-daemon -c "uname -a" 2>/dev/null || true
+        sleep 5
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000
+      capabilities:
+        drop:
+          - ALL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi

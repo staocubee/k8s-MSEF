@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: resource-hijacking-attempt
+  namespace: hardened
+  labels:
+    app: resource-hijacking-attempt
+    security: runtime-test
+spec:
+  restartPolicy: Never
+  serviceAccountName: hardened-app-sa
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: attack
+    image: busybox:1.36
+    command:
+      - sh
+      - -c
+      - |
+        echo "[+] Emulating stratum mining protocol handshake..."
+        nc -w 1 pool.supportxmr.com 3333 2>/dev/null || true
+        echo "[+] Executing compute burn loop..."
+        (i=0; while [ $i -lt 100000 ]; do i=$((i+1)); done) &
+        sleep 5
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000
+      capabilities:
+        drop:
+          - ALL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi

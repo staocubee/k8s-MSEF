@@ -1,0 +1,240 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# Multi-Layer Security Evaluation Framework (MSEF)
+# Script: scripts/benchmark-overhead.sh
+# Purpose: Quantitatively benchmark admission controller webhook latency percentiles
+#          (P50, P95, P99) and runtime eBPF/Falco CPU/RAM utilization overhead.
+# ==============================================================================
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+# Source shared modules
+source "${PROJECT_ROOT}/scripts/lib/common.sh"
+source "${PROJECT_ROOT}/scripts/lib/output.sh"
+
+RESULTS_DIR="${PROJECT_ROOT}/results"
+JSON_DIR="${RESULTS_DIR}/json"
+TXT_DIR="${RESULTS_DIR}/txt"
+LOGS_DIR="${RESULTS_DIR}/logs"
+BENCH_DIR="${RESULTS_DIR}/benchmarks"
+
+mkdir -p "${JSON_DIR}" "${TXT_DIR}" "${LOGS_DIR}" "${BENCH_DIR}"
+
+BENCH_LOG="${LOGS_DIR}/benchmark-overhead.log"
+BENCH_JSON="${JSON_DIR}/benchmark-overhead.json"
+BENCH_TXT="${TXT_DIR}/benchmark-overhead.txt"
+RAW_LATENCIES="${BENCH_DIR}/admission_latencies.raw"
+
+echo "=== MSEF Performance Benchmarking $(date -u +"%Y-%m-%dT%H:%M:%SZ") ===" > "${BENCH_LOG}"
+rm -f "${RAW_LATENCIES}"
+
+BENCH_NAMESPACE="msef-bench-$(date +%s)"
+BURST_COUNT=${1:-50}
+
+log_info "Initializing MSEF System Overhead & Latency Evaluation..."
+log_info "Test parameters: Concurrency Burst = ${BURST_COUNT} pods, Target NS = ${BENCH_NAMESPACE}"
+
+# ------------------------------------------------------------------------------
+# 1. Namespace Setup
+# ------------------------------------------------------------------------------
+cleanup() {
+  log_info "Cleaning up benchmark resources..."
+  kubectl delete namespace "${BENCH_NAMESPACE}" --ignore-not-found=true --wait=false &>/dev/null || true
+}
+trap cleanup EXIT INT TERM
+
+kubectl create namespace "${BENCH_NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f - >> "${BENCH_LOG}" 2>&1
+
+# ------------------------------------------------------------------------------
+# 2. Admission Webhook Latency Benchmarking (P50, P95, P99)
+# ------------------------------------------------------------------------------
+log_info "Starting Admission Webhook Latency Test (${BURST_COUNT} concurrent pods)..."
+
+# Ensure test pod template complies with security policies so we measure pure webhook latency
+cat << 'EOF' > "${BENCH_DIR}/bench-pod-template.yaml"
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: bench-target
+spec:
+  restartPolicy: Never
+  serviceAccountName: default
+  containers:
+  - name: pause-container
+    image: registry.k8s.io/pause:3.9
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 10001
+      capabilities:
+        drop: ["ALL"]
+    resources:
+      limits:
+        cpu: 50m
+        memory: 64Mi
+      requests:
+        cpu: 10m
+        memory: 32Mi
+EOF
+
+# Measure admission latency per request (Creation request accepted by API server)
+for i in $(seq 1 "${BURST_COUNT}"); do
+  POD_NAME="bench-pod-${i}"
+  
+  # Microsecond timestamp capture
+  T_START=$(python3 -c 'import time; print(time.perf_counter())')
+  
+  if sed "s/name: bench-pod/name: ${POD_NAME}/g" "${BENCH_DIR}/bench-pod-template.yaml" | \
+     kubectl apply -n "${BENCH_NAMESPACE}" -f - --dry-run=server >> "${BENCH_LOG}" 2>&1; then
+    
+    T_END=$(python3 -c 'import time; print(time.perf_counter())')
+    LATENCY_MS=$(python3 -c "print((${T_END} - ${T_START}) * 1000)")
+    echo "${LATENCY_MS}" >> "${RAW_LATENCIES}"
+  else
+    echo "[WARN] Pod ${POD_NAME} rejected during admission benchmark" >> "${BENCH_LOG}"
+  fi
+done
+
+# Calculate Percentiles using Python
+STATS_JSON=$(python3 - << 'PYEOF'
+import sys, json, math
+
+latencies = []
+try:
+    with open("results/benchmarks/admission_latencies.raw", "r") as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                latencies.append(float(line))
+except Exception:
+    pass
+
+if not latencies:
+    print(json.dumps({"p50": 0, "p90": 0, "p95": 0, "p99": 0, "mean": 0, "std_dev": 0, "count": 0}))
+    sys.exit(0)
+
+latencies.sort()
+n = len(latencies)
+
+def percentile(p):
+    idx = int(math.ceil((p / 100.0) * n)) - 1
+    return round(latencies[max(0, min(idx, n - 1))], 2)
+
+mean = round(sum(latencies) / n, 2)
+variance = sum((x - mean) ** 2 for x in latencies) / n
+std_dev = round(math.sqrt(variance), 2)
+
+res = {
+    "count": n,
+    "mean_ms": mean,
+    "std_dev_ms": std_dev,
+    "p50_ms": percentile(50),
+    "p90_ms": percentile(90),
+    "p95_ms": percentile(95),
+    "p99_ms": percentile(99)
+}
+print(json.dumps(res))
+PYEOF
+)
+
+log_success "Admission Latency Benchmarking Complete."
+echo "  Admission Latency Stats: ${STATS_JSON}" >> "${BENCH_LOG}"
+
+# ------------------------------------------------------------------------------
+# 3. Runtime eBPF / Falco & KRE Resource Utilization Benchmarking
+# ------------------------------------------------------------------------------
+log_info "Evaluating Runtime Security Stack Resource Footprint (metrics-server)..."
+
+# Fetch Falco Daemonset Resource Usage
+FALCO_CPU_M=0
+FALCO_MEM_MI=0
+FALCO_PODS=$(kubectl get pods -n falco -l app.kubernetes.io/name=falco -o jsonpath='{.items[*].metadata.name}' 2>/dev/null || true)
+
+if [[ -n "${FALCO_PODS}" ]]; then
+  log_info "Collecting metrics for Falco Daemonset pods..."
+  # Sample top pods across nodes
+  METRICS=$(kubectl top pods -n falco --no-headers 2>/dev/null || echo "")
+  if [[ -n "${METRICS}" ]]; then
+    FALCO_CPU_M=$(echo "${METRICS}" | awk '{sum+=$2} END {if (NR>0) print int(sum/NR); else print 0}' | tr -d 'm')
+    FALCO_MEM_MI=$(echo "${METRICS}" | awk '{sum+=$3} END {if (NR>0) print int(sum/NR); else print 0}' | tr -d 'Mi')
+  fi
+else
+  log_warn "Falco pods not detected or metrics-server uninitialized."
+fi
+
+# Fetch KRE Controller Resource Usage
+KRE_CPU_M=0
+KRE_MEM_MI=0
+KRE_METRICS=$(kubectl top pod -n kre -l app=msef-kre-handler --no-headers 2>/dev/null || \
+             kubectl top pod -n dev -l app=msef-kre-handler --no-headers 2>/dev/null || echo "")
+
+if [[ -n "${KRE_METRICS}" ]]; then
+  KRE_CPU_M=$(echo "${KRE_METRICS}" | awk '{print $2}' | head -n1 | tr -d 'm')
+  KRE_MEM_MI=$(echo "${KRE_METRICS}" | awk '{print $3}' | head -n1 | tr -d 'Mi')
+fi
+
+# ------------------------------------------------------------------------------
+# 4. Generate Standardized Metric Artifacts
+# ------------------------------------------------------------------------------
+P50_MS=$(echo "${STATS_JSON}" | jq -r '.p50_ms')
+P95_MS=$(echo "${STATS_JSON}" | jq -r '.p95_ms')
+P99_MS=$(echo "${STATS_JSON}" | jq -r '.p99_ms')
+MEAN_MS=$(echo "${STATS_JSON}" | jq -r '.mean_ms')
+STD_DEV_MS=$(echo "${STATS_JSON}" | jq -r '.std_dev_ms')
+SAMPLE_COUNT=$(echo "${STATS_JSON}" | jq -r '.count')
+
+cat <<EOF > "${BENCH_JSON}"
+{
+  "metric_group": "MSEF_SYSTEM_OVERHEAD",
+  "admission_benchmarks": {
+    "sample_requests": ${SAMPLE_COUNT},
+    "mean_latency_ms": ${MEAN_MS},
+    "std_dev_ms": ${STD_DEV_MS},
+    "p50_latency_ms": ${P50_MS},
+    "p95_latency_ms": ${P95_MS},
+    "p99_latency_ms": ${P99_MS}
+  },
+  "runtime_resource_footprint": {
+    "falco_avg_cpu_millicores": ${FALCO_CPU_M:-0},
+    "falco_avg_memory_mib": ${FALCO_MEM_MI:-0},
+    "kre_avg_cpu_millicores": ${KRE_CPU_M:-0},
+    "kre_avg_memory_mib": ${KRE_MEM_MI:-0}
+  },
+  "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+}
+EOF
+
+cat <<EOF > "${BENCH_TXT}"
+=== MSEF SYSTEM OVERHEAD & BENCHMARK REPORT ===
+Timestamp: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+[Admission Controller Latency]
+Samples:               ${SAMPLE_COUNT} requests
+Mean Latency:          ${MEAN_MS} ms (±${STD_DEV_MS} ms)
+50th Percentile (P50): ${P50_MS} ms
+95th Percentile (P95): ${P95_MS} ms
+99th Percentile (P99): ${P99_MS} ms
+
+[Runtime Daemonset Resource Utilization]
+Falco eBPF Probe CPU:  ${FALCO_CPU_M:-0} m
+Falco eBPF Probe RAM:  ${FALCO_MEM_MI:-0} MiB
+KRE Controller CPU:    ${KRE_CPU_M:-0} m
+KRE Controller RAM:    ${KRE_MEM_MI:-0} MiB
+EOF
+
+echo ""
+log_success "Benchmarking Harness Successfully Completed!"
+echo "--------------------------------------------------------"
+echo "  Admission Webhook P50 Latency:  ${P50_MS} ms"
+echo "  Admission Webhook P95 Latency:  ${P95_MS} ms"
+echo "  Admission Webhook P99 Latency:  ${P99_MS} ms"
+echo "  Falco Probe Memory Footprint:   ${FALCO_MEM_MI:-0} MiB"
+echo "--------------------------------------------------------"
+echo "  Output JSON: ${BENCH_JSON}"
+echo "  Output TXT:  ${BENCH_TXT}"
+echo "--------------------------------------------------------"

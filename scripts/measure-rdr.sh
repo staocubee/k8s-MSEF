@@ -1,173 +1,124 @@
 #!/usr/bin/env bash
-
-###############################################################################
+# ==============================================================================
 # Multi-Layer Security Evaluation Framework (MSEF)
-#
-# Runtime Detection Rate (RDR)
-###############################################################################
+# Script: scripts/measure-rdr.sh
+# Purpose: Quantitatively measure Runtime Detection Rate (RDR) across 10 MITRE
+#          ATT&CK container attack windows.
+# ==============================================================================
 
 set -euo pipefail
-shopt -s nullglob
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-source "$SCRIPT_DIR/lib/common.sh"
-source "$SCRIPT_DIR/lib/kubernetes.sh"
-source "$SCRIPT_DIR/lib/falco.sh"
-source "$SCRIPT_DIR/lib/metrics.sh"
+source "${PROJECT_ROOT}/scripts/lib/common.sh"
+source "${PROJECT_ROOT}/scripts/lib/output.sh"
 
-RUNTIME_NS="${RUNTIME_NS:-hardened}"
+RESULTS_DIR="${PROJECT_ROOT}/results"
+JSON_DIR="${RESULTS_DIR}/json"
+TXT_DIR="${RESULTS_DIR}/txt"
+LOGS_DIR="${RESULTS_DIR}/logs"
+ATTACK_DIR="${PROJECT_ROOT}/k8s/runtime-tests"
 
-require_namespace "$RUNTIME_NS"
-require_namespace falco
+mkdir -p "${JSON_DIR}" "${TXT_DIR}" "${LOGS_DIR}"
 
-TEST_DIR="${TEST_DIR:-$PROJECT_ROOT/k8s/runtime-tests}"
+DETAILS_LOG="${LOGS_DIR}/rdr-details.log"
+OUTPUT_JSON="${JSON_DIR}/rdr.json"
+OUTPUT_TXT="${TXT_DIR}/rdr.txt"
 
-JSON_DIR="$RESULTS_DIR/json"
-TXT_DIR="$RESULTS_DIR/txt"
-LOG_DIR="$RESULTS_DIR/logs"
+echo "=== MSEF Runtime Detection (RDR) Evaluation $(date -u +"%Y-%m-%dT%H:%M:%SZ") ===" > "${DETAILS_LOG}"
 
-mkdir -p \
-    "$JSON_DIR" \
-    "$TXT_DIR" \
-    "$LOG_DIR"
+# 10 Attack Manifests
+ATTACK_TESTS=(
+  "interactive-shell"
+  "token-test"
+  "metadata-theft"
+  "outbound-c2"
+  "host-write-attempt"
+  "cgroup-escape-attempt"
+  "tmp-binary-execution"
+  "pam-tampering-attempt"
+  "internal-port-scan"
+  "resource-hijacking-attempt"
+)
 
-DETAILS="$LOG_DIR/rdr-details.log"
-EVENTS_FILE="$JSON_DIR/runtime-events.jsonl"
+TOTAL_ATTACKS=${#ATTACK_TESTS[@]}
+DETECTED_COUNT=0
 
-> "$DETAILS"
-> "$EVENTS_FILE"
+log_info "Executing 10-Stage MITRE ATT&CK Runtime Evaluation..."
 
-banner "Runtime Detection Rate (RDR)"
+for ATTACK in "${ATTACK_TESTS[@]}"; do
+  MANIFEST="${ATTACK_DIR}/${ATTACK}.yaml"
+  
+  if [[ ! -f "${MANIFEST}" ]]; then
+    log_warn "Manifest ${MANIFEST} not found. Skipping..."
+    continue
+  fi
 
-TOTAL=0
-DETECTED=0
-ATTACK_RESULTS=""
+  log_info "Deploying attack workload: ${ATTACK}..."
+  
+  # Clean up any existing pod
+  kubectl delete -f "${MANIFEST}" --ignore-not-found=true --wait=false &>/dev/null || true
+  sleep 2
 
-###############################################################################
+  # Capture Falco pod baseline logs point
+  FALCO_START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-for FILE in "$TEST_DIR"/*.yaml
-do
-    [[ -f "$FILE" ]] || continue
+  # Deploy attack pod
+  kubectl apply -f "${MANIFEST}" >> "${DETAILS_LOG}" 2>&1
 
-    TOTAL=$((TOTAL+1))
+  # Wait for execution and Falco probe detection window
+  log_info "Observing detection window (15s)..."
+  sleep 15
 
-    NAME=$(basename "$FILE" .yaml)
+  # Check Falco logs for detection of this attack pod
+  FALCO_LOGS=$(kubectl logs -n falco -l app.kubernetes.io/name=falco --since-time="${FALCO_START_TIME}" 2>/dev/null || echo "")
 
-    POD=$(kubectl create \
-        --dry-run=client \
-        -f "$FILE" \
-        -o jsonpath='{.metadata.name}')
+  if echo "${FALCO_LOGS}" | grep -q "${ATTACK}"; then
+    DETECTED_COUNT=$((DETECTED_COUNT + 1))
+    echo "[DETECTED: PASS] Scenario: ${ATTACK}" >> "${DETAILS_LOG}"
+    log_success "Attack ${ATTACK} successfully detected by Falco probe."
+  else
+    echo "[UNDETECTED: FAIL] Scenario: ${ATTACK}" >> "${DETAILS_LOG}"
+    log_warn "Attack ${ATTACK} was NOT detected within the window."
+  fi
 
-    echo
-    echo "Running: $NAME"
-
-    kubectl delete \
-        -f "$FILE" \
-        --ignore-not-found >/dev/null 2>&1 || true
-
-    kubectl apply -f "$FILE" >/dev/null
-
-    START=$(date +%s)
-
-    kubectl wait \
-        --for=condition=Ready \
-        pod/"$POD" \
-        -n "$RUNTIME_NS" \
-        --timeout=60s >/dev/null 2>&1 || true
-
-    sleep 20
-
-    TIME=$(measure_detection_time "$START")
-
-    EVENT=$(
-        collect_falco_logs 60s \
-        | jq -c \
-            --arg pod "$POD" \
-            '
-            select(
-                (.output_fields["k8s.pod.name"]==$pod)
-                or
-                (.output|contains($pod))
-            )
-            ' \
-        | tail -1
-    )
-
-    if [[ -n "$EVENT" ]]
-    then
-
-        FOUND=true
-
-        DETECTED=$((DETECTED+1))
-
-        echo "$EVENT" >> "$EVENTS_FILE"
-
-        echo "Detected"
-
-    else
-
-        FOUND=false
-
-        echo "Not Detected"
-
-    fi
-
-    ATTACK_RESULTS="${ATTACK_RESULTS}
-{
-  \"name\":\"${NAME}\",
-  \"pod\":\"${POD}\",
-  \"detected\":${FOUND},
-  \"time_seconds\":${TIME}
-},"
-
-    cat >> "$DETAILS" <<EOF
-Attack     : $NAME
-Pod        : $POD
-Detected   : $FOUND
-Time       : ${TIME}s
-----------------------------------------
-EOF
-
-    kubectl delete \
-        -f "$FILE" \
-        --ignore-not-found >/dev/null 2>&1 || true
-
+  # Cleanup workload
+  kubectl delete -f "${MANIFEST}" --ignore-not-found=true --wait=false &>/dev/null || true
+  sleep 2
 done
 
-[[ "$TOTAL" -gt 0 ]] || fail "No runtime tests found."
+# Metric Calculation
+RDR=$(awk "BEGIN {printf \"%.4f\", ${DETECTED_COUNT} / ${TOTAL_ATTACKS}}")
+RDR_PERCENT=$(awk "BEGIN {printf \"%.2f\", ${RDR} * 100}")
 
-RDR=$(calculate_ratio "$DETECTED" "$TOTAL")
-
-ATTACK_RESULTS=$(echo "$ATTACK_RESULTS" | sed '$ s/,$//')
-
-cat > "$JSON_DIR/rdr.json" <<EOF
+cat <<EOF > "${OUTPUT_JSON}"
 {
-  "metric":"RDR",
-  "total_attacks":$TOTAL,
-  "detected":$DETECTED,
-  "score":$RDR,
-  "events_file":"runtime-events.jsonl",
-  "attacks":[
-$ATTACK_RESULTS
-  ]
+  "metric": "RDR",
+  "score": ${RDR},
+  "percentage": ${RDR_PERCENT},
+  "detected_windows": ${DETECTED_COUNT},
+  "total_attack_windows": ${TOTAL_ATTACKS},
+  "scenarios_evaluated": ${TOTAL_ATTACKS},
+  "taxonomy": "MITRE ATT&CK for Containers",
+  "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 }
 EOF
 
-cat > "$TXT_DIR/rdr.txt" <<EOF
-==========================================
-Runtime Detection Rate
-==========================================
-
-Total Runtime Attacks : $TOTAL
-Detected              : $DETECTED
-
-RDR                   : $RDR
-
-Falco Events          : $EVENTS_FILE
-
-Generated : $(date)
+cat <<EOF > "${OUTPUT_TXT}"
+Metric: RDR
+Score: ${RDR}
+Percentage: ${RDR_PERCENT}%
+Detected Windows: ${DETECTED_COUNT}/${TOTAL_ATTACKS}
+Taxonomy: MITRE ATT&CK for Containers
 EOF
 
-cat "$TXT_DIR/rdr.txt"
+echo ""
+log_success "RDR Evaluation Complete!"
+echo "--------------------------------------------------------"
+echo "  Runtime Detection Rate (RDR): ${RDR} (${RDR_PERCENT}%)"
+echo "  Detected Attack Scenarios:   ${DETECTED_COUNT}/${TOTAL_ATTACKS}"
+echo "--------------------------------------------------------"
+echo "  Details Log: ${DETAILS_LOG}"
+echo "  Output JSON: ${OUTPUT_JSON}"
+echo "--------------------------------------------------------"

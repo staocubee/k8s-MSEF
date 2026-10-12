@@ -71,3 +71,38 @@
     - msef
     - runtime
     - shell
+
+    - rule: MSEF Cgroup Release Agent Modification
+  desc: Detects attempt to escape container by writing to cgroups release_agent
+  condition: open_write and fd.name startswith "/tmp/cgroup" and fd.name contains "release_agent"
+  output: "Container escape release_agent write detected (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name file=%fd.name)"
+  priority: CRITICAL
+  tags: [msef, attack, container_escape, mitre_t1611]
+
+- rule: MSEF Execution from /tmp Scratch Space
+  desc: Detects binaries executed out of /tmp or /dev/shm
+  condition: spawned_process and (proc.name startswith "/tmp/" or proc.exepath startswith "/tmp/")
+  output: "Execution of binary dropped in /tmp (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name exepath=%proc.exepath)"
+  priority: WARNING
+  tags: [msef, attack, defense_evasion, mitre_t1036]
+
+- rule: MSEF PAM Configuration Modification
+  desc: Detects modification of sensitive authentication pam.d directory
+  condition: open_write and fd.name startswith "/etc/pam.d/"
+  output: "System authentication file modified (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name file=%fd.name)"
+  priority: CRITICAL
+  tags: [msef, attack, persistence, mitre_t1556]
+
+- rule: MSEF Network Recon Scan
+  desc: Detects rapid network probing against Kubernetes services
+  condition: outbound and fd.sport > 1024 and fd.dport in (6443, 2379, 8080, 9090)
+  output: "Internal Kubernetes service port recon scan detected (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name dport=%fd.dport)"
+  priority: NOTICE
+  tags: [msef, attack, lateral_movement, mitre_t1046]
+
+- rule: MSEF Crypto Mining Outbound Beacon
+  desc: Detects outbound communication to common mining ports or stratum protocol
+  condition: outbound and fd.dport in (3333, 5555, 7777, 9999)
+  output: "Outbound crypto mining protocol beacon detected (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name dest=%fd.rip:%fd.rport)"
+  priority: CRITICAL
+  tags: [msef, attack, impact, mitre_t1496]
