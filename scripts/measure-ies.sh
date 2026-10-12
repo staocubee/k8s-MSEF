@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
-# Thin wrapper; logic and oracle live in scripts/measure_admission.py.
+# IES is produced by its harness (runtime suite or SPR); this only reports it.
 set -euo pipefail
-exec python3 "$(dirname "$0")/measure_admission.py" spr "$@"
+source "$(dirname "$0")/lib/report_metric.sh"
+report_metric "IES" "$(cd "$(dirname "$0")/.." && pwd)/results/json/ies.json"

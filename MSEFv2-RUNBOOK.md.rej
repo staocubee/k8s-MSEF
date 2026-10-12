@@ -1,0 +1,36 @@
+diff a/MSEFv2-RUNBOOK.md b/MSEFv2-RUNBOOK.md	(rejected hunks)
+@@ -3,7 +3,7 @@
+ Branch `msefv2-harness-fixes` implements the "minimal code fixes" from the
+ October 2026 evidence audit. **Nothing on this branch has been run against a
+ cluster.** Offline checks only: KRE controller tests against a fake API
+-(`python3 tests/test_kre_handler.py`, 16/16), fuzzer determinism and
++(`python3 tests/test_kre_handler.py`, 20/20; `python3 tests/test_rule_consistency.py`, 8/8), fuzzer determinism and
+ distinctness, admission-oracle cases, metric calculators on fixtures.
+ Falco rule syntax has not been validated by Falco itself (step 2 does that).
+ 
+@@ -13,6 +13,17 @@ cluster version, component images, seed). `results/json/*.json` holds the
+ latest value per metric *with its run_id*. v1 results are archived under
+ `results/archive-v1-pre-f413715/` and must not be cited.
+ 
++## Changing runtime rules
++Falco rules, KRE containment and the harness must stay in step. A rule change touches three files:
++1. `gitops/platform/dev/falco/values.yaml` (`customRules`): the detection rule
++2. `gitops/platform/dev/kre/configmap.yaml` (`rule-plans.json`): its containment plan;
++   then bump `msef.security/rule-plans-version` in `kre/deployment.yaml` so the pod restarts
++   and reloads the map (environment variables from a ConfigMap are read only at start)
++3. `k8s/runtime-tests/scenarios.tsv`: the scenario that exercises it
++
++Then run `python3 tests/test_rule_consistency.py` before committing. KRE only remediates
++rules present in the map; anything else is audited as `unsupported_rule` and left alone.
++
+ ## 0. Prerequisites
+ - `pip install -r scripts/requirements.txt`; `jq`; kubectl context on the dev cluster
+ - metrics-server available (`kubectl top pods -n falco` works)
+@@ -28,6 +39,7 @@ Sync Argo CD apps: falco, falcosidekick, kre-handler. Then check:
+ - `kubectl -n hardened get pods -l app=msef-kre-handler` → Running, Ready
+ - `kubectl -n hardened exec deploy/msef-kre-handler -- python -c "import urllib.request;print(urllib.request.urlopen('http://localhost:8080/healthz').read())"` → `mode: async`
+ - `kubectl -n falco logs ds/<falco> -c falco | grep -i "msef"` → rules loaded, no rule errors
++- `kubectl -n hardened logs deploy/msef-kre-handler | grep "rule plans"` → `10 rule plans`
+ - Two Falcosidekick instances exist (chart-embedded and the standalone app);
+   both now post to KRE. KRE's dedup absorbs duplicates, but disable one to keep
+   the event accounting clean.

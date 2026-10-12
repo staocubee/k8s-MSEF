@@ -1,0 +1,37 @@
+diff a/gitops/platform/dev/kre/configmap.yaml b/gitops/platform/dev/kre/configmap.yaml	(rejected hunks)
+@@ -1,14 +1,25 @@
+ apiVersion: v1
+ kind: ConfigMap
+-
+ metadata:
+   name: kre-config
+-
+ data:
+-
+-  TARGET_RULES: |
+-    MSEF Host Filesystem Write Attempt
+-    MSEF Token and Sensitive File Access
+-    MSEF Cloud Metadata Server Access
+-    MSEF Outbound C2 Traffic
+-    MSEF Interactive Shell Execution
+\ No newline at end of file
++  # Single source of truth for KRE containment. Loaded by the handler at
++  # startup (env KRE_RULE_PLANS). Only rules listed here are remediated;
++  # any other alert is audited as unsupported and left alone.
++  # Must match the rule names in gitops/platform/dev/falco/values.yaml
++  # (customRules) and k8s/runtime-tests/scenarios.tsv; enforced by
++  # tests/test_rule_consistency.py.
++  # Plans: TERMINATE | QUARANTINE_TERMINATE | QUARANTINE_REVOKE_TERMINATE
++  rule-plans.json: |
++    {
++      "MSEF Interactive Shell Execution": "QUARANTINE_TERMINATE",
++      "MSEF Service Account Token Access": "QUARANTINE_REVOKE_TERMINATE",
++      "MSEF Cloud Metadata Server Access": "QUARANTINE_REVOKE_TERMINATE",
++      "MSEF Outbound C2 Connection": "QUARANTINE_TERMINATE",
++      "MSEF Host Filesystem Write Attempt": "TERMINATE",
++      "MSEF Cgroup Release Agent Write": "TERMINATE",
++      "MSEF Execution from tmp": "TERMINATE",
++      "MSEF PAM Configuration Modification": "TERMINATE",
++      "MSEF Network Recon Scan": "QUARANTINE_TERMINATE",
++      "MSEF Crypto Mining Outbound Beacon": "QUARANTINE_TERMINATE"
++    }

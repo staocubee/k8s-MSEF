@@ -28,10 +28,10 @@ resource "google_iam_workload_identity_pool" "github_pool" {
 }
 
 resource "google_iam_workload_identity_pool_provider" "github_provider" {
-  project = var.project_id
-  workload_identity_pool_id = google_iam_workload_identity_pool.github_pool.workload_identity_pool_id
+  project                            = var.project_id
+  workload_identity_pool_id          = google_iam_workload_identity_pool.github_pool.workload_identity_pool_id
   workload_identity_pool_provider_id = "${var.env}-github-provider"
-  display_name = "${var.env} GitHub Actions Provider"
+  display_name                       = "${var.env} GitHub Actions Provider"
   attribute_mapping = {
     "google.subject"       = "assertion.sub"
     "attribute.actor"      = "assertion.actor"

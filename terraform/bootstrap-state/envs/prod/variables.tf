@@ -34,11 +34,3 @@ variable "state_bucket_name" {
   description = "Terraform state bucket name."
   type        = string
 }
-variable "workload_service_accounts" {
-  description = "Google service accounts for GKE Workload Identity."
-  type = map(object({
-    display_name = string
-    roles        = list(string)
-  }))
-  default = {}
-}

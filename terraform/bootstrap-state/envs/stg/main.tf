@@ -1,3 +1,8 @@
+# Bootstrap layer: everything CI needs before it can run.
+# Applied ONCE by a human project owner (Cloud Shell), not by CI: it creates the
+# Workload Identity pool that CI itself authenticates through. See docs/GCP-BOOTSTRAP.md.
+# Workload service accounts are owned by terraform/foundation, not here.
+
 module "apis" {
   source     = "../../modules/apis"
   project_id = var.project_id
@@ -8,8 +13,7 @@ module "state_bucket" {
   project_id  = var.project_id
   region      = var.region
   bucket_name = var.state_bucket_name
-
-  depends_on = [module.apis]
+  depends_on  = [module.apis]
 }
 
 module "artifact_registry" {
@@ -17,84 +21,49 @@ module "artifact_registry" {
   project_id = var.project_id
   region     = var.region
   repo_id    = "${var.env}-${var.artifact_registry_repo}"
-
   depends_on = [module.apis]
 }
 
 module "github_oidc" {
-  source = "../../modules/github-oidc"
-
+  source       = "../../modules/github-oidc"
   project_id   = var.project_id
   env          = var.env
   github_owner = var.github_owner
   github_repo  = var.github_repo
-
-  depends_on = [module.apis]
-}
-
-module "workload_identity" {
-  source = "../../modules/workload-identity"
-
-  project_id                = var.project_id
-  env                       = var.env
-  workload_service_accounts = var.workload_service_accounts
-
-  depends_on = [module.apis]
+  depends_on   = [module.apis]
 }
 
 locals {
   github_actions_member = "serviceAccount:${module.github_oidc.github_actions_service_account_email}"
 
-  workload_identity_iam_bindings = merge([
-    for sa_key, sa in module.workload_identity.service_accounts : {
-      for role in var.workload_service_accounts[sa_key].roles :
-      "${sa_key}-${replace(replace(role, "/", "-"), ".", "-")}" => {
-        role   = role
-        member = "serviceAccount:${sa.email}"
-      }
-    }
-  ]...)
-
-  github_actions_iam_bindings = {
-    github_artifact_registry_writer = {
-      role   = "roles/artifactregistry.writer"
-      member = local.github_actions_member
-    }
-
-    github_container_developer = {
-      role   = "roles/container.developer"
-      member = local.github_actions_member
-    }
-
-    github_service_account_user = {
-      role   = "roles/iam.serviceAccountUser"
-      member = local.github_actions_member
-    }
-
-    github_storage_admin = {
-      role   = "roles/storage.admin"
-      member = local.github_actions_member
-    }
-
-    github_secretmanager_secret_accessor = {
-      role   = "roles/secretmanager.secretAccessor"
-      member = local.github_actions_member
-    }
-  }
+  # Roles the GitHub Actions service account needs for the workflows it runs:
+  #   terraform-foundation : create workload GSAs and their project IAM bindings
+  #   terraform-infra      : VPC, subnet, router, NAT, GKE cluster, node pool, node GSA
+  #   terraform-bootstrap  : install Argo CD (cluster-scoped RBAC objects)
+  #   security workflows   : apply policies and manifests, read results
+  #   build workflows      : push images
+  #   bootstrap-state      : plan only (read access)
+  # resourcemanager.projectIamAdmin is powerful (it can grant roles); acceptable
+  # for a single-purpose research project, revisit for anything shared.
+  github_actions_roles = [
+    "roles/viewer",
+    "roles/artifactregistry.writer",
+    "roles/container.admin",
+    "roles/compute.networkAdmin",
+    "roles/iam.serviceAccountAdmin",
+    "roles/iam.serviceAccountUser",
+    "roles/resourcemanager.projectIamAdmin",
+    "roles/storage.admin",
+    "roles/secretmanager.secretAccessor",
+  ]
 }
 
 module "iam" {
-  source = "../../modules/iam"
-
+  source     = "../../modules/iam"
   project_id = var.project_id
-
-  project_iam_bindings = merge(
-    local.github_actions_iam_bindings,
-    local.workload_identity_iam_bindings
-  )
-
-  depends_on = [
-    module.github_oidc,
-    module.workload_identity
-  ]
+  project_iam_bindings = {
+    for r in local.github_actions_roles :
+    "github-${replace(replace(r, "roles/", ""), ".", "-")}" => { role = r, member = local.github_actions_member }
+  }
+  depends_on = [module.github_oidc]
 }

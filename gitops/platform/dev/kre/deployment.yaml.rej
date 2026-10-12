@@ -1,71 +1,22 @@
 diff a/gitops/platform/dev/kre/deployment.yaml b/gitops/platform/dev/kre/deployment.yaml	(rejected hunks)
-@@ -3,7 +3,9 @@ kind: Deployment
- metadata:
-   name: msef-kre-handler
- spec:
--  replicas: 1
-+  replicas: 1                     # queue and dedup state are per-replica
-+  strategy:
-+    type: Recreate                # RWO volume cannot attach to two pods
-   selector:
-     matchLabels:
-       app: msef-kre-handler
-@@ -16,30 +18,42 @@ spec:
+@@ -13,6 +13,8 @@ spec:
+     metadata:
+       labels:
+         app: msef-kre-handler
++      annotations:
++        msef.security/rule-plans-version: "2026-10-12.1"   # bump when kre-config changes
+     spec:
+       serviceAccountName: msef-kre-handler
        securityContext:
-         runAsNonRoot: true
-         runAsUser: 1000
-+        fsGroup: 1000
-         seccompProfile:
-           type: RuntimeDefault
-       containers:
-       - name: kre
--        image: staocube/msef-kre-handler:v2.0.1
-+        # Rebuild and Cosign-sign this tag before syncing: Kyverno's
-+        # verify-signed-images policy enforces signatures on staocube/* in
-+        # the hardened namespace (see .github/workflows/build-sign-kre.yaml).
-+        image: staocube/msef-kre-handler:v2.1.0
-+        ports:
-+        - containerPort: 8080
-+        env:
-+        - name: KRE_MODE              # "async" (C5) or "sync" (C4 baseline)
-+          value: "async"
-+        - name: KRE_TARGET_NAMESPACES
-+          value: "hardened"
-+        - name: KRE_AUDIT_LOG
-+          value: /data/results/remediation-events.jsonl
-+        readinessProbe:
-+          httpGet: {path: /healthz, port: 8080}
-+          periodSeconds: 5
-+        livenessProbe:
-+          httpGet: {path: /healthz, port: 8080}
-+          periodSeconds: 10
-         securityContext:
-           allowPrivilegeEscalation: false
-           readOnlyRootFilesystem: true
-           capabilities:
--            drop:
--              - ALL
--
-+            drop: ["ALL"]
-         resources:
--          requests:
--            cpu: 100m
--            memory: 128Mi
--          limits:
--            cpu: 250m
--            memory: 256Mi
--
-+          requests: {cpu: 100m, memory: 128Mi}
-+          limits: {cpu: 250m, memory: 256Mi}
-         volumeMounts:
--        - name: results-vol
-+        - name: audit
-           mountPath: /data/results
--
-       volumes:
--      - name: results-vol
--        emptyDir: {}
-\ No newline at end of file
-+      - name: audit
-+        persistentVolumeClaim:
-+          claimName: msef-kre-audit
+@@ -36,6 +38,11 @@ spec:
+           value: "hardened"
+         - name: KRE_AUDIT_LOG
+           value: /data/results/remediation-events.jsonl
++        - name: KRE_RULE_PLANS              # explicit rule -> containment plan
++          valueFrom:
++            configMapKeyRef:
++              name: kre-config
++              key: rule-plans.json
+         readinessProbe:
+           httpGet: {path: /healthz, port: 8080}
+           periodSeconds: 5

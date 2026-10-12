@@ -1,0 +1,8 @@
+diff a/.gitignore b/.gitignore	(rejected hunks)
+@@ -26,3 +26,6 @@ nexus-data/
+ .DS_Store
+ .envcosign.key
+ *.key
++
++__pycache__/
++*.pyc

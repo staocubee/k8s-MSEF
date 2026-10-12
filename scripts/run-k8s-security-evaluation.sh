@@ -38,6 +38,10 @@ banner "Multi-Layer Security Evaluation Framework"
 
 echo "Started: $(date)"
 
+section "Preflight"
+
+run_metric "$SCRIPT_DIR/preflight-cluster.sh"
+
 section "Prevention Layer"
 
 run_metric "$SCRIPT_DIR/measure-mbr.sh"
@@ -60,8 +64,10 @@ run_metric "$SCRIPT_DIR/measure-des.sh"
 
 section "Generating Reports"
 
-run_metric "$SCRIPT_DIR/generate-security-report.sh"
-run_metric "$SCRIPT_DIR/generate-html-report.sh"
+# Report generators predate the v2 output formats; a failure here must not discard results.
+"$SCRIPT_DIR/generate-security-report.sh" || echo "[!] generate-security-report.sh failed"
+"$SCRIPT_DIR/generate-html-report.sh" || echo "[!] generate-html-report.sh failed"
+python3 "$SCRIPT_DIR/export_results_tables.py" > "$RESULTS_DIR/manuscript-tables.md"
 
 banner "Evaluation Completed"
 

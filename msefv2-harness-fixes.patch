@@ -1,7 +1,7 @@
 From 7fb8b332b28979650861f49fbe2a98ebc4c2abb9 Mon Sep 17 00:00:00 2001
 From: MSEF audit fixes <audit@example.invalid>
 Date: Mon, 12 Oct 2026 12:48:37 +0000
-Subject: [PATCH 1/2] MSEFv2 harness fixes from evidence audit
+Subject: [PATCH 1/4] MSEFv2 harness fixes from evidence audit
 
 - KRE: port 8080 (gunicorn), /remediate route, audit log on PVC, fixed RBAC
   binding, namespace allowlist, MSEF-rule gate, revocation by removing bindings
@@ -7696,7 +7696,7 @@ index 0000000..d436536
 From 92bb32045d2f2ac8db6652f8465e05ba7c6dc7c3 Mon Sep 17 00:00:00 2001
 From: MSEF audit fixes <audit@example.invalid>
 Date: Mon, 12 Oct 2026 13:58:00 +0000
-Subject: [PATCH 2/2] KRE: explicit rule->plan map from ConfigMap kre-config
+Subject: [PATCH 2/4] KRE: explicit rule->plan map from ConfigMap kre-config
 
 - kre-config now holds rule-plans.json for all 10 MSEF rules (the old
   TARGET_RULES list was stale and never read by the handler)
@@ -9158,6 +9158,1300 @@ index 0000000..7361d73
 +for name, ok, detail in checks:
 +    print(("PASS" if ok else "FAIL"), name, "" if ok else f"-> {detail}"); bad += not ok
 +print(f"\n{len(checks) - bad}/{len(checks)} passed"); sys.exit(1 if bad else 0)
+-- 
+2.43.0
+
+
+From 0b31834a3a3bf6ce8c51e9903b2ccdbc525d954a Mon Sep 17 00:00:00 2001
+From: MSEF audit fixes <audit@example.invalid>
+Date: Mon, 12 Oct 2026 14:12:51 +0000
+Subject: [PATCH 3/4] Make the repo deployable to a blank GCP project
+
+- terraform/bootstrap-state/envs/dev added (was missing; dev is the only env in use)
+- bootstrap-state: remove reference to non-existent modules/workload-identity
+  (service accounts are owned by foundation); state prefix bootstrap-state/<env>
+  (stg used foundation/stg, which would collide with foundation's own state)
+- state bucket: lifecycle no longer deletes the live state after 30 days;
+  prunes only noncurrent versions
+- CI service account gets the roles its workflows need (container.admin,
+  compute.networkAdmin, iam.serviceAccountAdmin, projectIamAdmin, viewer, ...)
+- bootstrap-state workflow: push runs a dev plan only; removed push-triggered
+  applies of dev/stg/prod and the automatic foundation trigger
+- scripts/configure-gcp-project.py: set project, region, buckets, repo URL in one step
+- docs/GCP-BOOTSTRAP.md: blank project -> verified cluster
+- remove empty terraform/foundation/bootstrap-key.json
+---
+ .github/workflows/bootstrap-state.yaml        |  80 +------------
+ MSEFv2-RUNBOOK.md                             |   2 +
+ docs/GCP-BOOTSTRAP.md                         | 113 ++++++++++++++++++
+ scripts/configure-gcp-project.py              |  66 ++++++++++
+ .../bootstrap-state/envs/prod/backend.tf      |   2 +-
+ terraform/bootstrap-state/envs/prod/main.tf   | 101 ++++++----------
+ .../bootstrap-state/envs/prod/outputs.tf      |  12 +-
+ .../envs/prod/terraform.tfvars                |  30 -----
+ .../bootstrap-state/envs/prod/variables.tf    |   8 --
+ .../bootstrap-state/envs/prod/versions.tf     |   6 +-
+ terraform/bootstrap-state/envs/stg/backend.tf |   2 +-
+ terraform/bootstrap-state/envs/stg/main.tf    | 101 ++++++----------
+ terraform/bootstrap-state/envs/stg/outputs.tf |  12 +-
+ .../bootstrap-state/envs/stg/terraform.tfvars |  30 -----
+ .../bootstrap-state/envs/stg/variables.tf     |   8 --
+ .../bootstrap-state/envs/stg/versions.tf      |   6 +-
+ .../modules/github-oidc/main.tf               |   6 +-
+ .../modules/state-bucket/main.tf              |  14 ++-
+ terraform/foundation/bootstrap-key.json       |   0
+ 19 files changed, 292 insertions(+), 307 deletions(-)
+ create mode 100644 docs/GCP-BOOTSTRAP.md
+ create mode 100755 scripts/configure-gcp-project.py
+ delete mode 100644 terraform/foundation/bootstrap-key.json
+
+diff --git a/.github/workflows/bootstrap-state.yaml b/.github/workflows/bootstrap-state.yaml
+index 1883c22..ecfc8e5 100644
+--- a/.github/workflows/bootstrap-state.yaml
++++ b/.github/workflows/bootstrap-state.yaml
+@@ -88,7 +88,7 @@ jobs:
+     runs-on: ubuntu-latest
+     strategy:
+       matrix:
+-        environment: [dev, stg, prod]
++        environment: [dev]   # push runs plan only; apply is manual (workflow_dispatch) or Cloud Shell
+       fail-fast: false
+     defaults:
+       run:
+@@ -115,81 +115,3 @@ jobs:
+   # Apply — gated per environment, dev/stg/prod independent
+   ##########################################################
+ 
+-  apply-dev:
+-    needs: plan
+-    if: github.event_name == 'push'
+-    runs-on: ubuntu-latest
+-    environment: dev-apply
+-    defaults:
+-      run:
+-        shell: bash
+-        working-directory: terraform/bootstrap-state/envs/dev
+-    steps:
+-      - uses: actions/checkout@v4
+-      - uses: google-github-actions/auth@v2
+-        with:
+-          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+-          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+-      - uses: google-github-actions/setup-gcloud@v2
+-      - uses: hashicorp/setup-terraform@v3
+-        with:
+-          terraform_version: ${{ env.TF_VERSION }}
+-      - run: terraform init
+-      - run: terraform apply -auto-approve
+-
+-  apply-stg:
+-    needs: plan
+-    if: github.event_name == 'push'
+-    runs-on: ubuntu-latest
+-    environment: stg-apply
+-    defaults:
+-      run:
+-        shell: bash
+-        working-directory: terraform/bootstrap-state/envs/stg
+-    steps:
+-      - uses: actions/checkout@v4
+-      - uses: google-github-actions/auth@v2
+-        with:
+-          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+-          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+-      - uses: google-github-actions/setup-gcloud@v2
+-      - uses: hashicorp/setup-terraform@v3
+-        with:
+-          terraform_version: ${{ env.TF_VERSION }}
+-      - run: terraform init
+-      - run: terraform apply -auto-approve
+-
+-  apply-prod:
+-    needs: plan
+-    if: github.event_name == 'push'
+-    runs-on: ubuntu-latest
+-    environment: prod-apply
+-    defaults:
+-      run:
+-        shell: bash
+-        working-directory: terraform/bootstrap-state/envs/prod
+-    steps:
+-      - uses: actions/checkout@v4
+-      - uses: google-github-actions/auth@v2
+-        with:
+-          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+-          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+-      - uses: google-github-actions/setup-gcloud@v2
+-      - uses: hashicorp/setup-terraform@v3
+-        with:
+-          terraform_version: ${{ env.TF_VERSION }}
+-      - run: terraform init
+-      - run: terraform apply -auto-approve
+-
+-  ##########################################################
+-  # Chain — dev only, fires foundation after dev apply
+-  ##########################################################
+-
+-  trigger-foundation:
+-    needs: apply-dev
+-    if: github.event_name == 'push' && success()
+-    runs-on: ubuntu-latest
+-    steps:
+-      - run: gh workflow run terraform-foundation.yaml --ref main -f environment=dev -f action=apply
+-        env:
+-          GH_TOKEN: ${{ github.token }}
+\ No newline at end of file
+diff --git a/MSEFv2-RUNBOOK.md b/MSEFv2-RUNBOOK.md
+index 8e93400..371640b 100644
+--- a/MSEFv2-RUNBOOK.md
++++ b/MSEFv2-RUNBOOK.md
+@@ -7,6 +7,8 @@ cluster.** Offline checks only: KRE controller tests against a fake API
+ distinctness, admission-oracle cases, metric calculators on fixtures.
+ Falco rule syntax has not been validated by Falco itself (step 2 does that).
+ 
++Fresh project? First follow `docs/GCP-BOOTSTRAP.md`, then return here.
++
+ Run order matters: fix → verify deployment → experiments → manuscript.
+ All results go to `results/runs/<run_id>/` with run metadata (git commit,
+ cluster version, component images, seed). `results/json/*.json` holds the
+diff --git a/docs/GCP-BOOTSTRAP.md b/docs/GCP-BOOTSTRAP.md
+new file mode 100644
+index 0000000..8d9f966
+--- /dev/null
++++ b/docs/GCP-BOOTSTRAP.md
+@@ -0,0 +1,113 @@
++# Bringing MSEF up on a blank GCP project
++
++Order: **A** configure the repo → **B** one-time bootstrap in Cloud Shell →
++**C** GitHub settings → **D** GitHub Actions → **E** verify → experiments
++(`MSEFv2-RUNBOOK.md`). Steps marked *owner* need Owner on the new project.
++
++Why step B is manual: every workflow authenticates through Workload Identity
++Federation, and the WIF pool is itself created by `terraform/bootstrap-state`.
++A human applies that layer once; after that, CI runs everything else.
++
++## A. Configure the repository (your machine)
++
++1. Merge `msefv2-harness-fixes` into `main`. Argo CD deploys from `main`, so
++   the cluster would otherwise sync the v1 KRE and rules.
++2. Point the repo at the new project (dev only; add `--envs dev,stg,prod` later if needed):
++   ```bash
++   python3 scripts/configure-gcp-project.py --project <PROJECT_ID> --region <REGION>
++   ```
++   Use one region for everything (e.g. `us-east1`). Commit, **but push after step C**:
++   a push to `main` runs a `dev` plan, which needs the GitHub variables from step C.
++
++## B. One-time bootstrap (Cloud Shell, *owner*)
++
++```bash
++# 1. Project and billing (or use the console)
++gcloud projects create <PROJECT_ID>
++gcloud billing projects link <PROJECT_ID> --billing-account=<BILLING_ACCOUNT_ID>
++gcloud config set project <PROJECT_ID>
++gcloud services enable serviceusage.googleapis.com cloudresourcemanager.googleapis.com
++
++# 2. Apply bootstrap-state with LOCAL state (its own bucket does not exist yet)
++git clone https://github.com/staocubee/k8s-MSEF.git && cd k8s-MSEF   # your configured commit
++cd terraform/bootstrap-state/envs/dev
++cat > backend_override.tf <<'HCL'
++terraform {
++  backend "local" {}
++}
++HCL
++terraform init
++terraform apply          # APIs, state bucket, Artifact Registry, WIF pool + provider, CI service account + roles
++
++# 3. Move that state into the bucket it just created
++rm backend_override.tf
++terraform init -migrate-state      # answer "yes"
++rm -f terraform.tfstate terraform.tfstate.backup
++
++# 4. Values for step C
++terraform output -raw workload_identity_provider
++terraform output -raw github_actions_service_account
++```
++
++If you cloned before pushing, copy your configured `terraform/` changes into
++Cloud Shell first (or push to a branch and clone that branch).
++
++## C. GitHub settings (repo admin)
++
++Repository variables (Settings → Secrets and variables → Actions → Variables):
++
++| Variable | Value |
++| --- | --- |
++| `GCP_PROJECT_ID` | new project ID |
++| `GCP_REGION` | region used in step A |
++| `GCP_WORKLOAD_IDENTITY_PROVIDER` | `workload_identity_provider` output |
++| `GCP_SERVICE_ACCOUNT` | `github_actions_service_account` output |
++
++Unchanged and still required: variables `DOCKERHUB_USERNAME`, `REPORT_IMAGE_NAME`;
++secrets `DOCKERHUB_TOKEN`, `COSIGN_PRIVATE_KEY`, `COSIGN_PASSWORD`. Keep the same
++Cosign key: the public key in `k8s/policies/kyverno/verify-signed-images.yaml`
++must match it, and existing image signatures on Docker Hub stay valid.
++
++Environment (Settings → Environments): create `dev-apply` and add yourself as a
++required reviewer, so every apply waits for approval.
++
++Now push `main`. The push runs a `dev` plan of bootstrap-state only.
++
++## D. GitHub Actions, in this order
++
++| # | Workflow | Inputs | Creates |
++| --- | --- | --- | --- |
++| 1 | Terraform Foundation | dev, apply | workload service accounts + IAM |
++| 2 | Terraform Infra | dev, apply | VPC, NAT, regional GKE (Calico NetworkPolicy, Workload Identity) |
++| 3 | Build and Sign KRE Image | `v2.1.0` | signed `staocube/msef-kre-handler:v2.1.0` |
++| 4 | Terraform Bootstrap | dev, apply | Argo CD + root app; Argo then syncs `gitops/` |
++
++Run 3 before 4 so Kyverno admits the KRE pod on first sync (otherwise it retries until signed).
++
++## E. Verify before any experiment
++
++```bash
++gcloud container clusters get-credentials dev-msef-gke --region <REGION>
++kubectl -n argocd get applications            # all Synced / Healthy
++kubectl -n falco get pods                      # one per node, Running
++kubectl -n falco logs ds/falco -c falco | grep -i -m3 "msef\|error"
++kubectl -n hardened get deploy msef-kre-handler
++kubectl -n hardened logs deploy/msef-kre-handler | grep "rule plans"   # "10 rule plans"
++kubectl get constraints                        # Gatekeeper constraints present
++kubectl get clusterpolicy verify-signed-images # Kyverno policy present
++kubectl -n kube-system get pods -l k8s-app=calico-node   # NetworkPolicy enforcement running
++python3 tests/test_rule_consistency.py         # repo-side consistency
++```
++
++Capacity: the regional node pool counts nodes **per zone** (`node_count = 1` →
++3 nodes). Gatekeeper, Kyverno, Falco, Argo CD, Istio, Kafka, Elasticsearch and
++monitoring together can leave pods Pending on `e2-standard-2`; if so, raise
++`node_machine_type` or `node_count` in `terraform/infra/envs/dev/terraform.tfvars`.
++Whatever you choose, keep the node shape and the set of background components
++identical across C0–C5, and record them; they affect latency and resource results.
++
++## Teardown
++
++Run **Terraform Destroy** (dev). The state bucket is kept (`force_destroy = false`).
++To stop all charges, delete the project. The old `msef-2026` project is not touched
++by any of this; delete it separately if it is no longer needed.
+diff --git a/scripts/configure-gcp-project.py b/scripts/configure-gcp-project.py
+new file mode 100755
+index 0000000..89c30f8
+--- /dev/null
++++ b/scripts/configure-gcp-project.py
+@@ -0,0 +1,66 @@
++#!/usr/bin/env python3
++"""
++Point the whole repository at one GCP project, region and GitHub repo.
++
++  python3 scripts/configure-gcp-project.py --project <PROJECT_ID> --region <REGION> \
++      [--github-owner staocubee --github-repo k8s-MSEF] [--envs dev] [--dry-run]
++
++Rewrites, for each selected environment:
++  terraform/{bootstrap-state,foundation,infra}/envs/<env>/terraform.tfvars
++      project_id, region, state_bucket_name (= <project>-<env>-tfstate), github_owner/repo
++  terraform/{bootstrap-state,foundation,infra}/envs/<env>/backend.tf     bucket
++  terraform/bootstrap/envs/<env>/{terraform.tfvars,versions.tf}         project_id, region, repo_url, bucket
++and, when the GitHub owner/repo changes, every repoURL under gitops/.
++Deliberately untouched: pre-deployment/test-artifacts (scanner fixtures).
++Bucket names are global: the script refuses names GCS would reject.
++"""
++import argparse, glob, os, re, sys
++ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
++
++def sub(path, pattern, repl, changes, dry, flags=re.M):
++    if not os.path.exists(path): return
++    s = open(path).read(); n = re.sub(pattern, repl, s, flags=flags)
++    if n != s:
++        changes.append(os.path.relpath(path, ROOT))
++        if not dry: open(path, "w").write(n)
++
++def main():
++    ap = argparse.ArgumentParser()
++    ap.add_argument("--project", required=True); ap.add_argument("--region", required=True)
++    ap.add_argument("--github-owner", default="staocubee"); ap.add_argument("--github-repo", default="k8s-MSEF")
++    ap.add_argument("--envs", default="dev", help="comma-separated, e.g. dev or dev,stg,prod")
++    ap.add_argument("--dry-run", action="store_true")
++    a = ap.parse_args()
++    if not re.fullmatch(r"[a-z][a-z0-9-]{4,28}[a-z0-9]", a.project):
++        sys.exit(f"'{a.project}' is not a valid GCP project ID")
++    if not re.fullmatch(r"[a-z]+-[a-z]+[0-9]", a.region):
++        sys.exit(f"'{a.region}' does not look like a GCP region (e.g. us-east1)")
++    changes = []
++    for env in a.envs.split(","):
++        bucket = f"{a.project}-{env}-tfstate"
++        if len(bucket) > 63: sys.exit(f"bucket name {bucket} exceeds 63 characters")
++        for layer in ("bootstrap-state", "foundation", "infra"):
++            d = os.path.join(ROOT, "terraform", layer, "envs", env)
++            tv = os.path.join(d, "terraform.tfvars")
++            sub(tv, r'^(\s*project_id\s*=\s*)"[^"]*"', rf'\1"{a.project}"', changes, a.dry_run)
++            sub(tv, r'^(\s*region\s*=\s*)"[^"]*"', rf'\1"{a.region}"', changes, a.dry_run)
++            sub(tv, r'^(\s*state_bucket_name\s*=\s*)"[^"]*"', rf'\1"{bucket}"', changes, a.dry_run)
++            sub(tv, r'^(\s*github_owner\s*=\s*)"[^"]*"', rf'\1"{a.github_owner}"', changes, a.dry_run)
++            sub(tv, r'^(\s*github_repo\s*=\s*)"[^"]*"', rf'\1"{a.github_repo}"', changes, a.dry_run)
++            sub(os.path.join(d, "backend.tf"), r'^(\s*bucket\s*=\s*)"[^"]*"', rf'\1"{bucket}"', changes, a.dry_run)
++        bd = os.path.join(ROOT, "terraform", "bootstrap", "envs", env)
++        tv = os.path.join(bd, "terraform.tfvars")
++        sub(tv, r'^(\s*project_id\s*=\s*)"[^"]*"', rf'\1"{a.project}"', changes, a.dry_run)
++        sub(tv, r'^(\s*region\s*=\s*)"[^"]*"', rf'\1"{a.region}"', changes, a.dry_run)
++        sub(tv, r'^(\s*repo_url\s*=\s*)"[^"]*"', rf'\1"https://github.com/{a.github_owner}/{a.github_repo}.git"', changes, a.dry_run)
++        sub(os.path.join(bd, "versions.tf"), r'^(\s*bucket\s*=\s*)"[^"]*"', rf'\1"{bucket}"', changes, a.dry_run)
++    new_url = f"https://github.com/{a.github_owner}/{a.github_repo}.git"
++    for f in glob.glob(os.path.join(ROOT, "gitops", "**", "*.yaml"), recursive=True):
++        sub(f, r'(repoURL:\s*)https://github\.com/[^/\s]+/k8s-MSEF(\.git)?\b', rf'\1{new_url}', changes, a.dry_run)
++    print(("Would change" if a.dry_run else "Changed"), len(set(changes)), "files:")
++    for c in sorted(set(changes)): print("  ", c)
++    print(f"\nGitHub repository variables to set:\n  GCP_PROJECT_ID = {a.project}\n  GCP_REGION     = {a.region}")
++    print("  GCP_WORKLOAD_IDENTITY_PROVIDER / GCP_SERVICE_ACCOUNT = outputs of terraform/bootstrap-state/envs/<env>")
++
++if __name__ == "__main__":
++    main()
+diff --git a/terraform/bootstrap-state/envs/prod/backend.tf b/terraform/bootstrap-state/envs/prod/backend.tf
+index 46acd44..8a1fe37 100644
+--- a/terraform/bootstrap-state/envs/prod/backend.tf
++++ b/terraform/bootstrap-state/envs/prod/backend.tf
+@@ -1,6 +1,6 @@
+ terraform {
+   backend "gcs" {
+     bucket = "msef-2026-prod-tfstate"
+-    prefix = "foundation/prod"
++    prefix = "bootstrap-state/prod"
+   }
+ }
+\ No newline at end of file
+diff --git a/terraform/bootstrap-state/envs/prod/main.tf b/terraform/bootstrap-state/envs/prod/main.tf
+index 685957e..45aba08 100644
+--- a/terraform/bootstrap-state/envs/prod/main.tf
++++ b/terraform/bootstrap-state/envs/prod/main.tf
+@@ -1,3 +1,8 @@
++# Bootstrap layer: everything CI needs before it can run.
++# Applied ONCE by a human project owner (Cloud Shell), not by CI: it creates the
++# Workload Identity pool that CI itself authenticates through. See docs/GCP-BOOTSTRAP.md.
++# Workload service accounts are owned by terraform/foundation, not here.
++
+ module "apis" {
+   source     = "../../modules/apis"
+   project_id = var.project_id
+@@ -8,8 +13,7 @@ module "state_bucket" {
+   project_id  = var.project_id
+   region      = var.region
+   bucket_name = var.state_bucket_name
+-
+-  depends_on = [module.apis]
++  depends_on  = [module.apis]
+ }
+ 
+ module "artifact_registry" {
+@@ -17,84 +21,49 @@ module "artifact_registry" {
+   project_id = var.project_id
+   region     = var.region
+   repo_id    = "${var.env}-${var.artifact_registry_repo}"
+-
+   depends_on = [module.apis]
+ }
+ 
+ module "github_oidc" {
+-  source = "../../modules/github-oidc"
+-
++  source       = "../../modules/github-oidc"
+   project_id   = var.project_id
+   env          = var.env
+   github_owner = var.github_owner
+   github_repo  = var.github_repo
+-
+-  depends_on = [module.apis]
+-}
+-
+-module "workload_identity" {
+-  source = "../../modules/workload-identity"
+-
+-  project_id                = var.project_id
+-  env                       = var.env
+-  workload_service_accounts = var.workload_service_accounts
+-
+-  depends_on = [module.apis]
++  depends_on   = [module.apis]
+ }
+ 
+ locals {
+   github_actions_member = "serviceAccount:${module.github_oidc.github_actions_service_account_email}"
+ 
+-  workload_identity_iam_bindings = merge([
+-    for sa_key, sa in module.workload_identity.service_accounts : {
+-      for role in var.workload_service_accounts[sa_key].roles :
+-      "${sa_key}-${replace(replace(role, "/", "-"), ".", "-")}" => {
+-        role   = role
+-        member = "serviceAccount:${sa.email}"
+-      }
+-    }
+-  ]...)
+-
+-  github_actions_iam_bindings = {
+-    github_artifact_registry_writer = {
+-      role   = "roles/artifactregistry.writer"
+-      member = local.github_actions_member
+-    }
+-
+-    github_container_developer = {
+-      role   = "roles/container.developer"
+-      member = local.github_actions_member
+-    }
+-
+-    github_service_account_user = {
+-      role   = "roles/iam.serviceAccountUser"
+-      member = local.github_actions_member
+-    }
+-
+-    github_storage_admin = {
+-      role   = "roles/storage.admin"
+-      member = local.github_actions_member
+-    }
+-
+-    github_secretmanager_secret_accessor = {
+-      role   = "roles/secretmanager.secretAccessor"
+-      member = local.github_actions_member
+-    }
+-  }
++  # Roles the GitHub Actions service account needs for the workflows it runs:
++  #   terraform-foundation : create workload GSAs and their project IAM bindings
++  #   terraform-infra      : VPC, subnet, router, NAT, GKE cluster, node pool, node GSA
++  #   terraform-bootstrap  : install Argo CD (cluster-scoped RBAC objects)
++  #   security workflows   : apply policies and manifests, read results
++  #   build workflows      : push images
++  #   bootstrap-state      : plan only (read access)
++  # resourcemanager.projectIamAdmin is powerful (it can grant roles); acceptable
++  # for a single-purpose research project, revisit for anything shared.
++  github_actions_roles = [
++    "roles/viewer",
++    "roles/artifactregistry.writer",
++    "roles/container.admin",
++    "roles/compute.networkAdmin",
++    "roles/iam.serviceAccountAdmin",
++    "roles/iam.serviceAccountUser",
++    "roles/resourcemanager.projectIamAdmin",
++    "roles/storage.admin",
++    "roles/secretmanager.secretAccessor",
++  ]
+ }
+ 
+ module "iam" {
+-  source = "../../modules/iam"
+-
++  source     = "../../modules/iam"
+   project_id = var.project_id
+-
+-  project_iam_bindings = merge(
+-    local.github_actions_iam_bindings,
+-    local.workload_identity_iam_bindings
+-  )
+-
+-  depends_on = [
+-    module.github_oidc,
+-    module.workload_identity
+-  ]
+-}
+\ No newline at end of file
++  project_iam_bindings = {
++    for r in local.github_actions_roles :
++    "github-${replace(replace(r, "roles/", ""), ".", "-")}" => { role = r, member = local.github_actions_member }
++  }
++  depends_on = [module.github_oidc]
++}
+diff --git a/terraform/bootstrap-state/envs/prod/outputs.tf b/terraform/bootstrap-state/envs/prod/outputs.tf
+index 6bee343..cda87d6 100644
+--- a/terraform/bootstrap-state/envs/prod/outputs.tf
++++ b/terraform/bootstrap-state/envs/prod/outputs.tf
+@@ -7,19 +7,19 @@ output "artifact_registry_location" {
+ }
+ 
+ output "github_actions_service_account" {
+-  value = module.github_oidc.github_actions_service_account_email
++  description = "GitHub variable GCP_SERVICE_ACCOUNT"
++  value       = module.github_oidc.github_actions_service_account_email
+ }
+ 
+ output "workload_identity_provider" {
+-  value = module.github_oidc.workload_identity_provider_name
++  description = "GitHub variable GCP_WORKLOAD_IDENTITY_PROVIDER"
++  value       = module.github_oidc.workload_identity_provider_name
+ }
+ 
+ output "state_bucket_name" {
+   value = module.state_bucket.bucket_name
+ }
+-output "workload_identity_service_accounts" {
+-  value = module.workload_identity.service_accounts
+-}
++
+ output "iam_bindings" {
+   value = module.iam.bindings
+-}
+\ No newline at end of file
++}
+diff --git a/terraform/bootstrap-state/envs/prod/terraform.tfvars b/terraform/bootstrap-state/envs/prod/terraform.tfvars
+index 5f32a4a..d92d134 100644
+--- a/terraform/bootstrap-state/envs/prod/terraform.tfvars
++++ b/terraform/bootstrap-state/envs/prod/terraform.tfvars
+@@ -5,33 +5,3 @@ env                    = "prod"
+ github_repo            = "k8s-MSEF"
+ artifact_registry_repo = "k8s-msef"
+ state_bucket_name      = "msef-2026-dev-tfstate"
+-workload_service_accounts = {
+-  external-secrets = {
+-    display_name = "dev External Secrets GSA"
+-    roles = [
+-      "roles/secretmanager.secretAccessor"
+-    ]
+-  }
+-
+-  cert-manager = {
+-    display_name = "dev Cert Manager GSA"
+-    roles = [
+-      "roles/dns.admin"
+-    ]
+-  }
+-
+-  argocd = {
+-    display_name = "dev ArgoCD GSA"
+-    roles = [
+-      "roles/artifactregistry.reader"
+-    ]
+-  }
+-
+-  workload-app = {
+-    display_name = "dev Application Workload GSA"
+-    roles = [
+-      "roles/artifactregistry.reader",
+-      "roles/secretmanager.secretAccessor"
+-    ]
+-  }
+-}
+\ No newline at end of file
+diff --git a/terraform/bootstrap-state/envs/prod/variables.tf b/terraform/bootstrap-state/envs/prod/variables.tf
+index c6dd394..11ccc8c 100644
+--- a/terraform/bootstrap-state/envs/prod/variables.tf
++++ b/terraform/bootstrap-state/envs/prod/variables.tf
+@@ -34,11 +34,3 @@ variable "state_bucket_name" {
+   description = "Terraform state bucket name."
+   type        = string
+ }
+-variable "workload_service_accounts" {
+-  description = "Google service accounts for GKE Workload Identity."
+-  type = map(object({
+-    display_name = string
+-    roles        = list(string)
+-  }))
+-  default = {}
+-}
+\ No newline at end of file
+diff --git a/terraform/bootstrap-state/envs/prod/versions.tf b/terraform/bootstrap-state/envs/prod/versions.tf
+index 765f742..3a4600a 100644
+--- a/terraform/bootstrap-state/envs/prod/versions.tf
++++ b/terraform/bootstrap-state/envs/prod/versions.tf
+@@ -6,5 +6,9 @@ terraform {
+       source  = "hashicorp/google"
+       version = "~> 6.0"
+     }
++    random = {
++      source  = "hashicorp/random"
++      version = "~> 3.6"
++    }
+   }
+-}
+\ No newline at end of file
++}
+diff --git a/terraform/bootstrap-state/envs/stg/backend.tf b/terraform/bootstrap-state/envs/stg/backend.tf
+index 82d121b..f36d056 100644
+--- a/terraform/bootstrap-state/envs/stg/backend.tf
++++ b/terraform/bootstrap-state/envs/stg/backend.tf
+@@ -1,6 +1,6 @@
+ terraform {
+   backend "gcs" {
+     bucket = "msef-2026-stg-tfstate"
+-    prefix = "foundation/stg"
++    prefix = "bootstrap-state/stg"
+   }
+ }
+\ No newline at end of file
+diff --git a/terraform/bootstrap-state/envs/stg/main.tf b/terraform/bootstrap-state/envs/stg/main.tf
+index 685957e..45aba08 100644
+--- a/terraform/bootstrap-state/envs/stg/main.tf
++++ b/terraform/bootstrap-state/envs/stg/main.tf
+@@ -1,3 +1,8 @@
++# Bootstrap layer: everything CI needs before it can run.
++# Applied ONCE by a human project owner (Cloud Shell), not by CI: it creates the
++# Workload Identity pool that CI itself authenticates through. See docs/GCP-BOOTSTRAP.md.
++# Workload service accounts are owned by terraform/foundation, not here.
++
+ module "apis" {
+   source     = "../../modules/apis"
+   project_id = var.project_id
+@@ -8,8 +13,7 @@ module "state_bucket" {
+   project_id  = var.project_id
+   region      = var.region
+   bucket_name = var.state_bucket_name
+-
+-  depends_on = [module.apis]
++  depends_on  = [module.apis]
+ }
+ 
+ module "artifact_registry" {
+@@ -17,84 +21,49 @@ module "artifact_registry" {
+   project_id = var.project_id
+   region     = var.region
+   repo_id    = "${var.env}-${var.artifact_registry_repo}"
+-
+   depends_on = [module.apis]
+ }
+ 
+ module "github_oidc" {
+-  source = "../../modules/github-oidc"
+-
++  source       = "../../modules/github-oidc"
+   project_id   = var.project_id
+   env          = var.env
+   github_owner = var.github_owner
+   github_repo  = var.github_repo
+-
+-  depends_on = [module.apis]
+-}
+-
+-module "workload_identity" {
+-  source = "../../modules/workload-identity"
+-
+-  project_id                = var.project_id
+-  env                       = var.env
+-  workload_service_accounts = var.workload_service_accounts
+-
+-  depends_on = [module.apis]
++  depends_on   = [module.apis]
+ }
+ 
+ locals {
+   github_actions_member = "serviceAccount:${module.github_oidc.github_actions_service_account_email}"
+ 
+-  workload_identity_iam_bindings = merge([
+-    for sa_key, sa in module.workload_identity.service_accounts : {
+-      for role in var.workload_service_accounts[sa_key].roles :
+-      "${sa_key}-${replace(replace(role, "/", "-"), ".", "-")}" => {
+-        role   = role
+-        member = "serviceAccount:${sa.email}"
+-      }
+-    }
+-  ]...)
+-
+-  github_actions_iam_bindings = {
+-    github_artifact_registry_writer = {
+-      role   = "roles/artifactregistry.writer"
+-      member = local.github_actions_member
+-    }
+-
+-    github_container_developer = {
+-      role   = "roles/container.developer"
+-      member = local.github_actions_member
+-    }
+-
+-    github_service_account_user = {
+-      role   = "roles/iam.serviceAccountUser"
+-      member = local.github_actions_member
+-    }
+-
+-    github_storage_admin = {
+-      role   = "roles/storage.admin"
+-      member = local.github_actions_member
+-    }
+-
+-    github_secretmanager_secret_accessor = {
+-      role   = "roles/secretmanager.secretAccessor"
+-      member = local.github_actions_member
+-    }
+-  }
++  # Roles the GitHub Actions service account needs for the workflows it runs:
++  #   terraform-foundation : create workload GSAs and their project IAM bindings
++  #   terraform-infra      : VPC, subnet, router, NAT, GKE cluster, node pool, node GSA
++  #   terraform-bootstrap  : install Argo CD (cluster-scoped RBAC objects)
++  #   security workflows   : apply policies and manifests, read results
++  #   build workflows      : push images
++  #   bootstrap-state      : plan only (read access)
++  # resourcemanager.projectIamAdmin is powerful (it can grant roles); acceptable
++  # for a single-purpose research project, revisit for anything shared.
++  github_actions_roles = [
++    "roles/viewer",
++    "roles/artifactregistry.writer",
++    "roles/container.admin",
++    "roles/compute.networkAdmin",
++    "roles/iam.serviceAccountAdmin",
++    "roles/iam.serviceAccountUser",
++    "roles/resourcemanager.projectIamAdmin",
++    "roles/storage.admin",
++    "roles/secretmanager.secretAccessor",
++  ]
+ }
+ 
+ module "iam" {
+-  source = "../../modules/iam"
+-
++  source     = "../../modules/iam"
+   project_id = var.project_id
+-
+-  project_iam_bindings = merge(
+-    local.github_actions_iam_bindings,
+-    local.workload_identity_iam_bindings
+-  )
+-
+-  depends_on = [
+-    module.github_oidc,
+-    module.workload_identity
+-  ]
+-}
+\ No newline at end of file
++  project_iam_bindings = {
++    for r in local.github_actions_roles :
++    "github-${replace(replace(r, "roles/", ""), ".", "-")}" => { role = r, member = local.github_actions_member }
++  }
++  depends_on = [module.github_oidc]
++}
+diff --git a/terraform/bootstrap-state/envs/stg/outputs.tf b/terraform/bootstrap-state/envs/stg/outputs.tf
+index 6bee343..cda87d6 100644
+--- a/terraform/bootstrap-state/envs/stg/outputs.tf
++++ b/terraform/bootstrap-state/envs/stg/outputs.tf
+@@ -7,19 +7,19 @@ output "artifact_registry_location" {
+ }
+ 
+ output "github_actions_service_account" {
+-  value = module.github_oidc.github_actions_service_account_email
++  description = "GitHub variable GCP_SERVICE_ACCOUNT"
++  value       = module.github_oidc.github_actions_service_account_email
+ }
+ 
+ output "workload_identity_provider" {
+-  value = module.github_oidc.workload_identity_provider_name
++  description = "GitHub variable GCP_WORKLOAD_IDENTITY_PROVIDER"
++  value       = module.github_oidc.workload_identity_provider_name
+ }
+ 
+ output "state_bucket_name" {
+   value = module.state_bucket.bucket_name
+ }
+-output "workload_identity_service_accounts" {
+-  value = module.workload_identity.service_accounts
+-}
++
+ output "iam_bindings" {
+   value = module.iam.bindings
+-}
+\ No newline at end of file
++}
+diff --git a/terraform/bootstrap-state/envs/stg/terraform.tfvars b/terraform/bootstrap-state/envs/stg/terraform.tfvars
+index 056713b..4ede403 100644
+--- a/terraform/bootstrap-state/envs/stg/terraform.tfvars
++++ b/terraform/bootstrap-state/envs/stg/terraform.tfvars
+@@ -5,33 +5,3 @@ env                    = "stg"
+ github_repo            = "k8s-MSEF"
+ artifact_registry_repo = "k8s-msef"
+ state_bucket_name      = "msef-2026-stg-tfstate"
+-workload_service_accounts = {
+-  external-secrets = {
+-    display_name = "stg External Secrets GSA"
+-    roles = [
+-      "roles/secretmanager.secretAccessor"
+-    ]
+-  }
+-
+-  cert-manager = {
+-    display_name = "stg Cert Manager GSA"
+-    roles = [
+-      "roles/dns.admin"
+-    ]
+-  }
+-
+-  argocd = {
+-    display_name = "stg ArgoCD GSA"
+-    roles = [
+-      "roles/artifactregistry.reader"
+-    ]
+-  }
+-
+-  workload-app = {
+-    display_name = "stg Application Workload GSA"
+-    roles = [
+-      "roles/artifactregistry.reader",
+-      "roles/secretmanager.secretAccessor"
+-    ]
+-  }
+-}
+\ No newline at end of file
+diff --git a/terraform/bootstrap-state/envs/stg/variables.tf b/terraform/bootstrap-state/envs/stg/variables.tf
+index c6dd394..11ccc8c 100644
+--- a/terraform/bootstrap-state/envs/stg/variables.tf
++++ b/terraform/bootstrap-state/envs/stg/variables.tf
+@@ -34,11 +34,3 @@ variable "state_bucket_name" {
+   description = "Terraform state bucket name."
+   type        = string
+ }
+-variable "workload_service_accounts" {
+-  description = "Google service accounts for GKE Workload Identity."
+-  type = map(object({
+-    display_name = string
+-    roles        = list(string)
+-  }))
+-  default = {}
+-}
+\ No newline at end of file
+diff --git a/terraform/bootstrap-state/envs/stg/versions.tf b/terraform/bootstrap-state/envs/stg/versions.tf
+index 765f742..3a4600a 100644
+--- a/terraform/bootstrap-state/envs/stg/versions.tf
++++ b/terraform/bootstrap-state/envs/stg/versions.tf
+@@ -6,5 +6,9 @@ terraform {
+       source  = "hashicorp/google"
+       version = "~> 6.0"
+     }
++    random = {
++      source  = "hashicorp/random"
++      version = "~> 3.6"
++    }
+   }
+-}
+\ No newline at end of file
++}
+diff --git a/terraform/bootstrap-state/modules/github-oidc/main.tf b/terraform/bootstrap-state/modules/github-oidc/main.tf
+index 8f0678b..72ff128 100644
+--- a/terraform/bootstrap-state/modules/github-oidc/main.tf
++++ b/terraform/bootstrap-state/modules/github-oidc/main.tf
+@@ -28,10 +28,10 @@ resource "google_iam_workload_identity_pool" "github_pool" {
+ }
+ 
+ resource "google_iam_workload_identity_pool_provider" "github_provider" {
+-  project = var.project_id
+-  workload_identity_pool_id = google_iam_workload_identity_pool.github_pool.workload_identity_pool_id
++  project                            = var.project_id
++  workload_identity_pool_id          = google_iam_workload_identity_pool.github_pool.workload_identity_pool_id
+   workload_identity_pool_provider_id = "${var.env}-github-provider"
+-  display_name = "${var.env} GitHub Actions Provider"
++  display_name                       = "${var.env} GitHub Actions Provider"
+   attribute_mapping = {
+     "google.subject"       = "assertion.sub"
+     "attribute.actor"      = "assertion.actor"
+diff --git a/terraform/bootstrap-state/modules/state-bucket/main.tf b/terraform/bootstrap-state/modules/state-bucket/main.tf
+index cdcf5c8..66f491b 100644
+--- a/terraform/bootstrap-state/modules/state-bucket/main.tf
++++ b/terraform/bootstrap-state/modules/state-bucket/main.tf
+@@ -10,11 +10,23 @@ resource "google_storage_bucket" "tfstate" {
+     enabled = true
+   }
+ 
++  # Keep the live state forever. Prune only superseded (noncurrent) versions:
++  # keep the newest 20, and delete any noncurrent version older than 90 days.
+   lifecycle_rule {
+     condition {
+-      age = 30
++      num_newer_versions = 20
++      with_state         = "ARCHIVED"
+     }
++    action {
++      type = "Delete"
++    }
++  }
+ 
++  lifecycle_rule {
++    condition {
++      days_since_noncurrent_time = 90
++      with_state                 = "ARCHIVED"
++    }
+     action {
+       type = "Delete"
+     }
+diff --git a/terraform/foundation/bootstrap-key.json b/terraform/foundation/bootstrap-key.json
+deleted file mode 100644
+index e69de29..0000000
+-- 
+2.43.0
+
+
+From c1201c6f03b5debd62cebe59e94e860971eb593a Mon Sep 17 00:00:00 2001
+From: MSEF audit fixes <audit@example.invalid>
+Date: Mon, 12 Oct 2026 14:24:49 +0000
+Subject: [PATCH 4/4] Workflows: one harness run per metric, readiness gate,
+ safe uploads
+
+- measure-rdr.sh runs the runtime suite once; measure-mttd/-fpr/-rrsr.sh and
+  measure-ies.sh report the files their harness wrote (previously each re-ran
+  a full suite, overwriting results)
+- measure-mbr.sh uses the seeded fuzzer + admission oracle (was v1 static set)
+- scripts/preflight-cluster.sh: refuse to evaluate a partially deployed cluster
+- orchestrator: preflight first; report generators cannot discard results;
+  writes manuscript-tables.md
+- security-evaluation.yaml calls the same orchestrator as run-security.yaml
+- both: install jq + Python requirements; upload results with if: always()
+- terraform-bootstrap: remove auto-trigger of security-evaluation right after
+  Argo CD install (cluster not yet synced)
+- run-security: fix needs: generate-reports -> run-security (unknown job made
+  the workflow invalid)
+---
+ .github/workflows/run-security.yaml        |  6 +-
+ .github/workflows/security-evaluation.yaml | 28 +++------
+ .github/workflows/terraform-bootstrap.yaml |  9 ---
+ docs/GCP-BOOTSTRAP.md                      | 19 ++++++
+ scripts/lib/report_metric.sh               |  8 +++
+ scripts/measure-fpr.sh                     |  8 +--
+ scripts/measure-ies.sh                     |  5 +-
+ scripts/measure-mbr.sh                     | 73 ++--------------------
+ scripts/measure-mttd.sh                    |  8 +--
+ scripts/measure-rdr.sh                     |  9 ++-
+ scripts/measure-rrsr.sh                    |  8 +--
+ scripts/preflight-cluster.sh               | 19 ++++++
+ scripts/run-k8s-security-evaluation.sh     | 10 ++-
+ 13 files changed, 87 insertions(+), 123 deletions(-)
+ create mode 100644 scripts/lib/report_metric.sh
+ mode change 100644 => 100755 scripts/measure-mbr.sh
+ create mode 100755 scripts/preflight-cluster.sh
+
+diff --git a/.github/workflows/run-security.yaml b/.github/workflows/run-security.yaml
+index cdc8099..f759c0f 100644
+--- a/.github/workflows/run-security.yaml
++++ b/.github/workflows/run-security.yaml
+@@ -69,7 +69,8 @@ jobs:
+       - name: Install required packages
+         run: |
+           sudo apt-get update
+-          sudo apt-get install -y bc
++          sudo apt-get install -y bc jq
++          pip install -r scripts/requirements.txt
+ 
+       - name: Get GKE credentials
+         run: |
+@@ -84,6 +85,7 @@ jobs:
+         run: scripts/run-k8s-security-evaluation.sh
+ 
+       - name: Upload results
++        if: always()
+         uses: actions/upload-artifact@v4
+         with:
+           name: security-orchestrator-${{ github.event.inputs.environment }}
+@@ -91,7 +93,7 @@ jobs:
+             results/
+ 
+   trigger-build-sign-deploy:
+-    needs: generate-reports
++    needs: run-security
+     if: github.event.inputs.environment == 'dev' && success()
+     runs-on: ubuntu-latest
+     steps:
+diff --git a/.github/workflows/security-evaluation.yaml b/.github/workflows/security-evaluation.yaml
+index a42e611..492c28a 100644
+--- a/.github/workflows/security-evaluation.yaml
++++ b/.github/workflows/security-evaluation.yaml
+@@ -67,31 +67,21 @@ jobs:
+       - name: Install required packages
+         run: |
+           sudo apt-get update
+-          sudo apt-get install -y bc
++          sudo apt-get install -y bc jq
++          pip install -r scripts/requirements.txt
+ 
+       - name: Make scripts executable
+         run: chmod +x scripts/*.sh
+ 
+-      - name: Run Security Measurement Metrics
+-        run: |
+-          scripts/measure-mbr.sh | tee results/mbr-result.txt
+-          scripts/measure-nper.sh | tee results/nper-result.txt
+-          scripts/measure-smer.sh | tee results/smer-result.txt
+-          scripts/measure-pes.sh | tee results/pes-result.txt
+-          scripts/measure-spr.sh | tee results/spr-result.txt
+-          scripts/measure-ies.sh | tee results/ies-result.txt
+-          scripts/measure-rdr.sh | tee results/rdr-result.txt
+-          scripts/measure-mttd.sh | tee results/mttd-result.txt
+-          scripts/measure-fpr.sh | tee results/fpr-result.txt
+-          scripts/measure-rrsr.sh | tee results/rrsr-result.txt
+-          scripts/measure-des.sh | tee results/des-result.txt
+-
+-      - name: Generate reports
+-        run: |
+-          scripts/generate-security-report.sh | tee results/final-security-report.txt
+-          scripts/generate-html-report.sh
++      - name: Run MSEF evaluation (same orchestrator as run-security)
++        env:
++          MSEF_FUZZ_SEED: "20261012"
++          MSEF_RUNTIME_REPEATS: "1"
++          MSEF_CONFIG_LABEL: "C5"
++        run: scripts/run-k8s-security-evaluation.sh
+ 
+       - name: Upload evaluation results
++        if: always()
+         uses: actions/upload-artifact@v4
+         with:
+           name: security-evaluation-${{ github.event.inputs.environment }}
+diff --git a/.github/workflows/terraform-bootstrap.yaml b/.github/workflows/terraform-bootstrap.yaml
+index b323f06..3f3e617 100644
+--- a/.github/workflows/terraform-bootstrap.yaml
++++ b/.github/workflows/terraform-bootstrap.yaml
+@@ -123,12 +123,3 @@ jobs:
+       - name: Terraform destroy
+         if: github.event.inputs.action == 'destroy'
+         run: terraform destroy -auto-approve -input=false
+-    
+-  trigger-security-evaluation:
+-    needs: apply
+-    if: github.event.inputs.environment == 'dev' && success()
+-    runs-on: ubuntu-latest
+-    steps:
+-      - run: gh workflow run security-evaluation.yaml --ref main -f environment=dev
+-        env:
+-          GH_TOKEN: ${{ github.token }}
+\ No newline at end of file
+diff --git a/docs/GCP-BOOTSTRAP.md b/docs/GCP-BOOTSTRAP.md
+index 8d9f966..05e7ebe 100644
+--- a/docs/GCP-BOOTSTRAP.md
++++ b/docs/GCP-BOOTSTRAP.md
+@@ -106,6 +106,25 @@ monitoring together can leave pods Pending on `e2-standard-2`; if so, raise
+ Whatever you choose, keep the node shape and the set of background components
+ identical across C0–C5, and record them; they affect latency and resource results.
+ 
++## F. Evaluation workflows
++
++Run **Run Security Orchestrator** (or **Security Evaluation**; both now call
++`scripts/run-k8s-security-evaluation.sh`). It starts with
++`scripts/preflight-cluster.sh` and stops if Argo CD apps, Gatekeeper, Kyverno,
++Falco, KRE or metrics-server are not ready. Each harness runs once:
++
++| Layer | Script | Produces |
++| --- | --- | --- |
++| L2 | `measure-mbr.sh` (seeded fuzzer), `measure-nper.sh`, `measure-smer.sh`, `measure-pes.sh` | MBR, NPER, SMER, PES |
++| L3 | `measure-spr.sh` → `measure-ies.sh` reports | SPR, IES |
++| L4 | `measure-rdr.sh` runs the runtime suite once → `measure-mttd/-fpr/-rrsr.sh` report | RDR, MTTD, MTTC, OFPR, RRSR |
++| L4 | `measure-des.sh` | DES |
++
++Results upload as an artifact even if a later step fails. Admission latency and
++the C0–C5 ablation are run from a workstation (`MSEFv2-RUNBOOK.md`), because
++each configuration requires deliberately reconfiguring the cluster.
++`terraform-bootstrap` no longer auto-starts an evaluation.
++
+ ## Teardown
+ 
+ Run **Terraform Destroy** (dev). The state bucket is kept (`force_destroy = false`).
+diff --git a/scripts/lib/report_metric.sh b/scripts/lib/report_metric.sh
+new file mode 100644
+index 0000000..fd8dd31
+--- /dev/null
++++ b/scripts/lib/report_metric.sh
+@@ -0,0 +1,8 @@
++#!/usr/bin/env bash
++# Print a metric already produced by its harness; never re-measure, never impute.
++report_metric() {
++  local name="$1" file="$2"
++  [[ -f "$file" ]] || { echo "[!] $name: $file not found - run its harness first" >&2; exit 1; }
++  echo "[i] $name (from $(jq -r '.run_id // "unknown run"' "$file"))"
++  jq . "$file"
++}
+diff --git a/scripts/measure-fpr.sh b/scripts/measure-fpr.sh
+index 1134e63..ba5baf9 100755
+--- a/scripts/measure-fpr.sh
++++ b/scripts/measure-fpr.sh
+@@ -1,7 +1,5 @@
+ #!/usr/bin/env bash
+-# Superseded in MSEFv2: RDR, RRSR, MTTD, MTTC and OFPR are now produced together,
+-# per scenario, by scripts/run-runtime-suite.sh (+ compute_runtime_metrics.py),
+-# so that detection and containment are measured on the same events.
++# OFPR is produced by its harness (runtime suite or SPR); this only reports it.
+ set -euo pipefail
+-echo "[i] measure-fpr.sh is superseded; running scripts/run-runtime-suite.sh $*" >&2
+-exec "$(dirname "$0")/run-runtime-suite.sh" "$@"
++source "$(dirname "$0")/lib/report_metric.sh"
++report_metric "OFPR" "$(cd "$(dirname "$0")/.." && pwd)/results/json/fpr.json"
+diff --git a/scripts/measure-ies.sh b/scripts/measure-ies.sh
+index 9267b13..2dfe180 100755
+--- a/scripts/measure-ies.sh
++++ b/scripts/measure-ies.sh
+@@ -1,4 +1,5 @@
+ #!/usr/bin/env bash
+-# Thin wrapper; logic and oracle live in scripts/measure_admission.py.
++# IES is produced by its harness (runtime suite or SPR); this only reports it.
+ set -euo pipefail
+-exec python3 "$(dirname "$0")/measure_admission.py" spr "$@"
++source "$(dirname "$0")/lib/report_metric.sh"
++report_metric "IES" "$(cd "$(dirname "$0")/.." && pwd)/results/json/ies.json"
+diff --git a/scripts/measure-mbr.sh b/scripts/measure-mbr.sh
+old mode 100644
+new mode 100755
+index 9963d76..390057b
+--- a/scripts/measure-mbr.sh
++++ b/scripts/measure-mbr.sh
+@@ -1,71 +1,6 @@
+ #!/usr/bin/env bash
+-
++# MSEFv2 MBR = seeded mutation corpus + explicit admission oracle.
++# Env: MSEF_FUZZ_SEED (default 20261012; record it with the results), MSEF_FUZZ_COUNT (default 100)
++# The v1 static manifests remain in k8s/insecure-manifests/ for reference only.
+ set -euo pipefail
+-
+-source scripts/lib/common.sh
+-source scripts/lib/kubernetes.sh
+-source scripts/lib/validation.sh
+-source scripts/lib/metrics.sh
+-source scripts/lib/output.sh
+-
+-init_framework
+-
+-print_banner "Manifest Blocking Rate (MBR)"
+-
+-TARGET_NS="${TARGET_NS:-hardened}"
+-MANIFEST_DIR="${MANIFEST_DIR:-k8s/insecure-manifests}"
+-
+-require_namespace "$TARGET_NS"
+-require_gatekeeper
+-
+-TOTAL=0
+-BLOCKED=0
+-ALLOWED=0
+-
+-DETAILS="$LOG_DIR/mbr-details.log"
+-: > "$DETAILS"
+-
+-for FILE in "$MANIFEST_DIR"/*.yaml
+-do
+-
+-    TOTAL=$((TOTAL+1))
+-
+-    NAME=$(basename "$FILE")
+-    [[ "$NAME" == "" ]] && continue
+-
+-    log_info "Testing $NAME"
+-
+-    if OUTPUT=$(apply_dry_run "$FILE" "$TARGET_NS")
+-    then
+-        RESULT="ALLOWED"
+-        ALLOWED=$((ALLOWED+1))
+-    else
+-        if admission_blocked "$OUTPUT"
+-        then
+-            RESULT="BLOCKED"
+-            BLOCKED=$((BLOCKED+1))
+-        else
+-            RESULT="ERROR"
+-            echo "$OUTPUT"
+-        fi
+-    fi
+-
+-    printf "%s : %s\n" "$NAME" "$RESULT" >> "$DETAILS"
+-
+-done
+-
+-MBR=$(score "$BLOCKED" "$TOTAL")
+-
+-cat > "$JSON_DIR/mbr.json" <<EOF
+-{
+-  "framework":"Kubernetes MSEF",
+-  "metric":"MBR",
+-  "timestamp":"$(timestamp)",
+-  "total":$TOTAL,
+-  "blocked":$BLOCKED,
+-  "allowed":$ALLOWED,
+-  "score":$MBR
+-}
+-EOF
+-
+-cat "$JSON_DIR/mbr.json"
+\ No newline at end of file
++exec python3 "$(dirname "$0")/measure_admission.py" mbr --seed "${MSEF_FUZZ_SEED:-20261012}" --count "${MSEF_FUZZ_COUNT:-100}"
+diff --git a/scripts/measure-mttd.sh b/scripts/measure-mttd.sh
+index b8a8303..7b7d7f5 100755
+--- a/scripts/measure-mttd.sh
++++ b/scripts/measure-mttd.sh
+@@ -1,7 +1,5 @@
+ #!/usr/bin/env bash
+-# Superseded in MSEFv2: RDR, RRSR, MTTD, MTTC and OFPR are now produced together,
+-# per scenario, by scripts/run-runtime-suite.sh (+ compute_runtime_metrics.py),
+-# so that detection and containment are measured on the same events.
++# MTTD is produced by its harness (runtime suite or SPR); this only reports it.
+ set -euo pipefail
+-echo "[i] measure-mttd.sh is superseded; running scripts/run-runtime-suite.sh $*" >&2
+-exec "$(dirname "$0")/run-runtime-suite.sh" "$@"
++source "$(dirname "$0")/lib/report_metric.sh"
++report_metric "MTTD" "$(cd "$(dirname "$0")/.." && pwd)/results/json/mttd.json"
+diff --git a/scripts/measure-rdr.sh b/scripts/measure-rdr.sh
+index 1280214..14b60db 100755
+--- a/scripts/measure-rdr.sh
++++ b/scripts/measure-rdr.sh
+@@ -1,7 +1,6 @@
+ #!/usr/bin/env bash
+-# Superseded in MSEFv2: RDR, RRSR, MTTD, MTTC and OFPR are now produced together,
+-# per scenario, by scripts/run-runtime-suite.sh (+ compute_runtime_metrics.py),
+-# so that detection and containment are measured on the same events.
++# Runs the Layer 4 runtime suite ONCE. It writes rdr.json, rrsr.json, mttd.json
++# and fpr.json together; measure-mttd/-fpr/-rrsr.sh only report those files.
++# Env: MSEF_RUNTIME_REPEATS (default 1), MSEF_CONFIG_LABEL (default C5)
+ set -euo pipefail
+-echo "[i] measure-rdr.sh is superseded; running scripts/run-runtime-suite.sh $*" >&2
+-exec "$(dirname "$0")/run-runtime-suite.sh" "$@"
++exec "$(dirname "$0")/run-runtime-suite.sh" --repeats "${MSEF_RUNTIME_REPEATS:-1}" --config-label "${MSEF_CONFIG_LABEL:-C5}"
+diff --git a/scripts/measure-rrsr.sh b/scripts/measure-rrsr.sh
+index be780da..1dfcbce 100755
+--- a/scripts/measure-rrsr.sh
++++ b/scripts/measure-rrsr.sh
+@@ -1,7 +1,5 @@
+ #!/usr/bin/env bash
+-# Superseded in MSEFv2: RDR, RRSR, MTTD, MTTC and OFPR are now produced together,
+-# per scenario, by scripts/run-runtime-suite.sh (+ compute_runtime_metrics.py),
+-# so that detection and containment are measured on the same events.
++# RRSR is produced by its harness (runtime suite or SPR); this only reports it.
+ set -euo pipefail
+-echo "[i] measure-rrsr.sh is superseded; running scripts/run-runtime-suite.sh $*" >&2
+-exec "$(dirname "$0")/run-runtime-suite.sh" "$@"
++source "$(dirname "$0")/lib/report_metric.sh"
++report_metric "RRSR" "$(cd "$(dirname "$0")/.." && pwd)/results/json/rrsr.json"
+diff --git a/scripts/preflight-cluster.sh b/scripts/preflight-cluster.sh
+new file mode 100755
+index 0000000..f3d1556
+--- /dev/null
++++ b/scripts/preflight-cluster.sh
+@@ -0,0 +1,19 @@
++#!/usr/bin/env bash
++# Refuse to evaluate a cluster that is not fully deployed. Read-only.
++set -euo pipefail
++fail=0; ok() { echo "[ok]   $1"; }; bad() { echo "[FAIL] $1"; fail=1; }
++apps="$(kubectl -n argocd get applications -o json 2>/dev/null || echo '{"items":[]}')"
++n=$(jq '.items|length' <<<"$apps")
++notready=$(jq -r '.items[]|select(.status.sync.status!="Synced" or .status.health.status!="Healthy")|.metadata.name' <<<"$apps")
++if [[ "$n" -gt 0 && -z "$notready" ]]; then ok "Argo CD: $n applications Synced/Healthy"; else bad "Argo CD apps not ready: ${notready:-none found}"; fi
++if kubectl get validatingwebhookconfigurations -o name | grep -qi gatekeeper; then ok "Gatekeeper webhook"; else bad "Gatekeeper webhook missing"; fi
++if kubectl get validatingwebhookconfigurations -o name | grep -qi kyverno; then ok "Kyverno webhook"; else bad "Kyverno webhook missing"; fi
++if kubectl get clusterpolicy verify-signed-images >/dev/null 2>&1; then ok "Kyverno verify-signed-images"; else bad "verify-signed-images policy missing"; fi
++d=$(kubectl -n falco get ds -o jsonpath='{.items[0].status.desiredNumberScheduled}' 2>/dev/null || echo 0)
++r=$(kubectl -n falco get ds -o jsonpath='{.items[0].status.numberReady}' 2>/dev/null || echo 0)
++if [[ "${d:-0}" -gt 0 && "$d" == "$r" ]]; then ok "Falco $r/$d ready"; else bad "Falco ${r:-0}/${d:-0} ready"; fi
++kr=$(kubectl -n hardened get deploy msef-kre-handler -o jsonpath='{.status.readyReplicas}' 2>/dev/null || echo 0)
++if [[ "${kr:-0}" -ge 1 ]]; then ok "KRE ready"; else bad "KRE not ready"; fi
++if kubectl -n hardened logs deploy/msef-kre-handler 2>/dev/null | grep -q "rule plans"; then ok "KRE loaded rule plans"; else bad "KRE rule plans not confirmed in logs"; fi
++if kubectl top pods -n falco >/dev/null 2>&1; then ok "metrics-server"; else bad "metrics-server unavailable (resource metrics would be null)"; fi
++if [[ $fail != 0 ]]; then echo "Cluster not ready for evaluation."; exit 1; fi
+diff --git a/scripts/run-k8s-security-evaluation.sh b/scripts/run-k8s-security-evaluation.sh
+index 129dca8..4ba4f8a 100644
+--- a/scripts/run-k8s-security-evaluation.sh
++++ b/scripts/run-k8s-security-evaluation.sh
+@@ -38,6 +38,10 @@ banner "Multi-Layer Security Evaluation Framework"
+ 
+ echo "Started: $(date)"
+ 
++section "Preflight"
++
++run_metric "$SCRIPT_DIR/preflight-cluster.sh"
++
+ section "Prevention Layer"
+ 
+ run_metric "$SCRIPT_DIR/measure-mbr.sh"
+@@ -60,8 +64,10 @@ run_metric "$SCRIPT_DIR/measure-des.sh"
+ 
+ section "Generating Reports"
+ 
+-run_metric "$SCRIPT_DIR/generate-security-report.sh"
+-run_metric "$SCRIPT_DIR/generate-html-report.sh"
++# Report generators predate the v2 output formats; a failure here must not discard results.
++"$SCRIPT_DIR/generate-security-report.sh" || echo "[!] generate-security-report.sh failed"
++"$SCRIPT_DIR/generate-html-report.sh" || echo "[!] generate-html-report.sh failed"
++python3 "$SCRIPT_DIR/export_results_tables.py" > "$RESULTS_DIR/manuscript-tables.md"
+ 
+ banner "Evaluation Completed"
+ 
 -- 
 2.43.0
 

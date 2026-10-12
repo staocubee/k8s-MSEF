@@ -7,6 +7,8 @@ cluster.** Offline checks only: KRE controller tests against a fake API
 distinctness, admission-oracle cases, metric calculators on fixtures.
 Falco rule syntax has not been validated by Falco itself (step 2 does that).
 
+Fresh project? First follow `docs/GCP-BOOTSTRAP.md`, then return here.
+
 Run order matters: fix → verify deployment → experiments → manuscript.
 All results go to `results/runs/<run_id>/` with run metadata (git commit,
 cluster version, component images, seed). `results/json/*.json` holds the

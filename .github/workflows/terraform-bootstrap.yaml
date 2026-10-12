@@ -123,12 +123,3 @@ jobs:
       - name: Terraform destroy
         if: github.event.inputs.action == 'destroy'
         run: terraform destroy -auto-approve -input=false
-    
-  trigger-security-evaluation:
-    needs: apply
-    if: github.event.inputs.environment == 'dev' && success()
-    runs-on: ubuntu-latest
-    steps:
-      - run: gh workflow run security-evaluation.yaml --ref main -f environment=dev
-        env:
-          GH_TOKEN: ${{ github.token }}

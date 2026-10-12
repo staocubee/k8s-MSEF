@@ -69,7 +69,8 @@ jobs:
       - name: Install required packages
         run: |
           sudo apt-get update
-          sudo apt-get install -y bc
+          sudo apt-get install -y bc jq
+          pip install -r scripts/requirements.txt
 
       - name: Get GKE credentials
         run: |
@@ -84,6 +85,7 @@ jobs:
         run: scripts/run-k8s-security-evaluation.sh
 
       - name: Upload results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: security-orchestrator-${{ github.event.inputs.environment }}
@@ -91,7 +93,7 @@ jobs:
             results/
 
   trigger-build-sign-deploy:
-    needs: generate-reports
+    needs: run-security
     if: github.event.inputs.environment == 'dev' && success()
     runs-on: ubuntu-latest
     steps:

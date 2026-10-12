@@ -1,0 +1,52 @@
+diff a/tests/test_kre_handler.py b/tests/test_kre_handler.py	(rejected hunks)
+@@ -47,7 +47,11 @@ def install_fake():
+     k.client, k.config, c.rest = c, cfg, rest
+     sys.modules.update({"kubernetes": k, "kubernetes.client": c, "kubernetes.config": cfg, "kubernetes.client.rest": rest})
+ 
+-BASE_ENV = {"KRE_QUEUE_MAXSIZE": "10000", "KRE_WORKER_THREADS": "4", "KRE_DEBOUNCE_WINDOW": "3.0"}
++import yaml
++_CM = os.path.join(os.path.dirname(__file__), "..", "gitops", "platform", "dev", "kre", "configmap.yaml")
++RULE_PLANS = yaml.safe_load(open(_CM))["data"]["rule-plans.json"]   # the real ConfigMap content
++BASE_ENV = {"KRE_QUEUE_MAXSIZE": "10000", "KRE_WORKER_THREADS": "4", "KRE_DEBOUNCE_WINDOW": "3.0",
++            "KRE_RULE_PLANS": RULE_PLANS}
+ 
+ def load(env):
+     os.environ.update({**BASE_ENV, **env}); install_fake()
+@@ -73,9 +77,13 @@ def run():
+         r2 = cl.post("/remediate", json=alert("MSEF Service Account Token Access"))
+         check("async: duplicate within window is debounced (200)", r2.status_code == 200 and r2.json["status"] == "debounced")
+         check("out-of-scope namespace is not remediated", cl.post("/remediate", json=alert("MSEF Service Account Token Access", ns="kube-system", pod="kube-dns-x")).json["status"] == "out_of_scope")
++        r_un = cl.post("/remediate", json=alert("MSEF Rule Not In ConfigMap", pod="token-theft"))
++        check("MSEF-prefixed rule absent from ConfigMap is not remediated", r_un.status_code == 202)
+         check("non-MSEF Falco rule is ignored", cl.post("/remediate", json=alert("Terminal shell in container")).json["status"] == "ignored")
+         m.event_queue.join(); time.sleep(0.05)
+         recs = records(log); proc = [x for x in recs if x["status"] == "processed"]
++        unsup = [x for x in recs if x["status"] == "unsupported_rule"]
++        check("unknown rule audited as unsupported, success=false, no action", len(unsup) == 1 and unsup[0]["success"] is False and not unsup[0].get("actions"))
+         check("exactly one processed record", len(proc) == 1)
+         p = proc[0] if proc else {}
+         check("token plan = quarantine + revoke + terminate", p.get("action_taken") == "QUARANTINE_REVOKE_TERMINATE")
+@@ -83,7 +91,22 @@ def run():
+         check("MTTC = t_confirmed - t_received (>= queue wait)", p.get("mttc_seconds") is not None and p["mttc_seconds"] >= p["queue_wait_seconds"])
+         check("revocation deleted the attack RoleBinding", ("hardened", "msef-attack-sa-probe") not in STATE["rbs"])
+         check("quarantine policy selects unique per-pod label", any(np.spec.pod_selector.match_labels == {m.QUARANTINE_LABEL: "uid-1"} for np in STATE["netpols"].values()))
+-        check("every alert audited (processed+debounced+out_of_scope+ignored)", sorted(x["status"] for x in recs) == sorted(["processed", "debounced", "out_of_scope", "ignored_non_msef_rule"]))
++        check("every alert audited (processed+debounced+out_of_scope+ignored)", sorted(x["status"] for x in recs) == sorted(["processed", "debounced", "out_of_scope", "ignored_non_msef_rule", "unsupported_rule"]))
++        # ---- startup must fail without a rule map
++        import subprocess
++        code = ("import os,sys;sys.path.insert(0,'tests');import test_kre_handler as T;"
++                "os.environ.pop('KRE_RULE_PLANS',None);T.BASE_ENV.pop('KRE_RULE_PLANS');T.reset();T.load({})")
++        pr = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, cwd=os.path.join(os.path.dirname(__file__), ".."))
++        check("KRE refuses to start without KRE_RULE_PLANS", pr.returncode != 0 and "KRE_RULE_PLANS is not set" in (pr.stderr + pr.stdout))
++        # ---- every ConfigMap rule produces its plan (one pod per rule, sync mode)
++        reset(); logp = os.path.join(d, "p.jsonl"); plans = json.loads(RULE_PLANS)
++        for i, rule in enumerate(plans):
++            STATE["pods"][("hardened", f"r{i}")] = O(metadata=O(uid=f"ur{i}", labels={}), spec=O(service_account_name="msef-attack-sa"))
++        mp = load({"KRE_MODE": "sync", "KRE_AUDIT_LOG": logp, "KRE_CONFIRM_POLL": "0.01"})
++        cp = mp.app.test_client()
++        for i, rule in enumerate(plans): cp.post("/remediate", json=alert(rule, pod=f"r{i}"))
++        got = {x["falco_rule"]: (x["action_taken"], x["success"]) for x in records(logp)}
++        check(f"all {len(plans)} ConfigMap rules -> configured plan, contained", got == {r: (p, True) for r, p in plans.items()})
+         # ---- sync mode
+         reset(); log2 = os.path.join(d, "s.jsonl")
+         m2 = load({"KRE_MODE": "sync", "KRE_AUDIT_LOG": log2, "KRE_CONFIRM_POLL": "0.01"})
